@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER") // USER or ADMIN
+  createdAt DateTime @default(now())
+}
+
+model Destination {
+  id          String        @id @default(uuid())
+  name        String
+  country     String
+  description String
+  image       String
+  category    String // e.g., India, International
+  createdAt   DateTime      @default(now())
+  packages    TourPackage[]
+}
+
+model TourPackage {
+  id               String       @id @default(uuid())
+  title            String
+  destinationId    String
+  destination      Destination  @relation(fields: [destinationId], references: [id])
+  description      String
+  shortDescription String
+  duration         String
+  nights           Int
+  price            Float
+  rating           Float        @default(0.0)
+  category         String
+  mainImage        String
+  featured         Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  itineraries      Itinerary[]
+  enquiries        Enquiry[]
+}
+
+model Itinerary {
+  id          String      @id @default(uuid())
+  packageId   String
+  package     TourPackage @relation(fields: [packageId], references: [id])
+  day         Int
+  title       String
+  description String
+}
+
+model Enquiry {
+  id          String      @id @default(uuid())
+  name        String
+  email       String
+  phone       String
+  destination String?
+  travelDate  String?
+  travellers  Int
+  message     String
+  packageId   String?
+  package     TourPackage? @relation(fields: [packageId], references: [id])
+  status      String      @default("PENDING") // PENDING, CONTACTED, RESOLVED
+  createdAt   DateTime    @default(now())
+}
+
+model Testimonial {
+  id          String   @id @default(uuid())
+  name        String
+  destination String
+  rating      Float
+  review      String
+  image       String?
+}
