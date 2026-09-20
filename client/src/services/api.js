@@ -24,4 +24,15 @@ export const getTestimonials = () => api.get('/testimonials');
 export const submitEnquiry = (data) => api.post('/enquiries', data);
 export const submitContact = (data) => api.post('/contact', data);
 
+// Leads (Visitor consultation popup & admin view)
+export const submitLead = (data) => api.post('/leads', data);
+export const getLeads = (adminKey) =>
+  api.get('/leads', {
+    headers: { 'x-admin-key': adminKey }
+  });
+export const updateLeadStatus = (id, status, adminKey) =>
+  api.patch(`/leads/${id}/status`, { status }, {
+    headers: { 'x-admin-key': adminKey }
+  });
+
 export default api;

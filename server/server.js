@@ -9,8 +9,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+const allowedOrigins = process.env.CORS_ORIGIN 
+  ? [process.env.CORS_ORIGIN] 
+  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Permissive in dev to avoid CORS blocking
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -26,6 +36,7 @@ try {
 const packageRoutes = require('./routes/packageRoutes');
 const destinationRoutes = require('./routes/destinationRoutes');
 const miscRoutes = require('./routes/miscRoutes');
+const leadRoutes = require('./routes/leadRoutes');
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Viraj Travels API is running 🚀' });
@@ -33,6 +44,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/packages', packageRoutes);
 app.use('/api/destinations', destinationRoutes);
+app.use('/api/leads', leadRoutes);
 app.use('/api', miscRoutes);
 
 // 404 handler

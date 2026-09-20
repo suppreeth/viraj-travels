@@ -137,12 +137,12 @@ const TestimonialCard = ({ t }) => (
    TYPING INTRO
    Tweak the timings here.
 ───────────────────────────────────────── */
-const LINE_1 = 'Discover The World.';
-const LINE_2 = 'Create Stories Worth Remembering.';
-const TYPE_START_MS  = 700;   // wait before the first letter
-const TYPE_SPEED_MS  = 55;    // base delay between letters
-const LINE_PAUSE_MS  = 450;   // pause after the first line
-const HOLD_MS        = 1300;  // how long the finished text stays on screen
+const LINE_1 = 'Your Journey.';
+const LINE_2 = 'Your Way.';
+const TYPE_START_MS  = 350;   // wait before the first letter
+const TYPE_SPEED_MS  = 35;    // faster, smooth typing
+const LINE_PAUSE_MS  = 250;   // brief pause after first line
+const HOLD_MS        = 1000;  // hold finished text before packages appear
 
 const TypedLine = ({ text, count, cursor }) => (
   <>

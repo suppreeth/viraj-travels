@@ -8,6 +8,8 @@ import PackageDetail from './pages/PackageDetail';
 import Destinations from './pages/Destinations';
 import Contact from './pages/Contact';
 import About from './pages/About';
+import AdminLeads from './pages/AdminLeads';
+import LeadPopup from './components/LeadPopup';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -31,9 +33,11 @@ function App() {
             <Route path="/destinations" element={<Destinations />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
+            <Route path="/admin/leads" element={<AdminLeads />} />
             <Route path="*" element={<div className="container" style={{paddingTop: '160px', textAlign: 'center', minHeight: '60vh'}}><h2>404 - Page Not Found</h2></div>} />
           </Routes>
         </main>
+        <LeadPopup />
         <Footer />
       </div>
     </Router>
