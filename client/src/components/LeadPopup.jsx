@@ -23,72 +23,33 @@ const LeadPopup = () => {
   
   const location = useLocation();
 
-  // Automatic trigger: show after 8 seconds or on scroll interaction
+  // Re-appear every 6 seconds until the user submits the form
   useEffect(() => {
     // Don't show popup on admin page
     if (location.pathname.startsWith('/admin')) {
       return;
     }
 
-    // Check if visitor has dismissed recently (2-minute cooldown so visitors aren't annoyed, but testing isn't permanently locked)
-    const dismissedVal = sessionStorage.getItem(STORAGE_DISMISSED_KEY);
-    let isDismissed = false;
-    if (dismissedVal) {
-      if (dismissedVal === 'true') {
-        // Clear old permanent boolean flag from prior tests
-        sessionStorage.removeItem(STORAGE_DISMISSED_KEY);
-      } else {
-        const dismissedTime = parseInt(dismissedVal, 10);
-        if (!isNaN(dismissedTime) && Date.now() - dismissedTime < 2 * 60 * 1000) {
-          isDismissed = true;
-        } else {
-          sessionStorage.removeItem(STORAGE_DISMISSED_KEY);
-        }
-      }
-    }
-
-    if (isDismissed || hasTriggered) {
+    // If user has successfully submitted the lead, never show popup again
+    const isSubmitted = sessionStorage.getItem(STORAGE_DISMISSED_KEY) === 'submitted';
+    if (isSubmitted || isSuccess) {
       return;
     }
 
-    let opened = false;
-    const openPopup = () => {
-      if (opened) return;
-      opened = true;
-      setHasTriggered(true);
-      setIsOpen(true);
-      cleanupListeners();
-    };
-
-    // Primary timer: 8 seconds (as requested: around 8–12 seconds)
-    const timer = setTimeout(() => {
-      openPopup();
-    }, 8000);
-
-    // Interaction trigger: if visitor scrolls down after at least 4s
-    const pageLoadTime = Date.now();
-    const handleScroll = () => {
-      if (Date.now() - pageLoadTime > 4000 && window.scrollY > 300) {
-        openPopup();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    const cleanupListeners = () => {
-      clearTimeout(timer);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    let timer;
+    if (!isOpen) {
+      timer = setTimeout(() => {
+        setIsOpen(true);
+      }, 10000);
+    }
 
     return () => {
-      cleanupListeners();
+      if (timer) clearTimeout(timer);
     };
-  }, [location.pathname, hasTriggered]);
+  }, [location.pathname, isOpen, isSuccess]);
 
   const handleClose = () => {
     setIsOpen(false);
-    // Don't immediately show again (2-minute gentle cooldown)
-    sessionStorage.setItem(STORAGE_DISMISSED_KEY, Date.now().toString());
   };
 
   // Handle ESC key to close
@@ -161,7 +122,7 @@ const LeadPopup = () => {
       });
 
       setIsSuccess(true);
-      sessionStorage.setItem(STORAGE_DISMISSED_KEY, 'true');
+      sessionStorage.setItem(STORAGE_DISMISSED_KEY, 'submitted');
 
       // Auto-close modal after 3.5 seconds
       setTimeout(() => {
@@ -408,11 +369,11 @@ const LeadPopup = () => {
           margin-bottom: 1rem;
         }
 
-        /* Always Accessible Floating Badge */
+        /* Always Accessible Floating Badge - Positioned on Bottom-Left to prevent overlapping right FABs */
         .lead-floating-badge {
           position: fixed;
-          bottom: 24px;
-          right: 24px;
+          bottom: 28px;
+          left: 28px;
           background: linear-gradient(135deg, var(--blue), var(--teal));
           color: white;
           border: none;
@@ -434,8 +395,8 @@ const LeadPopup = () => {
         }
         @media (max-width: 600px) {
           .lead-floating-badge {
-            bottom: 16px;
-            right: 16px;
+            bottom: 20px;
+            left: 18px;
             padding: 0.65rem 1.15rem;
             font-size: 0.85rem;
           }

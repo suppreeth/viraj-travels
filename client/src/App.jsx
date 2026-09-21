@@ -10,6 +10,7 @@ import Contact from './pages/Contact';
 import About from './pages/About';
 import AdminLeads from './pages/AdminLeads';
 import LeadPopup from './components/LeadPopup';
+import FloatingActions from './components/FloatingActions';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -38,6 +39,7 @@ function App() {
           </Routes>
         </main>
         <LeadPopup />
+        <FloatingActions />
         <Footer />
       </div>
     </Router>

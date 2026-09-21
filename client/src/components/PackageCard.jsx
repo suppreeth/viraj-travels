@@ -10,9 +10,8 @@ const PackageCard = ({ pkg, index = 0 }) => {
     <motion.div
       className="pkg-card"
       initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.75, delay: index * 1.0, ease: [0.25, 1, 0.5, 1] }}
       whileHover="hover"
     >
       <style>{`

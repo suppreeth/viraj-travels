@@ -57,4 +57,43 @@ const submitContact = (req, res) => {
   }
 };
 
-module.exports = { getAllTestimonials, createEnquiry, submitContact };
+// POST /api/testimonials (Submit review)
+const createTestimonial = (req, res) => {
+  try {
+    const { name, destination, rating, review } = req.body;
+    
+    if (!name || !review) {
+      return res.status(400).json({ success: false, message: 'Name and review are required.' });
+    }
+
+    const numRating = parseFloat(rating) || 5.0;
+    const clampedRating = Math.max(1, Math.min(5, numRating));
+    const id = uuidv4();
+
+    db.prepare(`INSERT INTO Testimonial (id, name, destination, rating, review, image) VALUES (?, ?, ?, ?, ?, ?)`)
+      .run(
+        id,
+        name.trim(),
+        destination ? destination.trim() : 'Traveller',
+        clampedRating,
+        review.trim(),
+        null
+      );
+
+    const newTestimonial = {
+      id,
+      name: name.trim(),
+      destination: destination ? destination.trim() : 'Traveller',
+      rating: clampedRating,
+      review: review.trim(),
+      image: null
+    };
+
+    res.status(201).json({ success: true, message: 'Thank you for your review!', data: newTestimonial });
+  } catch (err) {
+    console.error('Error creating testimonial:', err);
+    res.status(500).json({ success: false, message: 'Failed to submit review. Please try again.' });
+  }
+};
+
+module.exports = { getAllTestimonials, createTestimonial, createEnquiry, submitContact };
