@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, useInView } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Search, MapPin, Compass, Clock, Star, ArrowRight,
   CheckCircle2, Award, Globe, Zap, Shield, MessageSquare
@@ -134,6 +134,40 @@ const TestimonialCard = ({ t }) => (
 );
 
 /* ─────────────────────────────────────────
+   TYPING INTRO
+   Tweak the timings here.
+───────────────────────────────────────── */
+const LINE_1 = 'Your Journey.';
+const LINE_2 = 'Your Way.';
+const TYPE_START_MS  = 350;   // wait before the first letter
+const TYPE_SPEED_MS  = 35;    // faster, smooth typing
+const LINE_PAUSE_MS  = 250;   // brief pause after first line
+const HOLD_MS        = 1000;  // hold finished text before packages appear
+
+const TypedLine = ({ text, count, cursor }) => (
+  <>
+    <span>{text.slice(0, count)}</span>
+    {cursor && <span className="type-cursor" aria-hidden="true" />}
+    {/* untyped letters stay in the layout (invisible) so nothing jumps */}
+    <span style={{ visibility: 'hidden' }}>{text.slice(count)}</span>
+  </>
+);
+
+const TypedHeadline = ({ count }) => {
+  const n1 = Math.min(count, LINE_1.length);
+  const n2 = Math.max(0, count - LINE_1.length);
+  const onLine1 = count <= LINE_1.length;
+  return (
+    <h1 className="hero-h1" aria-label={`${LINE_1} ${LINE_2}`}>
+      <span aria-hidden="true">
+        <TypedLine text={LINE_1} count={n1} cursor={onLine1} />
+        <em><TypedLine text={LINE_2} count={n2} cursor={!onLine1} /></em>
+      </span>
+    </h1>
+  );
+};
+
+/* ─────────────────────────────────────────
    FADE-UP WRAPPER
 ───────────────────────────────────────── */
 const FadeUp = ({ children, delay = 0, className = '' }) => (
@@ -159,6 +193,45 @@ const Home = () => {
   const [pkgLoading,   setPkgLoading]   = useState(true);
   const [destLoading,  setDestLoading]  = useState(true);
   const [pkgError,     setPkgError]     = useState(null);
+  const [testLoading,  setTestLoading]  = useState(true);
+
+  // Intro: type the headline, hold, fade out, then show the packages in the same spot.
+  const [phase, setPhase] = useState(() =>
+    typeof window !== 'undefined' &&
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+      ? 'packages'
+      : 'intro'
+  );
+  const [typed, setTyped] = useState(0);
+  const totalChars = LINE_1.length + LINE_2.length;
+
+  useEffect(() => {
+    if (phase !== 'intro') return;
+    let i = 0;
+    let timer;
+    const tick = () => {
+      i += 1;
+      setTyped(i);
+      if (i >= totalChars) {
+        timer = setTimeout(() => setPhase('packages'), HOLD_MS);
+        return;
+      }
+      const delay = i === LINE_1.length
+        ? LINE_PAUSE_MS
+        : TYPE_SPEED_MS + Math.random() * 35;
+      timer = setTimeout(tick, delay);
+    };
+    timer = setTimeout(tick, TYPE_START_MS);
+    return () => clearTimeout(timer);
+  }, [phase, totalChars]);
+
+  // No scrolling while the intro plays, so the layout doesn't shift under the visitor.
+  useEffect(() => {
+    if (phase !== 'intro') return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [phase]);
 
   useEffect(() => {
     getFeaturedPackages()
@@ -173,7 +246,8 @@ const Home = () => {
 
     getTestimonials()
       .then(res => setTestimonials(res.data.data || []))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setTestLoading(false));
   }, []);
 
   const categories = [
@@ -209,11 +283,11 @@ const Home = () => {
   return (
     <div className="home-page">
       <style>{`
-        /* ─── HERO ─── */
+        /* ─── HERO (typing intro, then packages) ─── */
         .hero-section {
           position: relative;
-          min-height: 100svh;
-          min-height: 860px;
+          min-height: calc(100vh - 60px);
+          min-height: calc(100svh - 60px);
           display: flex;
           flex-direction: column;
           overflow: visible;
@@ -236,6 +310,16 @@ const Home = () => {
           );
           z-index: 1;
         }
+        /* extra darkening once the packages are showing, so the text stays readable */
+        .hero-overlay-dark {
+          position: absolute;
+          inset: 0;
+          background: rgba(10,20,40,0.55);
+          z-index: 1;
+          opacity: 0;
+          transition: opacity 0.9s ease;
+        }
+        .hero-open .hero-overlay-dark { opacity: 1; }
         .hero-body {
           position: relative;
           z-index: 10;
@@ -282,51 +366,51 @@ const Home = () => {
           display: block;
           margin-top: 0.1em;
         }
+        .type-cursor {
+          display: inline-block;
+          width: 0;
+          position: relative;
+        }
+        .type-cursor::after {
+          content: '';
+          position: absolute;
+          left: 0.05em;
+          bottom: -0.12em;
+          width: 0.055em;
+          height: 0.95em;
+          background: currentColor;
+          animation: type-blink 0.9s steps(1) infinite;
+        }
+        @keyframes type-blink { 50% { opacity: 0; } }
         .hero-desc {
           font-size: clamp(0.98rem, 1.8vw, 1.15rem);
           color: rgba(255,255,255,0.78);
           line-height: 1.75;
           max-width: 560px;
-          margin: 0 auto var(--sp-8);
+          margin: 0 auto;
         }
-        .hero-cta {
-          display: flex;
-          gap: var(--sp-3);
-          justify-content: center;
-          flex-wrap: wrap;
-          margin-bottom: var(--sp-10);
+
+        /* packages shown inside the hero */
+        .hero-packages {
+          position: relative;
+          z-index: 10;
+          padding-top: 112px;
+          padding-bottom: 112px;
         }
-        .hero-stats-strip {
-          display: flex;
-          background: rgba(255,255,255,0.09);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255,255,255,0.15);
-          border-radius: var(--r-xl);
-          overflow: hidden;
-        }
-        .hss-item {
-          padding: var(--sp-4) var(--sp-6);
-          text-align: center;
-          flex: 1;
-        }
-        .hss-item + .hss-item {
-          border-left: 1px solid rgba(255,255,255,0.12);
-        }
-        .hss-value {
-          font-size: 1.6rem;
-          font-weight: 900;
+        .hero-packages .section-eyebrow { color: #5ce8db; }
+        .hero-packages .section-eyebrow::before { background: #5ce8db; }
+        .hero-packages .section-title {
           color: #fff;
-          line-height: 1;
-          margin-bottom: 4px;
+          font-size: clamp(1.8rem, 3.4vw, 2.7rem);
         }
-        .hss-label {
-          font-size: 0.72rem;
-          color: rgba(255,255,255,0.58);
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-          white-space: nowrap;
+        .hero-packages .section-title span { color: #5ce8db; }
+        .hero-packages .section-subtitle { color: rgba(255,255,255,0.75); }
+        .hero-packages .skeleton {
+          background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 75%);
+          background-size: 800px 100%;
         }
+        .hero-packages .error-state,
+        .hero-packages .error-state h3 { color: rgba(255,255,255,0.85); }
 
         /* ─── SEARCH PANEL ─── */
         .search-panel-wrap {
@@ -412,51 +496,21 @@ const Home = () => {
           box-shadow: 0 8px 28px rgba(14,110,184,0.48);
         }
 
-        /* ─── PACKAGES SECTION (Mountain Background) ─── */
-        .pkg-section {
-          position: relative;
-          background: #f8fafc;
-          padding: var(--sp-20) 0;
-          overflow: hidden;
-        }
-        .pkg-section::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop') center / cover fixed no-repeat;
-          opacity: 0.08;
-          z-index: 0;
-          filter: blur(2px);
-        }
-        .pkg-section::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 15%, rgba(255,255,255,0) 85%, rgba(255,255,255,1) 100%);
-          z-index: 1;
-        }
-        .pkg-section .container {
-          position: relative;
-          z-index: 2;
-        }
+        /* ─── PACKAGES GRID ─── */
         .pkg-header {
-          position: relative;
-          z-index: 2;
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          margin-bottom: var(--sp-10);
+          margin-bottom: var(--sp-8);
           flex-wrap: wrap;
           gap: var(--sp-4);
         }
         .pkg-grid {
-          position: relative;
-          z-index: 2;
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
           gap: var(--sp-6);
         }
-        .error-state { text-align: center; padding: var(--sp-12); color: var(--gray-500); position: relative; z-index: 2; }
+        .error-state { text-align: center; padding: var(--sp-12); color: var(--gray-500); }
         .error-state h3 { color: var(--gray-700); margin-bottom: var(--sp-2); }
 
         /* ─── MOUNTAIN EDITORIAL ─── */
@@ -791,10 +845,24 @@ const Home = () => {
         .offer-btns { display: flex; gap: var(--sp-4); justify-content: center; flex-wrap: wrap; }
 
         /* ─── TESTIMONIALS ─── */
-        .testimonials-section { background: var(--off-white); padding: var(--sp-20) 0; }
+        .testimonials-section {
+          position: relative;
+          background: #f8fafc;
+          padding: var(--sp-20) 0;
+          overflow: hidden;
+        }
+        .testimonials-section::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: url('https://images.unsplash.com/photo-1499678329028-101435549a4e?q=80&w=2000&auto=format&fit=crop') center / cover no-repeat;
+          opacity: 0.04;
+          z-index: 0;
+        }
+        .testimonials-section .container { position: relative; z-index: 2; }
         .testimonials-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
           gap: var(--sp-5);
         }
         .tc-card {
@@ -828,7 +896,6 @@ const Home = () => {
           .dest-card-big { grid-column: span 2; grid-row: span 1; min-height: 340px; }
           .dest-card-ed { min-height: 260px; }
           .why-grid { grid-template-columns: repeat(2, 1fr); }
-          .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 900px) {
           .beach-inner { grid-template-columns: 1fr; gap: var(--sp-10); }
@@ -839,7 +906,6 @@ const Home = () => {
         }
         @media (max-width: 768px) {
           .hero-body { padding: 96px var(--sp-4) 48px; }
-          .hero-stats-strip { display: none; }
           .hs-form { flex-direction: column; padding: var(--sp-5); gap: 0; }
           .hs-field { padding: 0; padding-bottom: var(--sp-3); border-bottom: 1px solid var(--gray-100); }
           .hs-sep { display: none; }
@@ -851,86 +917,88 @@ const Home = () => {
           .dest-card-ed { min-height: 220px; }
           .cat-grid { grid-template-columns: repeat(2, 1fr); }
           .why-grid { grid-template-columns: 1fr; }
-          .testimonials-grid { grid-template-columns: 1fr; }
           .pkg-header { flex-direction: column; align-items: flex-start; }
         }
         @media (max-width: 480px) {
-          .hero-cta { flex-direction: column; align-items: center; }
           .stats-band-grid { grid-template-columns: repeat(2, 1fr); }
           .beach-img-wrap { height: 260px; }
           .offer-btns { flex-direction: column; align-items: center; }
         }
       `}</style>
 
-      {/* ══ HERO ══ */}
-      <section className="hero-section">
+      {/* ══ HERO: typing intro, then the packages appear in the same spot ══ */}
+      <section className={`hero-section${phase === 'packages' ? ' hero-open' : ''}`}>
         <div className="hero-bg" />
         <div className="hero-overlay" />
+        <div className="hero-overlay-dark" />
 
-        <div className="hero-body">
-          <motion.div
-            className="hero-badge"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            ✈️ &nbsp; Premium Travel Experiences Since 2015
-          </motion.div>
+        <AnimatePresence mode="wait">
+          {phase === 'intro' ? (
+            <motion.div
+              key="intro"
+              className="hero-body"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -24 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="hero-badge">
+                ✈️ &nbsp; Premium Travel Experiences Since 2015
+              </div>
 
-          <motion.h1
-            className="hero-h1"
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.35 }}
-          >
-            Discover The World.
-            <em>Create Stories Worth Remembering.</em>
-          </motion.h1>
+              <TypedHeadline count={typed} />
 
-          <motion.p
-            className="hero-desc"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-          >
-            Handpicked destinations, unforgettable experiences, and journeys
-            designed uniquely around you.
-          </motion.p>
+              <p className="hero-desc">
+                Handpicked destinations, unforgettable experiences, and journeys
+                designed uniquely around you.
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="packages"
+              className="container hero-packages"
+              initial={{ opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="pkg-header">
+                <div>
+                  <div className="section-eyebrow">Our Top Picks</div>
+                  <h2 className="section-title">
+                    Explore Our Most <span>Loved Journeys</span>
+                  </h2>
+                  <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 460 }}>
+                    Handpicked experiences designed to turn your next holiday into
+                    a story worth remembering.
+                  </p>
+                </div>
+                <Link to="/packages" className="btn btn-outline">
+                  View All Packages <ArrowRight size={16} />
+                </Link>
+              </div>
 
-          <motion.div
-            className="hero-cta"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.65 }}
-          >
-            <Link to="/packages" className="btn btn-primary btn-lg">
-              Explore Packages <ArrowRight size={18} />
-            </Link>
-            <Link to="/contact" className="btn btn-outline btn-lg">
-              Plan Your Journey
-            </Link>
-          </motion.div>
-
-          <motion.div
-            className="hero-stats-strip"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.82 }}
-          >
-            <div className="hss-item">
-              <div className="hss-value">5000+</div>
-              <div className="hss-label">Happy Travellers</div>
-            </div>
-            <div className="hss-item">
-              <div className="hss-value">100+</div>
-              <div className="hss-label">Destinations</div>
-            </div>
-            <div className="hss-item">
-              <div className="hss-value">4.9★</div>
-              <div className="hss-label">Average Rating</div>
-            </div>
-          </motion.div>
-        </div>
+              {pkgLoading ? (
+                <div className="pkg-grid">
+                  {Array.from({ length: 6 }).map((_, i) => <PackageSkeleton key={i} />)}
+                </div>
+              ) : pkgError ? (
+                <div className="error-state">
+                  <h3>Unable to load packages</h3>
+                  <p>{pkgError}</p>
+                </div>
+              ) : packages.length === 0 ? (
+                <div className="error-state">
+                  <h3>No featured packages yet</h3>
+                  <p>Check back soon, or browse all packages.</p>
+                </div>
+              ) : (
+                <div className="pkg-grid">
+                  {packages.map((pkg, i) => <PackageCard key={pkg.id} pkg={pkg} index={i} />)}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
       {/* ══ SEARCH PANEL ══ */}
@@ -946,43 +1014,32 @@ const Home = () => {
         </div>
       </div>
 
-      {/* ══ FEATURED PACKAGES ══ */}
-      <section className="pkg-section">
-        <div className="container">
-          <div className="pkg-header">
-            <FadeUp>
-              <div className="section-eyebrow">Our Top Picks</div>
-              <h2 className="section-title">
-                Explore Our Most<br /><span>Loved Journeys</span>
-              </h2>
-              <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 460 }}>
-                Handpicked experiences designed to turn your next holiday into
-                a story worth remembering.
-              </p>
-            </FadeUp>
-            <FadeUp delay={0.1}>
-              <Link to="/packages" className="btn btn-outline-dark">
-                View All Packages <ArrowRight size={16} />
-              </Link>
-            </FadeUp>
+      {/* ══ CUSTOMER REVIEWS (directly below the packages) ══ */}
+      {(testLoading || testimonials.length > 0) && (
+        <section className="testimonials-section">
+          <div className="container">
+            <div className="section-header centered" style={{ marginBottom: 'var(--sp-10)' }}>
+              <FadeUp>
+                <div className="section-eyebrow">Traveller Stories</div>
+                <h2 className="section-title">
+                  Stories From Our <span>Travellers</span>
+                </h2>
+              </FadeUp>
+            </div>
+            <div className="testimonials-grid">
+              {testLoading
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="skeleton" style={{ height: 200, borderRadius: 'var(--r-lg)' }} />
+                  ))
+                : testimonials.slice(0, 6).map((t, i) => (
+                    <FadeUp key={t.id} delay={i * 0.08}>
+                      <TestimonialCard t={t} />
+                    </FadeUp>
+                  ))}
+            </div>
           </div>
-
-          {pkgLoading ? (
-            <div className="pkg-grid">
-              {Array.from({ length: 6 }).map((_, i) => <PackageSkeleton key={i} />)}
-            </div>
-          ) : pkgError ? (
-            <div className="error-state">
-              <h3>Unable to load packages</h3>
-              <p>{pkgError}</p>
-            </div>
-          ) : (
-            <div className="pkg-grid">
-              {packages.map((pkg, i) => <PackageCard key={pkg.id} pkg={pkg} index={i} />)}
-            </div>
-          )}
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ══ MOUNTAIN EDITORIAL ══ */}
       <section className="mountain-section">
@@ -1233,30 +1290,6 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* ══ TESTIMONIALS ══ */}
-      {testimonials.length > 0 && (
-        <section className="testimonials-section" style={{ position: 'relative', background: '#f8fafc', padding: 'var(--sp-20) 0', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'url("https://images.unsplash.com/photo-1499678329028-101435549a4e?q=80&w=2000&auto=format&fit=crop") center/cover no-repeat', opacity: 0.04, zIndex: 0 }}></div>
-          <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-            <div className="section-header centered" style={{ marginBottom: 'var(--sp-10)' }}>
-              <FadeUp>
-                <div className="section-eyebrow">Traveller Stories</div>
-                <h2 className="section-title">
-                  Stories From Our <span>Travellers</span>
-                </h2>
-              </FadeUp>
-            </div>
-            <div className="testimonials-grid">
-              {testimonials.slice(0, 3).map((t, i) => (
-                <FadeUp key={t.id} delay={i * 0.08}>
-                  <TestimonialCard t={t} />
-                </FadeUp>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ══ FINAL CTA ══ */}
       <section className="final-cta" style={{ position: 'relative', padding: 'var(--sp-24) 0', background: '#fff', overflow: 'hidden' }}>
