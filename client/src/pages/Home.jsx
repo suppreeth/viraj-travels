@@ -134,34 +134,37 @@ const TestimonialCard = ({ t }) => (
 );
 
 /* ─────────────────────────────────────────
-   TYPING INTRO
-   Tweak the timings here.
+   HERO HEADLINES & CYCLING SLOGANS
 ───────────────────────────────────────── */
-const LINE_1 = 'Your Journey.';
-const LINE_2 = 'Your Way.';
-const TYPE_START_MS  = 350;   // wait before the first letter
-const TYPE_SPEED_MS  = 35;    // faster, smooth typing
-const LINE_PAUSE_MS  = 250;   // brief pause after first line
-const HOLD_MS        = 1000;  // hold finished text before packages appear
+const SLOGANS = [
+  { line1: 'Your Journey.', line2: 'Your Way.' },
+  { line1: 'Explore Paradise.', line2: 'Create Memories.' },
+];
 
-const TypedLine = ({ text, count, cursor }) => (
+const TYPE_START_MS    = 300;   // wait before typing starts
+const TYPE_SPEED_MS    = 150;   // smooth typing speed per character
+const LINE_PAUSE_MS    = 350;   // pause between line 1 and line 2
+const SLOGAN_WAIT_MS   = 1200;  // wait after slogan completes before next slogan or transition
+const PACKAGES_HOLD_MS = 8500;  // time packages stay visible (4 cards * 1s + 4.5s reading) before looping back
+
+const TypedLine = ({ text, count }) => (
   <>
     <span>{text.slice(0, count)}</span>
-    {cursor && <span className="type-cursor" aria-hidden="true" />}
-    {/* untyped letters stay in the layout (invisible) so nothing jumps */}
+    {/* untyped letters stay in the layout (invisible) so nothing jumps or glitches */}
     <span style={{ visibility: 'hidden' }}>{text.slice(count)}</span>
   </>
 );
 
-const TypedHeadline = ({ count }) => {
-  const n1 = Math.min(count, LINE_1.length);
-  const n2 = Math.max(0, count - LINE_1.length);
-  const onLine1 = count <= LINE_1.length;
+const TypedHeadline = ({ count, slogan }) => {
+  const line1 = slogan.line1;
+  const line2 = slogan.line2;
+  const n1 = Math.min(count, line1.length);
+  const n2 = Math.max(0, count - line1.length);
   return (
-    <h1 className="hero-h1" aria-label={`${LINE_1} ${LINE_2}`}>
+    <h1 className="hero-h1" aria-label={`${line1} ${line2}`}>
       <span aria-hidden="true">
-        <TypedLine text={LINE_1} count={n1} cursor={onLine1} />
-        <em><TypedLine text={LINE_2} count={n2} cursor={!onLine1} /></em>
+        <TypedLine text={line1} count={n1} />
+        <em><TypedLine text={line2} count={n2} /></em>
       </span>
     </h1>
   );
@@ -195,43 +198,67 @@ const Home = () => {
   const [pkgError,     setPkgError]     = useState(null);
   const [testLoading,  setTestLoading]  = useState(true);
 
-  // Intro: type the headline, hold, fade out, then show the packages in the same spot.
+  // Phase: 'intro' (slogans typing) <-> 'packages' (featured cards) looping continuously
   const [phase, setPhase] = useState(() =>
     typeof window !== 'undefined' &&
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
       ? 'packages'
       : 'intro'
   );
+  const [sloganIndex, setSloganIndex] = useState(0);
   const [typed, setTyped] = useState(0);
-  const totalChars = LINE_1.length + LINE_2.length;
 
+  const currentSlogan = SLOGANS[sloganIndex] || SLOGANS[0];
+  const totalChars = currentSlogan.line1.length + currentSlogan.line2.length;
+
+  // Typing effect and slogan transitions
   useEffect(() => {
     if (phase !== 'intro') return;
+
+    setTyped(0);
     let i = 0;
     let timer;
+
     const tick = () => {
       i += 1;
       setTyped(i);
+
       if (i >= totalChars) {
-        timer = setTimeout(() => setPhase('packages'), HOLD_MS);
+        // Slogan finished; wait before moving to next slogan or packages
+        timer = setTimeout(() => {
+          if (sloganIndex + 1 < SLOGANS.length) {
+            setSloganIndex(prev => prev + 1);
+          } else {
+            setPhase('packages');
+          }
+        }, SLOGAN_WAIT_MS);
         return;
       }
-      const delay = i === LINE_1.length
+
+      const delay = i === currentSlogan.line1.length
         ? LINE_PAUSE_MS
-        : TYPE_SPEED_MS + Math.random() * 35;
+        : TYPE_SPEED_MS + Math.random() * 20;
+
       timer = setTimeout(tick, delay);
     };
+
     timer = setTimeout(tick, TYPE_START_MS);
     return () => clearTimeout(timer);
-  }, [phase, totalChars]);
+  }, [phase, sloganIndex, totalChars, currentSlogan.line1.length]);
 
-  // No scrolling while the intro plays, so the layout doesn't shift under the visitor.
+  // When packages appear, hold them with ample time for all cards to sequence in, then loop back
   useEffect(() => {
-    if (phase !== 'intro') return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = prev; };
+    if (phase !== 'packages') return;
+
+    const loopTimer = setTimeout(() => {
+      setSloganIndex(0);
+      setTyped(0);
+      setPhase('intro');
+    }, PACKAGES_HOLD_MS);
+
+    return () => clearTimeout(loopTimer);
   }, [phase]);
+
 
   useEffect(() => {
     getFeaturedPackages()
@@ -295,18 +322,19 @@ const Home = () => {
         .hero-bg {
           position: absolute;
           inset: 0;
-          background: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=85&w=2000&auto=format&fit=crop')
-            center / cover no-repeat;
+          background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=85&w=2000&auto=format&fit=crop')
+            center 40% / cover no-repeat;
           z-index: 0;
         }
         .hero-overlay {
           position: absolute;
           inset: 0;
           background: linear-gradient(
-            160deg,
-            rgba(10,20,40,0.88) 0%,
-            rgba(10,20,40,0.65) 45%,
-            rgba(12,80,140,0.40) 100%
+            170deg,
+            rgba(10, 28, 50, 0.76) 0%,
+            rgba(12, 38, 62, 0.52) 42%,
+            rgba(13, 148, 136, 0.28) 75%,
+            rgba(245, 158, 11, 0.22) 100%
           );
           z-index: 1;
         }
@@ -318,8 +346,9 @@ const Home = () => {
           z-index: 1;
           opacity: 0;
           transition: opacity 0.9s ease;
+          display: none;
         }
-        .hero-open .hero-overlay-dark { opacity: 1; }
+        .hero-open .hero-overlay-dark { opacity: 0; }
         .hero-body {
           position: relative;
           z-index: 10;
@@ -338,18 +367,19 @@ const Home = () => {
           display: inline-flex;
           align-items: center;
           gap: var(--sp-2);
-          background: rgba(255,255,255,0.10);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.22);
-          padding: 0.38rem 1rem;
+          background: rgba(255,255,255,0.15);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 235, 200, 0.35);
+          padding: 0.42rem 1.1rem;
           border-radius: var(--r-full);
-          font-size: 0.78rem;
+          font-size: 0.8rem;
           font-weight: 700;
-          color: rgba(255,255,255,0.92);
+          color: #fff;
           letter-spacing: 0.08em;
           text-transform: uppercase;
           margin-bottom: var(--sp-6);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
         .hero-h1 {
           font-family: 'Playfair Display', var(--font-serif);
@@ -359,35 +389,25 @@ const Home = () => {
           line-height: 1.1;
           letter-spacing: -0.01em;
           margin-bottom: var(--sp-5);
+          text-shadow: 0 2px 20px rgba(10, 28, 50, 0.45);
         }
         .hero-h1 em {
           font-style: italic;
-          color: #5ce8db;
+          color: #6ee7b7;
+          background: linear-gradient(135deg, #a7f3d0 0%, #38bdf8 50%, #fcd34d 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
           display: block;
           margin-top: 0.1em;
         }
-        .type-cursor {
-          display: inline-block;
-          width: 0;
-          position: relative;
-        }
-        .type-cursor::after {
-          content: '';
-          position: absolute;
-          left: 0.05em;
-          bottom: -0.12em;
-          width: 0.055em;
-          height: 0.95em;
-          background: currentColor;
-          animation: type-blink 0.9s steps(1) infinite;
-        }
-        @keyframes type-blink { 50% { opacity: 0; } }
         .hero-desc {
           font-size: clamp(0.98rem, 1.8vw, 1.15rem);
-          color: rgba(255,255,255,0.78);
+          color: rgba(255,255,255,0.9);
           line-height: 1.75;
           max-width: 560px;
           margin: 0 auto;
+          text-shadow: 0 1px 12px rgba(10, 28, 50, 0.4);
         }
 
         /* packages shown inside the hero */
@@ -397,14 +417,14 @@ const Home = () => {
           padding-top: 112px;
           padding-bottom: 112px;
         }
-        .hero-packages .section-eyebrow { color: #5ce8db; }
-        .hero-packages .section-eyebrow::before { background: #5ce8db; }
+        .hero-packages .section-eyebrow { color: #5eead4; }
+        .hero-packages .section-eyebrow::before { background: #5eead4; }
         .hero-packages .section-title {
           color: #fff;
           font-size: clamp(1.8rem, 3.4vw, 2.7rem);
         }
-        .hero-packages .section-title span { color: #5ce8db; }
-        .hero-packages .section-subtitle { color: rgba(255,255,255,0.75); }
+        .hero-packages .section-title span { color: #fcd34d; }
+        .hero-packages .section-subtitle { color: rgba(255,255,255,0.85); }
         .hero-packages .skeleton {
           background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 75%);
           background-size: 800px 100%;
@@ -510,6 +530,11 @@ const Home = () => {
           grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
           gap: var(--sp-6);
         }
+        .hero-packages .pkg-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: var(--sp-5);
+        }
         .error-state { text-align: center; padding: var(--sp-12); color: var(--gray-500); }
         .error-state h3 { color: var(--gray-700); margin-bottom: var(--sp-2); }
 
@@ -611,7 +636,7 @@ const Home = () => {
           font-weight: 700;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #5ce8db;
+          color: #2dd4bf;
           margin-bottom: 4px;
         }
         .dest-card-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
@@ -624,7 +649,7 @@ const Home = () => {
           margin-top: var(--sp-2);
           font-size: 0.78rem;
           font-weight: 600;
-          color: #5ce8db;
+          color: #2dd4bf;
           opacity: 0;
           transform: translateY(8px);
           transition: all 0.3s;
@@ -912,6 +937,7 @@ const Home = () => {
           .hs-btn { width: 100%; justify-content: center; margin-left: 0; margin-top: var(--sp-4); }
           .search-panel-wrap { margin-top: -30px; }
           .pkg-grid { grid-template-columns: 1fr; }
+          .hero-packages .pkg-grid { grid-template-columns: 1fr; }
           .dest-editorial-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
           .dest-card-big { grid-column: span 1; min-height: 260px; }
           .dest-card-ed { min-height: 220px; }
@@ -937,16 +963,16 @@ const Home = () => {
             <motion.div
               key="intro"
               className="hero-body"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, y: -24 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
             >
               <div className="hero-badge">
                 ✈️ &nbsp; Premium Travel Experiences Since 2015
               </div>
 
-              <TypedHeadline count={typed} />
+              <TypedHeadline count={typed} slogan={currentSlogan} />
 
               <p className="hero-desc">
                 Handpicked destinations, unforgettable experiences, and journeys
@@ -957,9 +983,10 @@ const Home = () => {
             <motion.div
               key="packages"
               className="container hero-packages"
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, y: -18 }}
+              transition={{ duration: 0.55, ease: [0.25, 1, 0.5, 1] }}
             >
               <div className="pkg-header">
                 <div>
@@ -979,7 +1006,7 @@ const Home = () => {
 
               {pkgLoading ? (
                 <div className="pkg-grid">
-                  {Array.from({ length: 6 }).map((_, i) => <PackageSkeleton key={i} />)}
+                  {Array.from({ length: 4 }).map((_, i) => <PackageSkeleton key={i} />)}
                 </div>
               ) : pkgError ? (
                 <div className="error-state">
@@ -993,7 +1020,7 @@ const Home = () => {
                 </div>
               ) : (
                 <div className="pkg-grid">
-                  {packages.map((pkg, i) => <PackageCard key={pkg.id} pkg={pkg} index={i} />)}
+                  {packages.slice(0, 4).map((pkg, i) => <PackageCard key={pkg.id} pkg={pkg} index={i} />)}
                 </div>
               )}
             </motion.div>

@@ -17,8 +17,9 @@ export const searchPackages = (searchParams) => api.get('/packages', { params: s
 export const getDestinations = (params = {}) => api.get('/destinations', { params });
 export const getDestinationById = (id) => api.get(`/destinations/${id}`);
 
-// Testimonials
+// Testimonials / Reviews
 export const getTestimonials = () => api.get('/testimonials');
+export const submitTestimonial = (data) => api.post('/testimonials', data);
 
 // Enquiries & Contact
 export const submitEnquiry = (data) => api.post('/enquiries', data);

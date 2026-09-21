@@ -2,15 +2,17 @@
 
 /* ===== DESIGN TOKENS ===== */
 :root {
-  /* Primary Palette */
-  --navy: #0c1a2e;
-  --navy-light: #142238;
-  --blue: #0e6eb8;
-  --blue-bright: #1a8fe3;
+  /* Primary Palette - Warm Coastal Dawn & Tropical Ocean */
+  --navy: #0c1e34;
+  --navy-light: #162c46;
+  --blue: #0284c7;
+  --blue-bright: #38bdf8;
   --teal: #0d9488;
-  --teal-light: #14b8a6;
+  --teal-light: #2dd4bf;
   --gold: #f59e0b;
-  --gold-light: #fbbf24;
+  --gold-light: #fcd34d;
+  --coral: #f97316;
+  --sand: #fef8ee;
   
   /* Neutrals */
   --white: #ffffff;
