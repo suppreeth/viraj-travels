@@ -121,7 +121,7 @@ const Contact = () => {
               <div className="ci-icon"><Mail size={20} /></div>
               <div>
                 <div className="ci-title">Email Address</div>
-                <div className="ci-desc">hello@virajtravels.com<br />support@virajtravels.com</div>
+                <div className="ci-desc">hello@vrajholidays.com<br />support@vrajholidays.com</div>
               </div>
             </div>
 

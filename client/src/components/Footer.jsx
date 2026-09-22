@@ -44,22 +44,41 @@ const Footer = () => {
         .footer-brand {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           margin-bottom: var(--sp-4);
         }
-        .footer-brand-icon {
-          width: 38px; height: 38px;
-          background: linear-gradient(135deg, var(--blue), var(--teal));
-          border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
+        .footer-brand-logo-badge {
+          height: 52px;
+          background: #ffffff;
+          border-radius: var(--r-md);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px 6px;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+          flex-shrink: 0;
+        }
+        .footer-brand-logo {
+          height: 100%;
+          width: auto;
+          object-fit: contain;
         }
         .footer-brand-name {
-          font-size: 1.25rem;
-          font-weight: 800;
+          font-size: 1.3rem;
+          font-weight: 900;
           color: white;
           letter-spacing: -0.02em;
+          display: flex;
+          flex-direction: column;
+          line-height: 1.05;
         }
-        .footer-brand-name span { color: var(--teal-light); }
+        .footer-brand-sub {
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.22em;
+          color: var(--gold);
+          margin-top: 2px;
+        }
         .footer-desc {
           font-size: 0.9rem;
           line-height: 1.7;
@@ -167,8 +186,17 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="footer-brand">
-              <div className="footer-brand-icon"><Plane size={18} color="white" /></div>
-              <div className="footer-brand-name">VIRAJ<span> TRAVELS</span></div>
+              <div className="footer-brand-logo-badge">
+                <img
+                  src="/logo-transparent.png"
+                  alt="V-RAJ Holidays"
+                  className="footer-brand-logo"
+                />
+              </div>
+              <div className="footer-brand-name">
+                <span>V-RAJ</span>
+                <span className="footer-brand-sub">HOLIDAYS</span>
+              </div>
             </div>
             <p className="footer-desc">
               Creating unforgettable travel experiences since 2015. We believe every journey should be a story worth telling.
@@ -219,7 +247,7 @@ const Footer = () => {
             <div className="footer-contact-item">
               <div className="footer-contact-icon"><Mail size={14} /></div>
               <div>
-                <div style={{ color: 'white', fontWeight: 500 }}>hello@virajtravels.com</div>
+                <div style={{ color: 'white', fontWeight: 500 }}>hello@vrajholidays.com</div>
               </div>
             </div>
             <div className="footer-contact-item">
@@ -238,7 +266,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <span>© {year} Viraj Travels. All Rights Reserved.</span>
+          <span>© {year} V-RAJ Holidays. All Rights Reserved.</span>
           <span style={{ display: 'flex', gap: '1.5rem' }}>
             <a href="#" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--teal-light)'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.4)'}>Privacy Policy</a>
             <a href="#" style={{ color: 'rgba(255,255,255,0.4)', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--teal-light)'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.4)'}>Terms of Service</a>

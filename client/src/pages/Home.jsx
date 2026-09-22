@@ -259,6 +259,29 @@ const Home = () => {
     return () => clearTimeout(loopTimer);
   }, [phase]);
 
+  // 3D Parallax tilt effect for hero section
+  const heroRef = useRef(null);
+  const [heroTilt, setHeroTilt] = useState({ rotateX: 0, rotateY: 0, px: 0, py: 0 });
+
+  const handleHeroMouseMove = (e) => {
+    if (!heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    // Calculate tilt angles bounded smoothly between -7 and 7 degrees
+    const rotateY = ((x - centerX) / centerX) * 8;
+    const rotateX = -((y - centerY) / centerY) * 7;
+    const px = ((x - centerX) / centerX) * 20;
+    const py = ((y - centerY) / centerY) * 15;
+    setHeroTilt({ rotateX, rotateY, px, py });
+  };
+
+  const handleHeroMouseLeave = () => {
+    setHeroTilt({ rotateX: 0, rotateY: 0, px: 0, py: 0 });
+  };
+
 
   useEffect(() => {
     getFeaturedPackages()
@@ -293,7 +316,7 @@ const Home = () => {
     { icon: <CheckCircle2 size={26} />,  title: 'Handpicked Experiences', desc: 'Every destination and stay is personally vetted by our team.' },
     { icon: <MessageSquare size={26} />, title: '24/7 Expert Support',    desc: 'Our travel experts are always available whenever you need them.' },
     { icon: <Zap size={26} />,           title: 'Customised Itineraries', desc: 'Trips designed around your preferences, pace, and budget.' },
-    { icon: <Shield size={26} />,        title: 'Trusted & Reliable',     desc: 'Over 5000+ satisfied travellers trust Viraj Travels every year.' },
+    { icon: <Shield size={26} />,        title: 'Trusted & Reliable',     desc: 'Over 5000+ satisfied travellers trust V-RAJ Holidays every year.' },
     { icon: <Globe size={26} />,         title: '100+ Destinations',      desc: 'Domestic and international destinations for every kind of traveller.' },
   ];
 
@@ -310,33 +333,71 @@ const Home = () => {
   return (
     <div className="home-page">
       <style>{`
-        /* ─── HERO (typing intro, then packages) ─── */
+        /* ─── HERO 3D PERSPECTIVE & DEPTH VIEW (typing intro, then packages) ─── */
         .hero-section {
           position: relative;
           min-height: calc(100vh - 60px);
           min-height: calc(100svh - 60px);
           display: flex;
           flex-direction: column;
-          overflow: visible;
+          overflow: hidden;
+          perspective: 1400px;
+          perspective-origin: 50% 45%;
+        }
+        .hero-3d-scene {
+          position: relative;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          transform-style: preserve-3d;
+          transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.4, 1);
+          will-change: transform;
         }
         .hero-bg {
           position: absolute;
-          inset: 0;
+          inset: -6%;
           background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=85&w=2000&auto=format&fit=crop')
             center 40% / cover no-repeat;
           z-index: 0;
+          transform: translateZ(-80px) scale(1.18);
+          transform-style: preserve-3d;
+          transition: transform 0.25s ease-out;
+          filter: saturate(1.15) contrast(1.05);
         }
         .hero-overlay {
           position: absolute;
-          inset: 0;
-          background: linear-gradient(
+          inset: -4%;
+          background: radial-gradient(
+            circle at 50% 35%,
+            rgba(14, 165, 233, 0.15) 0%,
+            rgba(10, 28, 50, 0.62) 50%,
+            rgba(8, 20, 36, 0.88) 100%
+          ),
+          linear-gradient(
             170deg,
-            rgba(10, 28, 50, 0.76) 0%,
-            rgba(12, 38, 62, 0.52) 42%,
-            rgba(13, 148, 136, 0.28) 75%,
+            rgba(10, 28, 50, 0.72) 0%,
+            rgba(12, 38, 62, 0.48) 42%,
+            rgba(13, 148, 136, 0.25) 75%,
             rgba(245, 158, 11, 0.22) 100%
           );
           z-index: 1;
+          transform: translateZ(-40px) scale(1.1);
+          pointer-events: none;
+        }
+        /* 3D Atmospheric Particles / Shimmer layer */
+        .hero-ambient-depth {
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(
+            800px circle at var(--mouse-x, 50%) var(--mouse-y, 45%),
+            rgba(255, 255, 255, 0.14),
+            transparent 60%
+          );
+          mix-blend-mode: overlay;
+          pointer-events: none;
+          z-index: 2;
+          transform: translateZ(10px);
         }
         /* extra darkening once the packages are showing, so the text stays readable */
         .hero-overlay-dark {
@@ -362,16 +423,17 @@ const Home = () => {
           max-width: 900px;
           margin: 0 auto;
           width: 100%;
+          transform-style: preserve-3d;
         }
         .hero-badge {
           display: inline-flex;
           align-items: center;
           gap: var(--sp-2);
-          background: rgba(255,255,255,0.15);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 235, 200, 0.35);
-          padding: 0.42rem 1.1rem;
+          background: rgba(255,255,255,0.18);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1px solid rgba(255, 255, 255, 0.45);
+          padding: 0.42rem 1.15rem;
           border-radius: var(--r-full);
           font-size: 0.8rem;
           font-weight: 700;
@@ -379,17 +441,28 @@ const Home = () => {
           letter-spacing: 0.08em;
           text-transform: uppercase;
           margin-bottom: var(--sp-6);
-          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+          box-shadow: 0 12px 30px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.4);
+          transform: translateZ(45px);
+          transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.4, 1), box-shadow 0.3s;
+        }
+        .hero-badge:hover {
+          transform: translateZ(65px) scale(1.04);
+          box-shadow: 0 18px 36px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.6);
         }
         .hero-h1 {
           font-family: 'Playfair Display', var(--font-serif);
-          font-size: clamp(2.8rem, 6vw, 5rem);
+          font-size: clamp(2.8rem, 6vw, 5.2rem);
           font-weight: 700;
           color: #fff;
           line-height: 1.1;
           letter-spacing: -0.01em;
           margin-bottom: var(--sp-5);
-          text-shadow: 0 2px 20px rgba(10, 28, 50, 0.45);
+          transform: translateZ(70px);
+          text-shadow: 
+            0 2px 4px rgba(10, 28, 50, 0.6),
+            0 8px 24px rgba(10, 28, 50, 0.45),
+            0 20px 45px rgba(0, 0, 0, 0.35);
+          transform-style: preserve-3d;
         }
         .hero-h1 em {
           font-style: italic;
@@ -399,32 +472,53 @@ const Home = () => {
           -webkit-text-fill-color: transparent;
           background-clip: text;
           display: block;
-          margin-top: 0.1em;
+          margin-top: 0.12em;
+          filter: drop-shadow(0 4px 16px rgba(56, 189, 248, 0.35));
         }
         .hero-desc {
-          font-size: clamp(0.98rem, 1.8vw, 1.15rem);
-          color: rgba(255,255,255,0.9);
-          line-height: 1.75;
-          max-width: 560px;
+          font-size: clamp(0.98rem, 1.8vw, 1.18rem);
+          color: rgba(255,255,255,0.95);
+          line-height: 1.8;
+          max-width: 580px;
           margin: 0 auto;
-          text-shadow: 0 1px 12px rgba(10, 28, 50, 0.4);
+          text-shadow: 0 2px 16px rgba(10, 28, 50, 0.6);
+          transform: translateZ(50px);
         }
 
-        /* packages shown inside the hero */
+        /* packages shown inside the hero in 3D perspective */
         .hero-packages {
           position: relative;
           z-index: 10;
-          padding-top: 112px;
+          padding-top: 100px;
           padding-bottom: 112px;
+          transform-style: preserve-3d;
+          transform: translateZ(40px);
         }
         .hero-packages .section-eyebrow { color: #5eead4; }
         .hero-packages .section-eyebrow::before { background: #5eead4; }
         .hero-packages .section-title {
           color: #fff;
           font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+          text-shadow: 0 4px 24px rgba(0,0,0,0.5);
+          transform: translateZ(50px);
         }
         .hero-packages .section-title span { color: #fcd34d; }
-        .hero-packages .section-subtitle { color: rgba(255,255,255,0.85); }
+        .hero-packages .section-subtitle {
+          color: rgba(255,255,255,0.9);
+          text-shadow: 0 2px 14px rgba(0,0,0,0.4);
+          transform: translateZ(35px);
+        }
+        .hero-packages .pkg-grid {
+          transform-style: preserve-3d;
+        }
+        .hero-packages .pkg-card {
+          box-shadow: 0 20px 45px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
+          transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.4s ease;
+        }
+        .hero-packages .pkg-card:hover {
+          transform: translateY(-8px) translateZ(35px) rotateX(2deg);
+          box-shadow: 0 32px 64px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.25);
+        }
         .hero-packages .skeleton {
           background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 75%);
           background-size: 800px 100%;
@@ -952,80 +1046,110 @@ const Home = () => {
         }
       `}</style>
 
-      {/* ══ HERO: typing intro, then the packages appear in the same spot ══ */}
-      <section className={`hero-section${phase === 'packages' ? ' hero-open' : ''}`}>
-        <div className="hero-bg" />
-        <div className="hero-overlay" />
-        <div className="hero-overlay-dark" />
+      {/* ══ HERO 3D VIEW: interactive depth perspective, typing intro & 3D packages ══ */}
+      <section
+        ref={heroRef}
+        onMouseMove={handleHeroMouseMove}
+        onMouseLeave={handleHeroMouseLeave}
+        className={`hero-section${phase === 'packages' ? ' hero-open' : ''}`}
+        style={{
+          '--mouse-x': `${50 + (heroTilt.px / 20) * 35}%`,
+          '--mouse-y': `${45 + (heroTilt.py / 15) * 30}%`,
+        }}
+      >
+        <div
+          className="hero-3d-scene"
+          style={{
+            transform: `rotateX(${heroTilt.rotateX}deg) rotateY(${heroTilt.rotateY}deg)`,
+          }}
+        >
+          {/* Deep 3D Background Layer */}
+          <div
+            className="hero-bg"
+            style={{
+              transform: `translate3d(${-heroTilt.px * 0.4}px, ${-heroTilt.py * 0.4}px, -80px) scale(1.18)`,
+            }}
+          />
+          {/* Atmosphere & Lighting Layer */}
+          <div className="hero-overlay" />
+          <div className="hero-ambient-depth" />
+          <div className="hero-overlay-dark" />
 
-        <AnimatePresence mode="wait">
-          {phase === 'intro' ? (
-            <motion.div
-              key="intro"
-              className="hero-body"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-            >
-              <div className="hero-badge">
-                ✈️ &nbsp; Premium Travel Experiences Since 2015
-              </div>
+          <AnimatePresence mode="wait">
+            {phase === 'intro' ? (
+              <motion.div
+                key="intro"
+                className="hero-body"
+                initial={{ opacity: 0, z: -40, rotateX: -6 }}
+                animate={{ opacity: 1, z: 0, rotateX: 0 }}
+                exit={{ opacity: 0, z: 50, rotateX: 5 }}
+                transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  transform: `translate3d(${heroTilt.px * 0.6}px, ${heroTilt.py * 0.6}px, 0px)`,
+                }}
+              >
+                <div className="hero-badge">
+                  ✈️ &nbsp; Premium Travel Experiences Since 2015
+                </div>
 
-              <TypedHeadline count={typed} slogan={currentSlogan} />
+                <TypedHeadline count={typed} slogan={currentSlogan} />
 
-              <p className="hero-desc">
-                Handpicked destinations, unforgettable experiences, and journeys
-                designed uniquely around you.
-              </p>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="packages"
-              className="container hero-packages"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -18 }}
-              transition={{ duration: 0.55, ease: [0.25, 1, 0.5, 1] }}
-            >
-              <div className="pkg-header">
-                <div>
-                  <div className="section-eyebrow">Our Top Picks</div>
-                  <h2 className="section-title">
-                    Explore Our Most <span>Loved Journeys</span>
-                  </h2>
-                  <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 460 }}>
-                    Handpicked experiences designed to turn your next holiday into
-                    a story worth remembering.
-                  </p>
+                <p className="hero-desc">
+                  Handpicked destinations, unforgettable experiences, and journeys
+                  designed uniquely around you.
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="packages"
+                className="container hero-packages"
+                initial={{ opacity: 0, z: 60, scale: 0.95 }}
+                animate={{ opacity: 1, z: 0, scale: 1 }}
+                exit={{ opacity: 0, z: -50, scale: 0.96 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  transform: `translate3d(${heroTilt.px * 0.4}px, ${heroTilt.py * 0.4}px, 40px)`,
+                }}
+              >
+                <div className="pkg-header">
+                  <div>
+                    <div className="section-eyebrow">Our Top Picks</div>
+                    <h2 className="section-title">
+                      Explore Our Most <span>Loved Journeys</span>
+                    </h2>
+                    <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 460 }}>
+                      Handpicked experiences designed to turn your next holiday into
+                      a story worth remembering.
+                    </p>
+                  </div>
+                  <Link to="/packages" className="btn btn-outline">
+                    View All Packages <ArrowRight size={16} />
+                  </Link>
                 </div>
-                <Link to="/packages" className="btn btn-outline">
-                  View All Packages <ArrowRight size={16} />
-                </Link>
-              </div>
 
-              {pkgLoading ? (
-                <div className="pkg-grid">
-                  {Array.from({ length: 4 }).map((_, i) => <PackageSkeleton key={i} />)}
-                </div>
-              ) : pkgError ? (
-                <div className="error-state">
-                  <h3>Unable to load packages</h3>
-                  <p>{pkgError}</p>
-                </div>
-              ) : packages.length === 0 ? (
-                <div className="error-state">
-                  <h3>No featured packages yet</h3>
-                  <p>Check back soon, or browse all packages.</p>
-                </div>
-              ) : (
-                <div className="pkg-grid">
-                  {packages.slice(0, 4).map((pkg, i) => <PackageCard key={pkg.id} pkg={pkg} index={i} />)}
-                </div>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {pkgLoading ? (
+                  <div className="pkg-grid">
+                    {Array.from({ length: 4 }).map((_, i) => <PackageSkeleton key={i} />)}
+                  </div>
+                ) : pkgError ? (
+                  <div className="error-state">
+                    <h3>Unable to load packages</h3>
+                    <p>{pkgError}</p>
+                  </div>
+                ) : packages.length === 0 ? (
+                  <div className="error-state">
+                    <h3>No featured packages yet</h3>
+                    <p>Check back soon, or browse all packages.</p>
+                  </div>
+                ) : (
+                  <div className="pkg-grid">
+                    {packages.slice(0, 4).map((pkg, i) => <PackageCard key={pkg.id} pkg={pkg} index={i} />)}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </section>
 
       {/* ══ SEARCH PANEL ══ */}
@@ -1230,14 +1354,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ══ WHY VIRAJ TRAVELS ══ */}
+      {/* ══ WHY V-RAJ HOLIDAYS ══ */}
       <section className="why-section">
         <div className="container">
           <div className="section-header centered" style={{ marginBottom: 'var(--sp-12)' }}>
             <FadeUp>
               <div className="section-eyebrow">Why Travel With Us</div>
               <h2 className="section-title">
-                The <span>Viraj Travels</span> Difference
+                The <span>V-RAJ Holidays</span> Difference
               </h2>
               <p className="section-subtitle" style={{ margin: 'var(--sp-4) auto 0' }}>
                 We go beyond booking tickets. We craft experiences that stay with you forever.

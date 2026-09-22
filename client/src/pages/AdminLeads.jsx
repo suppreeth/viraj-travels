@@ -599,7 +599,7 @@ const AdminLeads = () => {
                           {/* Direct WhatsApp Chat Action */}
                           <a
                             href={`https://wa.me/${cleanPhoneForWhatsApp(lead.phone)}?text=${encodeURIComponent(
-                              `Hello ${lead.name}, thank you for reaching out to Viraj Travels! We received your enquiry for: "${lead.requirement || 'travel consultation'}". How can we assist you today?`
+                              `Hello ${lead.name}, thank you for reaching out to V-RAJ Holidays! We received your enquiry for: "${lead.requirement || 'travel consultation'}". How can we assist you today?`
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"

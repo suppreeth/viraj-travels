@@ -6,7 +6,7 @@ import { getTestimonials, submitTestimonial } from '../services/api';
 const PHONE_NUMBER = '+919876543210';
 const DISPLAY_PHONE = '+91 98765 43210';
 const WHATSAPP_NUMBER = '919876543210';
-const WHATSAPP_MSG = encodeURIComponent('Hello Viraj Travels! I would like to enquire about holiday packages.');
+const WHATSAPP_MSG = encodeURIComponent('Hello V-RAJ Holidays! I would like to enquire about holiday packages.');
 
 const FloatingActions = () => {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
@@ -590,7 +590,7 @@ const FloatingActions = () => {
 
                     <textarea
                       className="review-textarea"
-                      placeholder="Tell us about your trip with Viraj Travels... *"
+                      placeholder="Tell us about your trip with V-RAJ Holidays... *"
                       value={reviewForm.review}
                       onChange={(e) => setReviewForm(prev => ({ ...prev, review: e.target.value }))}
                       required

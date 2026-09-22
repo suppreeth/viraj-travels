@@ -92,7 +92,7 @@ const About = () => {
           <div className="story-grid">
             <motion.div className="story-text" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <h2>We Believe Travel Is More Than Just A Destination</h2>
-              <p>Founded in 2015, Viraj Travels started with a simple belief: that travel should be transformative, not transactional. We didn't want to just sell tickets and hotel rooms; we wanted to craft experiences that stay with our travellers forever.</p>
+              <p>Founded in 2015, V-RAJ Holidays started with a simple belief: that travel should be transformative, not transactional. We didn't want to just sell tickets and hotel rooms; we wanted to craft experiences that stay with our travellers forever.</p>
               <p>Over the years, we've grown from a small passionate team to one of the most trusted travel agencies in India. Our secret? A relentless focus on quality, personalization, and 24/7 support.</p>
               <p>Whether it's a romantic honeymoon in Bali, a family adventure in the Himalayas, or a luxury escape to Dubai, we handle every detail so you can focus on making memories.</p>
               <div style={{ marginTop: 'var(--sp-8)' }}>
@@ -116,7 +116,7 @@ const About = () => {
       <div className="values-section container">
         <div className="section-header centered">
           <div className="section-eyebrow">Our Core Values</div>
-          <h2 className="section-title">Why Choose <span>Viraj Travels</span></h2>
+          <h2 className="section-title">Why Choose <span>V-RAJ Holidays</span></h2>
         </div>
         
         <div className="values-grid">
