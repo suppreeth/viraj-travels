@@ -55,24 +55,55 @@ const Navbar = () => {
         .nav-logo {
           display: flex;
           align-items: center;
-          gap: 10px;
-          font-weight: 800;
+          gap: 12px;
+          text-decoration: none;
+          transition: transform 0.2s ease;
+        }
+        .nav-logo:hover {
+          transform: translateY(-1px);
+        }
+        .nav-logo-badge {
+          height: 48px;
+          padding: 2px 4px;
+          background: ${solid ? 'transparent' : 'rgba(255, 255, 255, 0.95)'};
+          border-radius: var(--r-md);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: ${solid ? 'none' : '0 4px 12px rgba(0,0,0,0.18)'};
+          transition: all 0.3s ease;
+        }
+        .nav-logo-img {
+          height: 44px;
+          width: auto;
+          object-fit: contain;
+          display: block;
+        }
+        .nav-logo-text {
+          font-weight: 900;
           font-size: 1.25rem;
           letter-spacing: -0.02em;
           color: ${solid ? 'var(--navy)' : 'white'};
           transition: color 0.4s;
+          display: flex;
+          flex-direction: column;
+          line-height: 1;
         }
-        .nav-logo-icon {
-          width: 36px;
-          height: 36px;
-          background: linear-gradient(135deg, var(--blue), var(--teal));
-          border-radius: 10px;
+        .nav-logo-brand {
           display: flex;
           align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
+          gap: 4px;
         }
-        .nav-logo-text span { color: var(--teal); }
+        .nav-logo-brand .gold-text {
+          color: var(--gold);
+        }
+        .nav-logo-sub {
+          font-size: 0.68rem;
+          font-weight: 800;
+          letter-spacing: 0.22em;
+          color: ${solid ? 'var(--teal)' : 'var(--gold)'};
+          margin-top: 3px;
+        }
         .nav-links {
           display: none;
           align-items: center;
@@ -186,10 +217,19 @@ const Navbar = () => {
       <nav className={`navbar ${solid ? 'navbar-solid' : 'navbar-transparent'}`}>
         <div className="container nav-inner">
           <Link to="/" className="nav-logo">
-            <div className="nav-logo-icon">
-              <Plane size={18} color="white" />
+            <div className="nav-logo-badge">
+              <img
+                src="/logo-transparent.png"
+                alt="V-RAJ Holidays"
+                className="nav-logo-img"
+              />
             </div>
-            <div className="nav-logo-text">VIRAJ<span> TRAVELS</span></div>
+            <div className="nav-logo-text">
+              <div className="nav-logo-brand">
+                <span>V-RAJ</span>
+              </div>
+              <div className="nav-logo-sub">HOLIDAYS</div>
+            </div>
           </Link>
 
           <div className="nav-links">
@@ -233,8 +273,17 @@ const Navbar = () => {
             >
               <div className="mobile-nav-header">
                 <Link to="/" className="nav-logo" style={{ color: 'var(--navy)' }}>
-                  <div className="nav-logo-icon"><Plane size={18} color="white" /></div>
-                  <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>VIRAJ<span style={{ color: 'var(--teal)' }}> TRAVELS</span></span>
+                  <img
+                    src="/logo-transparent.png"
+                    alt="V-RAJ Holidays"
+                    style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
+                  />
+                  <div className="nav-logo-text" style={{ color: 'var(--navy)' }}>
+                    <div className="nav-logo-brand">
+                      <span>V-RAJ</span>
+                    </div>
+                    <div className="nav-logo-sub" style={{ color: 'var(--teal)' }}>HOLIDAYS</div>
+                  </div>
                 </Link>
                 <button
                   onClick={() => setMobileOpen(false)}
