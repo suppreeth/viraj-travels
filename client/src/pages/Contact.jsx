@@ -113,7 +113,7 @@ const Contact = () => {
               <div className="ci-icon"><Phone size={20} /></div>
               <div>
                 <div className="ci-title">Phone & WhatsApp</div>
-                <div className="ci-desc">+91 98765 43210<br />+91 98765 43211</div>
+                <div className="ci-desc">+91 74831 56701</div>
               </div>
             </div>
 

@@ -12,7 +12,7 @@ const PackageDetail = () => {
   const [error, setError] = useState(null);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const [expandedDay, setExpandedDay] = useState(0);
-  const [form, setForm] = useState({ name: '', email: '', phone: '', travelDate: '', travellers: 2, message: '' });
+  const [form, setForm] = useState({ name: '', phone: '', travelDate: '', travellers: 2 });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState({});
@@ -27,27 +27,65 @@ const PackageDetail = () => {
 
   const validate = () => {
     const errors = {};
-    if (!form.name.trim()) errors.name = 'Name is required';
-    if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) errors.email = 'Valid email required';
-    if (!form.phone.trim()) errors.phone = 'Phone is required';
-    if (!form.message.trim()) errors.message = 'Message is required';
+    if (!form.name.trim()) errors.name = 'Full name is required';
+    if (!form.phone.trim()) errors.phone = 'Phone number is required';
     return errors;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const errors = validate();
-    if (Object.keys(errors).length) { setFormErrors(errors); return; }
-    setSubmitting(true);
-    try {
-      await submitEnquiry({ ...form, packageId: id, destination: pkg?.destinationName });
-      setSubmitted(true);
-      setEnquiryOpen(false);
-    } catch {
-      setFormErrors({ submit: 'Failed to submit. Please try again.' });
-    } finally {
-      setSubmitting(false);
+    if (Object.keys(errors).length) { 
+      setFormErrors(errors); 
+      return; 
     }
+    setFormErrors({});
+    setSubmitting(true);
+
+    const packageName = pkg?.title || 'Tour Package';
+    const destination = pkg?.destinationName || pkg?.destination || 'N/A';
+    const duration = pkg?.duration || 'N/A';
+    const price = pkg?.price ? `₹${Number(pkg.price).toLocaleString('en-IN')}` : 'N/A';
+    const customerName = form.name.trim();
+    const customerPhone = form.phone.trim();
+    const travellers = form.travellers || 1;
+    const travelDate = form.travelDate || 'Flexible';
+
+    // Construct WhatsApp message adhering to required format
+    const waText = 
+      `*New Tour Package Booking Enquiry*\n\n` +
+      `*Package:* ${packageName}\n` +
+      `*Destination:* ${destination}\n` +
+      `*Duration:* ${duration}\n` +
+      `*Price:* ${price}\n\n` +
+      `*Customer Details*\n` +
+      `Name: ${customerName}\n` +
+      `Phone: ${customerPhone}\n` +
+      `Travellers: ${travellers}\n` +
+      `Date of Travel: ${travelDate}\n\n` +
+      `I would like to enquire about this tour package.`;
+
+    const encodedText = encodeURIComponent(waText);
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=917483156701&text=${encodedText}`;
+
+    // Asynchronously record enquiry in backend without blocking WhatsApp launch
+    submitEnquiry({ 
+      name: customerName,
+      phone: customerPhone,
+      travellers: Number(travellers) || 1,
+      travelDate: form.travelDate,
+      packageId: id, 
+      destination: pkg?.destinationName 
+    }).catch(err => {
+      console.warn('Enquiry background save error:', err);
+    });
+
+    setSubmitting(false);
+    setSubmitted(true);
+    setEnquiryOpen(false);
+
+    // Open WhatsApp Click-to-Chat directly
+    window.open(whatsappUrl, '_blank');
   };
 
   if (loading) return (
@@ -372,13 +410,13 @@ const PackageDetail = () => {
                   <div className="bm-row"><Users size={16} className="bm-icon" color="var(--teal)" /> Group & Individual tours</div>
                 </div>
                 <button className="btn btn-primary" style={{ width: '100%', marginBottom: 12 }} onClick={() => setEnquiryOpen(true)}>
-                  Book Now / Enquire
+                  Book Now via WhatsApp
                 </button>
-                <a href="tel:+919876543210" className="btn btn-outline-dark" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <Phone size={16} /> Call Expert
+                <a href="tel:+917483156701" className="btn btn-outline-dark" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <Phone size={16} /> Call +91 74831 56701
                 </a>
                 <p style={{ fontSize: '0.8rem', color: 'var(--gray-400)', textAlign: 'center', marginTop: 16 }}>
-                  Free cancellation · No booking fee
+                  Direct WhatsApp & Call · Instant Confirmation
                 </p>
               </div>
             </div>
@@ -417,35 +455,25 @@ const PackageDetail = () => {
                 <div className="form-grid">
                   <div className="form-group">
                     <label className="form-label">Full Name *</label>
-                    <input className={`form-input ${formErrors.name ? 'error' : ''}`} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your name" />
+                    <input className={`form-input ${formErrors.name ? 'error' : ''}`} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your name" required />
                     {formErrors.name && <span className="form-error">{formErrors.name}</span>}
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Email *</label>
-                    <input type="email" className={`form-input ${formErrors.email ? 'error' : ''}`} value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com" />
-                    {formErrors.email && <span className="form-error">{formErrors.email}</span>}
-                  </div>
-                  <div className="form-group">
                     <label className="form-label">Phone *</label>
-                    <input className={`form-input ${formErrors.phone ? 'error' : ''}`} value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="+91 98765 43210" />
+                    <input className={`form-input ${formErrors.phone ? 'error' : ''}`} value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="+91 98765 43210" required />
                     {formErrors.phone && <span className="form-error">{formErrors.phone}</span>}
                   </div>
                   <div className="form-group">
                     <label className="form-label">No. of Travellers</label>
                     <input type="number" min="1" className="form-input" value={form.travellers} onChange={e => setForm(p => ({ ...p, travellers: e.target.value }))} />
                   </div>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <label className="form-label">Preferred Travel Date</label>
+                  <div className="form-group">
+                    <label className="form-label">Date of Travel</label>
                     <input type="date" className="form-input" value={form.travelDate} onChange={e => setForm(p => ({ ...p, travelDate: e.target.value }))} />
                   </div>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <label className="form-label">Message *</label>
-                    <textarea className={`form-input ${formErrors.message ? 'error' : ''}`} rows={3} value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} placeholder="Tell us your requirements or questions..." style={{ resize: 'vertical' }} />
-                    {formErrors.message && <span className="form-error">{formErrors.message}</span>}
-                  </div>
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 16 }} disabled={submitting}>
-                  {submitting ? 'Sending...' : 'Send Enquiry'}
+                <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 20 }} disabled={submitting}>
+                  {submitting ? 'Connecting to WhatsApp...' : 'Book via WhatsApp'}
                 </button>
               </form>
             </motion.div>

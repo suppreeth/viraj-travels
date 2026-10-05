@@ -17,18 +17,16 @@ const createEnquiry = (req, res) => {
   try {
     const { name, email, phone, destination, travelDate, travellers, message, packageId } = req.body;
     
-    // Validation
-    if (!name || !email || !phone || !message) {
-      return res.status(400).json({ success: false, message: 'Name, email, phone, and message are required.' });
+    // Validation - Name and Phone required; email and message optional
+    if (!name || !phone) {
+      return res.status(400).json({ success: false, message: 'Name and phone are required.' });
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ success: false, message: 'Invalid email address.' });
-    }
+    const cleanEmail = email && email.trim() ? email.trim() : `${phone.replace(/\D/g, '') || 'traveller'}@vrajholidays.com`;
+    const cleanMessage = message && message.trim() ? message.trim() : 'Booking enquiry submitted via website.';
 
     const id = uuidv4();
     db.prepare(`INSERT INTO Enquiry (id, name, email, phone, destination, travelDate, travellers, message, packageId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-      .run(id, name, email, phone, destination || null, travelDate || null, travellers || 1, message, packageId || null);
+      .run(id, name, cleanEmail, phone, destination || null, travelDate || null, travellers || 1, cleanMessage, packageId || null);
 
     res.status(201).json({ success: true, message: 'Your travel enquiry has been received! Our expert will contact you shortly.', id });
   } catch (err) {

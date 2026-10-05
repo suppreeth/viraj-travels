@@ -141,11 +141,32 @@ const SLOGANS = [
   { line1: 'Explore Paradise.', line2: 'Create Memories.' },
 ];
 
+const PACKAGE_SLIDES = [
+  {
+    eyebrow: 'Our Top Picks',
+    title: 'Explore Our Most',
+    highlight: 'Loved Journeys',
+    subtitle: 'Handpicked experiences designed to turn your next holiday into a story worth remembering.'
+  },
+  {
+    eyebrow: 'Bespoke Escapes',
+    title: 'Discover Unmatched',
+    highlight: 'Holiday Wonders',
+    subtitle: 'Scenic coastlines, mist-covered hills, and heritage adventures crafted just for you.'
+  },
+  {
+    eyebrow: 'Instant Booking',
+    title: 'Book Easily on',
+    highlight: 'WhatsApp Direct',
+    subtitle: 'Get customized itineraries, transparent prices, and instant confirmations in minutes.'
+  }
+];
+
 const TYPE_START_MS    = 300;   // wait before typing starts
 const TYPE_SPEED_MS    = 150;   // smooth typing speed per character
 const LINE_PAUSE_MS    = 350;   // pause between line 1 and line 2
 const SLOGAN_WAIT_MS   = 1200;  // wait after slogan completes before next slogan or transition
-const PACKAGES_HOLD_MS = 8500;  // time packages stay visible (4 cards * 1s + 4.5s reading) before looping back
+const PACKAGES_HOLD_MS = 11000; // 4 cards stagger in every 1.5s (0s, 1.5s, 3s, 4.5s) + 6.5s showcase time
 
 const TypedLine = ({ text, count }) => (
   <>
@@ -207,9 +228,19 @@ const Home = () => {
   );
   const [sloganIndex, setSloganIndex] = useState(0);
   const [typed, setTyped] = useState(0);
+  const [slideIndex, setSlideIndex] = useState(0);
 
   const currentSlogan = SLOGANS[sloganIndex] || SLOGANS[0];
   const totalChars = currentSlogan.line1.length + currentSlogan.line2.length;
+  const currentSlide = PACKAGE_SLIDES[slideIndex] || PACKAGE_SLIDES[0];
+
+  // Slideshow timer for the package section texts
+  useEffect(() => {
+    const slideTimer = setInterval(() => {
+      setSlideIndex(prev => (prev + 1) % PACKAGE_SLIDES.length);
+    }, 3800);
+    return () => clearInterval(slideTimer);
+  }, []);
 
   // Typing effect and slogan transitions
   useEffect(() => {
@@ -259,28 +290,7 @@ const Home = () => {
     return () => clearTimeout(loopTimer);
   }, [phase]);
 
-  // 3D Parallax tilt effect for hero section
-  const heroRef = useRef(null);
-  const [heroTilt, setHeroTilt] = useState({ rotateX: 0, rotateY: 0, px: 0, py: 0 });
 
-  const handleHeroMouseMove = (e) => {
-    if (!heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    // Calculate tilt angles bounded smoothly between -7 and 7 degrees
-    const rotateY = ((x - centerX) / centerX) * 8;
-    const rotateX = -((y - centerY) / centerY) * 7;
-    const px = ((x - centerX) / centerX) * 20;
-    const py = ((y - centerY) / centerY) * 15;
-    setHeroTilt({ rotateX, rotateY, px, py });
-  };
-
-  const handleHeroMouseLeave = () => {
-    setHeroTilt({ rotateX: 0, rotateY: 0, px: 0, py: 0 });
-  };
 
 
   useEffect(() => {
@@ -333,7 +343,7 @@ const Home = () => {
   return (
     <div className="home-page">
       <style>{`
-        /* ─── HERO 3D PERSPECTIVE & DEPTH VIEW (typing intro, then packages) ─── */
+        /* ─── HERO HERO & SLOGAN DISPLAY (typing intro, then packages) ─── */
         .hero-section {
           position: relative;
           min-height: calc(100vh - 60px);
@@ -341,75 +351,41 @@ const Home = () => {
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          perspective: 1400px;
-          perspective-origin: 50% 45%;
         }
-        .hero-3d-scene {
+        .hero-scene {
           position: relative;
           flex: 1;
           display: flex;
           flex-direction: column;
           width: 100%;
-          transform-style: preserve-3d;
-          transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.4, 1);
-          will-change: transform;
         }
         .hero-bg {
           position: absolute;
-          inset: -6%;
+          inset: 0;
           background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=85&w=2000&auto=format&fit=crop')
             center 40% / cover no-repeat;
           z-index: 0;
-          transform: translateZ(-80px) scale(1.18);
-          transform-style: preserve-3d;
-          transition: transform 0.25s ease-out;
-          filter: saturate(1.15) contrast(1.05);
+          filter: saturate(1.1) contrast(1.05);
         }
         .hero-overlay {
           position: absolute;
-          inset: -4%;
+          inset: 0;
           background: radial-gradient(
             circle at 50% 35%,
-            rgba(14, 165, 233, 0.15) 0%,
-            rgba(10, 28, 50, 0.62) 50%,
-            rgba(8, 20, 36, 0.88) 100%
+            rgba(14, 165, 233, 0.12) 0%,
+            rgba(10, 28, 50, 0.65) 50%,
+            rgba(8, 20, 36, 0.90) 100%
           ),
           linear-gradient(
             170deg,
             rgba(10, 28, 50, 0.72) 0%,
             rgba(12, 38, 62, 0.48) 42%,
-            rgba(13, 148, 136, 0.25) 75%,
-            rgba(245, 158, 11, 0.22) 100%
+            rgba(13, 148, 136, 0.22) 75%,
+            rgba(245, 158, 11, 0.18) 100%
           );
           z-index: 1;
-          transform: translateZ(-40px) scale(1.1);
           pointer-events: none;
         }
-        /* 3D Atmospheric Particles / Shimmer layer */
-        .hero-ambient-depth {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(
-            800px circle at var(--mouse-x, 50%) var(--mouse-y, 45%),
-            rgba(255, 255, 255, 0.14),
-            transparent 60%
-          );
-          mix-blend-mode: overlay;
-          pointer-events: none;
-          z-index: 2;
-          transform: translateZ(10px);
-        }
-        /* extra darkening once the packages are showing, so the text stays readable */
-        .hero-overlay-dark {
-          position: absolute;
-          inset: 0;
-          background: rgba(10,20,40,0.55);
-          z-index: 1;
-          opacity: 0;
-          transition: opacity 0.9s ease;
-          display: none;
-        }
-        .hero-open .hero-overlay-dark { opacity: 0; }
         .hero-body {
           position: relative;
           z-index: 10;
@@ -423,7 +399,6 @@ const Home = () => {
           max-width: 900px;
           margin: 0 auto;
           width: 100%;
-          transform-style: preserve-3d;
         }
         .hero-badge {
           display: inline-flex;
@@ -441,39 +416,29 @@ const Home = () => {
           letter-spacing: 0.08em;
           text-transform: uppercase;
           margin-bottom: var(--sp-6);
-          box-shadow: 0 12px 30px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.4);
-          transform: translateZ(45px);
-          transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.4, 1), box-shadow 0.3s;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
         .hero-badge:hover {
-          transform: translateZ(65px) scale(1.04);
-          box-shadow: 0 18px 36px rgba(0,0,0,0.35), inset 0 1px 2px rgba(255,255,255,0.6);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
         .hero-h1 {
           font-family: 'Playfair Display', var(--font-serif);
           font-size: clamp(2.8rem, 6vw, 5.2rem);
           font-weight: 700;
-          color: #fff;
-          line-height: 1.1;
+          color: #ffffff;
+          line-height: 1.15;
           letter-spacing: -0.01em;
           margin-bottom: var(--sp-5);
-          transform: translateZ(70px);
-          text-shadow: 
-            0 2px 4px rgba(10, 28, 50, 0.6),
-            0 8px 24px rgba(10, 28, 50, 0.45),
-            0 20px 45px rgba(0, 0, 0, 0.35);
-          transform-style: preserve-3d;
+          text-shadow: 0 3px 20px rgba(10, 28, 50, 0.6);
         }
         .hero-h1 em {
           font-style: italic;
-          color: #6ee7b7;
-          background: linear-gradient(135deg, #a7f3d0 0%, #38bdf8 50%, #fcd34d 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #fcd34d;
           display: block;
-          margin-top: 0.12em;
-          filter: drop-shadow(0 4px 16px rgba(56, 189, 248, 0.35));
+          margin-top: 0.14em;
+          text-shadow: 0 3px 20px rgba(10, 28, 50, 0.55);
         }
         .hero-desc {
           font-size: clamp(0.98rem, 1.8vw, 1.18rem);
@@ -481,43 +446,42 @@ const Home = () => {
           line-height: 1.8;
           max-width: 580px;
           margin: 0 auto;
-          text-shadow: 0 2px 16px rgba(10, 28, 50, 0.6);
-          transform: translateZ(50px);
+          text-shadow: 0 2px 14px rgba(10, 28, 50, 0.6);
         }
 
-        /* packages shown inside the hero in 3D perspective */
+        /* packages shown inside the hero */
         .hero-packages {
           position: relative;
           z-index: 10;
           padding-top: 100px;
           padding-bottom: 112px;
-          transform-style: preserve-3d;
-          transform: translateZ(40px);
         }
         .hero-packages .section-eyebrow { color: #5eead4; }
         .hero-packages .section-eyebrow::before { background: #5eead4; }
         .hero-packages .section-title {
           color: #fff;
           font-size: clamp(1.8rem, 3.4vw, 2.7rem);
-          text-shadow: 0 4px 24px rgba(0,0,0,0.5);
-          transform: translateZ(50px);
+          text-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
         .hero-packages .section-title span { color: #fcd34d; }
         .hero-packages .section-subtitle {
           color: rgba(255,255,255,0.9);
-          text-shadow: 0 2px 14px rgba(0,0,0,0.4);
-          transform: translateZ(35px);
+          text-shadow: 0 2px 12px rgba(0,0,0,0.35);
         }
         .hero-packages .pkg-grid {
-          transform-style: preserve-3d;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: var(--sp-5);
+          max-width: 1240px;
+          margin: 0 auto;
         }
         .hero-packages .pkg-card {
-          box-shadow: 0 20px 45px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
-          transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.4s ease;
+          box-shadow: 0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .hero-packages .pkg-card:hover {
-          transform: translateY(-8px) translateZ(35px) rotateX(2deg);
-          box-shadow: 0 32px 64px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.25);
+          transform: translateY(-6px);
+          box-shadow: 0 24px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.2);
         }
         .hero-packages .skeleton {
           background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 75%);
@@ -1008,6 +972,9 @@ const Home = () => {
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 1100px) {
+          .hero-packages .pkg-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
           .dest-editorial-grid {
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: auto;
@@ -1017,6 +984,9 @@ const Home = () => {
           .why-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 900px) {
+          .hero-packages .pkg-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
           .beach-inner { grid-template-columns: 1fr; gap: var(--sp-10); }
           .beach-img-wrap { height: 360px; }
           .stats-band-grid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-8) var(--sp-12); }
@@ -1024,69 +994,111 @@ const Home = () => {
           .dest-editorial-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 768px) {
-          .hero-body { padding: 96px var(--sp-4) 48px; }
+          .hero-section {
+            min-height: auto;
+            overflow: visible;
+            width: 100%;
+          }
+          .hero-section.hero-open {
+            min-height: auto;
+          }
+          .hero-scene {
+            width: 100%;
+          }
+          .hero-body { padding: 80px var(--sp-4) 36px; }
+          .hero-packages {
+            padding-top: 72px;
+            padding-bottom: 50px;
+            width: 100%;
+          }
+          .hero-packages .section-title {
+            font-size: 1.55rem;
+            line-height: 1.25;
+            word-break: break-word;
+          }
+          .hero-packages .section-subtitle {
+            font-size: 0.9rem;
+            line-height: 1.6;
+          }
+          .pkg-header { 
+            flex-direction: column; 
+            align-items: flex-start;
+            margin-bottom: var(--sp-5);
+            gap: var(--sp-3);
+            width: 100%;
+          }
+          .pkg-header-title-box {
+            min-height: auto !important;
+            width: 100%;
+          }
+          .pkg-header .btn {
+            padding: 0.55rem 1.25rem;
+            font-size: 0.85rem;
+          }
           .hs-form { flex-direction: column; padding: var(--sp-5); gap: 0; }
           .hs-field { padding: 0; padding-bottom: var(--sp-3); border-bottom: 1px solid var(--gray-100); }
           .hs-sep { display: none; }
           .hs-btn { width: 100%; justify-content: center; margin-left: 0; margin-top: var(--sp-4); }
-          .search-panel-wrap { margin-top: -30px; }
-          .pkg-grid { grid-template-columns: 1fr; }
-          .hero-packages .pkg-grid { grid-template-columns: 1fr; }
+          .search-panel-wrap { margin-top: -24px; padding: 0 var(--sp-4); }
+          .pkg-grid { grid-template-columns: 1fr; width: 100%; }
+          .hero-packages .pkg-grid { 
+            grid-template-columns: 1fr; 
+            gap: var(--sp-4);
+            width: 100%;
+          }
           .dest-editorial-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
           .dest-card-big { grid-column: span 1; min-height: 260px; }
           .dest-card-ed { min-height: 220px; }
           .cat-grid { grid-template-columns: repeat(2, 1fr); }
           .why-grid { grid-template-columns: 1fr; }
-          .pkg-header { flex-direction: column; align-items: flex-start; }
         }
         @media (max-width: 480px) {
+          .hero-section {
+            min-height: auto;
+            overflow: visible;
+          }
+          .hero-body { padding: 74px var(--sp-3) 28px; }
+          .hero-packages {
+            padding-top: 64px;
+            padding-bottom: 40px;
+          }
+          .hero-packages .section-title {
+            font-size: 1.38rem;
+            line-height: 1.25;
+          }
+          .hero-packages .section-subtitle {
+            font-size: 0.84rem;
+          }
+          .hero-packages .section-eyebrow {
+            font-size: 0.74rem;
+          }
+          .pkg-header .btn {
+            width: 100%;
+            justify-content: center;
+          }
           .stats-band-grid { grid-template-columns: repeat(2, 1fr); }
-          .beach-img-wrap { height: 260px; }
+          .beach-img-wrap { height: 240px; }
           .offer-btns { flex-direction: column; align-items: center; }
         }
       `}</style>
 
-      {/* ══ HERO 3D VIEW: interactive depth perspective, typing intro & 3D packages ══ */}
-      <section
-        ref={heroRef}
-        onMouseMove={handleHeroMouseMove}
-        onMouseLeave={handleHeroMouseLeave}
-        className={`hero-section${phase === 'packages' ? ' hero-open' : ''}`}
-        style={{
-          '--mouse-x': `${50 + (heroTilt.px / 20) * 35}%`,
-          '--mouse-y': `${45 + (heroTilt.py / 15) * 30}%`,
-        }}
-      >
-        <div
-          className="hero-3d-scene"
-          style={{
-            transform: `rotateX(${heroTilt.rotateX}deg) rotateY(${heroTilt.rotateY}deg)`,
-          }}
-        >
-          {/* Deep 3D Background Layer */}
-          <div
-            className="hero-bg"
-            style={{
-              transform: `translate3d(${-heroTilt.px * 0.4}px, ${-heroTilt.py * 0.4}px, -80px) scale(1.18)`,
-            }}
-          />
+      {/* ══ HERO SECTION: clean, elegant cycling intro & featured packages ══ */}
+      <section className={`hero-section${phase === 'packages' ? ' hero-open' : ''}`}>
+        <div className="hero-scene">
+          {/* Deep Background Layer */}
+          <div className="hero-bg" />
           {/* Atmosphere & Lighting Layer */}
           <div className="hero-overlay" />
-          <div className="hero-ambient-depth" />
-          <div className="hero-overlay-dark" />
 
           <AnimatePresence mode="wait">
             {phase === 'intro' ? (
               <motion.div
                 key="intro"
                 className="hero-body"
-                initial={{ opacity: 0, z: -40, rotateX: -6 }}
-                animate={{ opacity: 1, z: 0, rotateX: 0 }}
-                exit={{ opacity: 0, z: 50, rotateX: 5 }}
-                transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                  transform: `translate3d(${heroTilt.px * 0.6}px, ${heroTilt.py * 0.6}px, 0px)`,
-                }}
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="hero-badge">
                   ✈️ &nbsp; Premium Travel Experiences Since 2015
@@ -1103,26 +1115,32 @@ const Home = () => {
               <motion.div
                 key="packages"
                 className="container hero-packages"
-                initial={{ opacity: 0, z: 60, scale: 0.95 }}
-                animate={{ opacity: 1, z: 0, scale: 1 }}
-                exit={{ opacity: 0, z: -50, scale: 0.96 }}
-                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                  transform: `translate3d(${heroTilt.px * 0.4}px, ${heroTilt.py * 0.4}px, 40px)`,
-                }}
+                initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.98 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="pkg-header">
-                  <div>
-                    <div className="section-eyebrow">Our Top Picks</div>
-                    <h2 className="section-title">
-                      Explore Our Most <span>Loved Journeys</span>
-                    </h2>
-                    <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 460 }}>
-                      Handpicked experiences designed to turn your next holiday into
-                      a story worth remembering.
-                    </p>
+                  <div className="pkg-header-title-box" style={{ minHeight: 120 }}>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={slideIndex}
+                        initial={{ opacity: 0, x: 28 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -28 }}
+                        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <div className="section-eyebrow">{currentSlide.eyebrow}</div>
+                        <h2 className="section-title">
+                          {currentSlide.title} <span>{currentSlide.highlight}</span>
+                        </h2>
+                        <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 480 }}>
+                          {currentSlide.subtitle}
+                        </p>
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
-                  <Link to="/packages" className="btn btn-outline">
+                  <Link to="/packages" className="btn btn-outline" style={{ alignSelf: 'flex-start', marginTop: 10 }}>
                     View All Packages <ArrowRight size={16} />
                   </Link>
                 </div>
@@ -1143,7 +1161,9 @@ const Home = () => {
                   </div>
                 ) : (
                   <div className="pkg-grid">
-                    {packages.slice(0, 4).map((pkg, i) => <PackageCard key={pkg.id} pkg={pkg} index={i} />)}
+                    {packages.slice(0, 4).map((pkg, i) => (
+                      <PackageCard key={pkg.id} pkg={pkg} index={i} staggerSlideshow={true} />
+                    ))}
                   </div>
                 )}
               </motion.div>

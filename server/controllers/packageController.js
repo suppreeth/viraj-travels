@@ -63,7 +63,7 @@ const getPackageById = (req, res) => {
       return res.status(404).json({ success: false, message: 'Package not found' });
     }
 
-    const itineraries = db.prepare('SELECT * FROM Itinerary WHERE packageId = ? ORDER BY day ASC').all(req.params.id);
+    const itineraries = db.prepare('SELECT * FROM Itinerary WHERE packageId = ? ORDER BY day ASC, rowid ASC').all(req.params.id);
 
     const result = {
       ...pkg,
