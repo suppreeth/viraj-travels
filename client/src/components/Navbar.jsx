@@ -210,7 +210,25 @@ const Navbar = () => {
         }
         @media (max-width: 899px) {
           .nav-links { display: none; }
-          .hamburger { display: flex; }
+          .hamburger { 
+            display: flex; 
+            margin-left: auto;
+          }
+          .navbar {
+            padding: ${solid ? '0.45rem 0' : '0.75rem 0'};
+          }
+          .nav-inner {
+            width: 100%;
+          }
+          .nav-logo-badge {
+            height: 38px;
+          }
+          .nav-logo-img {
+            height: 34px;
+          }
+          .nav-logo-text {
+            font-size: 1.05rem;
+          }
         }
       `}</style>
 

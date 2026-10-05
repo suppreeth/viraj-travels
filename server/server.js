@@ -28,6 +28,8 @@ app.use(express.json());
 // Seed database on startup
 try {
   seedDatabase();
+  const { addSrrPackages } = require('./services/add_srr_packages');
+  addSrrPackages();
 } catch (err) {
   console.error('Seeding error:', err.message);
 }

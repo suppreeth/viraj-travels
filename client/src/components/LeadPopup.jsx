@@ -23,30 +23,27 @@ const LeadPopup = () => {
   
   const location = useLocation();
 
-  // Re-appear every 6 seconds until the user submits the form
+  // Appear once after 25 seconds
   useEffect(() => {
     // Don't show popup on admin page
     if (location.pathname.startsWith('/admin')) {
       return;
     }
 
-    // If user has successfully submitted the lead, never show popup again
-    const isSubmitted = sessionStorage.getItem(STORAGE_DISMISSED_KEY) === 'submitted';
-    if (isSubmitted || isSuccess) {
+    // If user has dismissed or successfully submitted the lead, don't auto-pop again
+    const isDismissed = sessionStorage.getItem(STORAGE_DISMISSED_KEY);
+    if (isDismissed || isSuccess || hasTriggered) {
       return;
     }
 
-    let timer;
-    if (!isOpen) {
-      timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 10000);
-    }
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+      setHasTriggered(true);
+      sessionStorage.setItem(STORAGE_DISMISSED_KEY, 'seen');
+    }, 25000);
 
-    return () => {
-      if (timer) clearTimeout(timer);
-    };
-  }, [location.pathname, isOpen, isSuccess]);
+    return () => clearTimeout(timer);
+  }, [location.pathname, isSuccess, hasTriggered]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -123,6 +120,19 @@ const LeadPopup = () => {
 
       setIsSuccess(true);
       sessionStorage.setItem(STORAGE_DISMISSED_KEY, 'submitted');
+
+      // Also trigger WhatsApp redirect with customer consultation details
+      const waText = 
+        `*Free Travel Consultation Request*\n` +
+        `─────────────────────────\n` +
+        `👤 *Name:* ${formData.name.trim()}\n` +
+        `📞 *Phone:* ${formData.phone.trim()}\n` +
+        (formData.email?.trim() ? `✉️ *Email:* ${formData.email.trim()}\n` : '') +
+        (formData.requirement?.trim() ? `📝 *Requirement:* ${formData.requirement.trim()}\n` : '') +
+        `─────────────────────────\n` +
+        `_Sent via V-RAJ Holidays Website_`;
+      const waUrl = `https://wa.me/917483156701?text=${encodeURIComponent(waText)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
 
       // Auto-close modal after 3.5 seconds
       setTimeout(() => {
@@ -395,10 +405,14 @@ const LeadPopup = () => {
         }
         @media (max-width: 600px) {
           .lead-floating-badge {
-            bottom: 20px;
-            left: 18px;
-            padding: 0.65rem 1.15rem;
-            font-size: 0.85rem;
+            bottom: 18px;
+            left: 14px;
+            padding: 0.55rem 0.95rem;
+            font-size: 0.8rem;
+            gap: 6px;
+          }
+          .lead-floating-badge span {
+            display: inline-block;
           }
           .lead-popup-container {
             max-width: 100%;

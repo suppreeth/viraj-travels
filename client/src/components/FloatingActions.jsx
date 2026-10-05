@@ -3,9 +3,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, Star, MessageCircle, X, Send, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 import { getTestimonials, submitTestimonial } from '../services/api';
 
-const PHONE_NUMBER = '+919876543210';
-const DISPLAY_PHONE = '+91 98765 43210';
-const WHATSAPP_NUMBER = '919876543210';
+const WhatsAppIcon = ({ size = 26, color = '#ffffff' }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill={color}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.16 12.04 20.16C10.66 20.16 9.3 19.8 8.09 19.09L7.8 18.92L4.69 19.74L5.52 16.71L5.33 16.41C4.55 15.17 4.13 13.56 4.13 11.92C4.13 7.38 7.84 3.67 12.04 3.67ZM8.73 7.34C8.54 7.34 8.24 7.41 7.99 7.68C7.74 7.95 7.03 8.62 7.03 9.99C7.03 11.36 8.03 12.68 8.17 12.87C8.31 13.06 10.13 15.86 12.91 17.06C13.57 17.35 14.09 17.52 14.49 17.65C15.15 17.86 15.75 17.83 16.22 17.76C16.75 17.68 17.85 17.09 18.08 16.45C18.31 15.81 18.31 15.26 18.24 15.15C18.17 15.04 17.98 14.98 17.7 14.84C17.42 14.7 16.05 14.02 15.8 13.93C15.54 13.84 15.35 13.79 15.17 14.07C14.98 14.35 14.45 14.98 14.28 15.17C14.12 15.35 13.96 15.38 13.68 15.24C13.4 15.1 12.5 14.81 11.43 13.85C10.6 13.11 10.04 12.19 9.87 11.91C9.71 11.63 9.85 11.48 9.99 11.34C10.12 11.21 10.27 11.01 10.41 10.85C10.55 10.69 10.6 10.57 10.69 10.39C10.78 10.21 10.74 10.04 10.67 9.9C10.6 9.77 10.04 8.4 9.81 7.85C9.58 7.31 9.35 7.39 9.18 7.38C9.02 7.37 8.88 7.34 8.73 7.34Z" />
+  </svg>
+);
+
+const PHONE_NUMBER = '+917483156701';
+const DISPLAY_PHONE = '+91 74831 56701';
+const WHATSAPP_NUMBER = '917483156701';
 const WHATSAPP_MSG = encodeURIComponent('Hello V-RAJ Holidays! I would like to enquire about holiday packages.');
 
 const FloatingActions = () => {
@@ -448,7 +460,7 @@ const FloatingActions = () => {
             className="fab-btn fab-whatsapp"
             aria-label="Chat on WhatsApp"
           >
-            <MessageCircle size={24} fill="#ffffff" />
+            <WhatsAppIcon size={28} color="#ffffff" />
           </a>
           <span className="fab-tooltip">Chat on WhatsApp</span>
         </div>
