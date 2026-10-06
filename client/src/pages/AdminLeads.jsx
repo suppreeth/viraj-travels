@@ -55,7 +55,7 @@ const AdminLeads = () => {
         setIsAuthenticated(false);
         sessionStorage.removeItem(SESSION_ADMIN_KEY);
       } else {
-        setError('Failed to load leads from the server. Check if backend is running.');
+        setError('Failed to load leads. Please try again.');
       }
     } finally {
       setLoading(false);
