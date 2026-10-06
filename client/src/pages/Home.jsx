@@ -1035,10 +1035,50 @@ const Home = () => {
             padding: 0.55rem 1.25rem;
             font-size: 0.85rem;
           }
-          .hs-form { flex-direction: column; padding: var(--sp-5); gap: 0; }
-          .hs-field { padding: 0; padding-bottom: var(--sp-3); border-bottom: 1px solid var(--gray-100); }
+          .hs-form { 
+            flex-direction: column; 
+            padding: var(--sp-5); 
+            gap: 0; 
+            align-items: center; 
+            text-align: center;
+          }
+          .hs-field { 
+            width: 100%;
+            padding: var(--sp-3) 0 !important; 
+            border-bottom: 1px solid var(--gray-100); 
+            align-items: center;
+            text-align: center;
+          }
+          .hs-field:first-child { 
+            padding-top: 0 !important; 
+          }
+          .hs-label { 
+            justify-content: center; 
+            text-align: center; 
+            width: 100%; 
+          }
+          .hs-input { 
+            text-align: center; 
+            text-align-last: center; 
+            -webkit-text-align-last: center; 
+            -moz-text-align-last: center;
+            width: 100%; 
+          }
+          .hs-input::placeholder { 
+            text-align: center; 
+          }
+          .hs-input option {
+            text-align: center;
+          }
           .hs-sep { display: none; }
-          .hs-btn { width: 100%; justify-content: center; margin-left: 0; margin-top: var(--sp-4); }
+          .hs-btn { 
+            width: 100%; 
+            justify-content: center; 
+            align-items: center;
+            text-align: center;
+            margin-left: 0; 
+            margin-top: var(--sp-4); 
+          }
           .search-panel-wrap { margin-top: -24px; padding: 0 var(--sp-4); }
           .pkg-grid { grid-template-columns: 1fr; width: 100%; }
           .hero-packages .pkg-grid { 
