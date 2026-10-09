@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Clock, Star, Check, X, ArrowLeft, Phone, ChevronDown, ChevronUp, Users, Calendar } from 'lucide-react';
+import { MapPin, Clock, Star, Check, X, ArrowLeft, Phone, ChevronDown, ChevronUp, Users, Calendar, AlertCircle } from 'lucide-react';
 import { getPackageById, submitEnquiry } from '../services/api';
 
 const PackageDetail = () => {
@@ -18,24 +18,109 @@ const PackageDetail = () => {
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setLoading(true);
     getPackageById(id)
       .then(res => setPkg(res.data.data))
       .catch(() => setError('Package not found or unavailable.'))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        });
+        setTimeout(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }, 30);
+      });
   }, [id]);
 
-  const validate = () => {
+  const [touched, setTouched] = useState({});
+
+  const validateField = (name, value, currentForm = form) => {
+    switch (name) {
+      case 'name': {
+        const val = (value !== undefined ? value : currentForm.name).trim();
+        if (!val) return 'Full name is required';
+        if (val.length < 2) return 'Name must be at least 2 characters';
+        if (!/^[a-zA-Z\s.'-]+$/.test(val)) return 'Please enter a valid name (letters only)';
+        return '';
+      }
+      case 'phone': {
+        const raw = (value !== undefined ? value : currentForm.phone).toString();
+        const digits = raw.replace(/\D/g, '');
+        if (!digits) return 'Phone number is required';
+        if (digits.length < 10) return `Enter complete 10-digit number (${digits.length}/10 digits)`;
+        if (!/^[6-9]\d{9}$/.test(digits)) return 'Enter a valid Indian mobile number starting with 6, 7, 8, or 9';
+        return '';
+      }
+      case 'travellers': {
+        const val = value !== undefined ? value : currentForm.travellers;
+        const num = parseInt(val, 10);
+        if (!val || isNaN(num) || num < 1) return 'Please specify at least 1 traveller';
+        if (num > 100) return 'Number of travellers cannot exceed 100';
+        return '';
+      }
+      case 'travelDate': {
+        const val = value !== undefined ? value : currentForm.travelDate;
+        if (!val) return 'Please select your date of travel';
+        const selected = new Date(val);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selected < today) return 'Travel date cannot be in the past';
+        return '';
+      }
+      default:
+        return '';
+    }
+  };
+
+  const validateAll = (currentForm = form) => {
     const errors = {};
-    if (!form.name.trim()) errors.name = 'Full name is required';
-    if (!form.phone.trim()) errors.phone = 'Phone number is required';
+    ['name', 'phone', 'travellers', 'travelDate'].forEach((field) => {
+      const err = validateField(field, currentForm[field], currentForm);
+      if (err) errors[field] = err;
+    });
     return errors;
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const error = validateField(field, form[field]);
+    setFormErrors((prev) => ({ ...prev, [field]: error || undefined }));
+  };
+
+  const handleInputChange = (field, value) => {
+    setForm((p) => ({ ...p, [field]: value }));
+    if (touched[field] || formErrors[field]) {
+      const err = validateField(field, value);
+      setFormErrors((p) => ({ ...p, [field]: err || undefined }));
+    }
+  };
+
+  const handlePhoneChange = (e) => {
+    let input = e.target.value;
+    let digits = input.replace(/\D/g, '');
+    if (digits.startsWith('91') && digits.length > 10) {
+      digits = digits.slice(2);
+    } else if (digits.startsWith('0') && digits.length > 10) {
+      digits = digits.slice(1);
+    }
+    if (digits.length > 10) {
+      digits = digits.slice(0, 10);
+    }
+
+    setForm((p) => ({ ...p, phone: digits }));
+    if (touched.phone || formErrors.phone) {
+      const err = validateField('phone', digits);
+      setFormErrors((p) => ({ ...p, phone: err || undefined }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const errors = validate();
-    if (Object.keys(errors).length) { 
+    setTouched({ name: true, phone: true, travellers: true, travelDate: true });
+    const errors = validateAll();
+    if (Object.keys(errors).length > 0) { 
       setFormErrors(errors); 
       return; 
     }
@@ -45,33 +130,31 @@ const PackageDetail = () => {
     const packageName = pkg?.title || 'Tour Package';
     const destination = pkg?.destinationName || pkg?.destination || 'N/A';
     const duration = pkg?.duration || 'N/A';
-    const price = pkg?.price ? `₹${Number(pkg.price).toLocaleString('en-IN')}` : 'N/A';
     const customerName = form.name.trim();
     const customerPhone = form.phone.trim();
     const travellers = form.travellers || 1;
     const travelDate = form.travelDate || 'Flexible';
 
-    // Construct WhatsApp message adhering to required format
+    // Construct WhatsApp message adhering to required format with +91
     const waText = 
       `*New Tour Package Booking Enquiry*\n\n` +
       `*Package:* ${packageName}\n` +
       `*Destination:* ${destination}\n` +
-      `*Duration:* ${duration}\n` +
-      `*Price:* ${price}\n\n` +
+      `*Duration:* ${duration}\n\n` +
       `*Customer Details*\n` +
       `Name: ${customerName}\n` +
-      `Phone: ${customerPhone}\n` +
+      `Phone: +91 ${customerPhone}\n` +
       `Travellers: ${travellers}\n` +
       `Date of Travel: ${travelDate}\n\n` +
       `I would like to enquire about this tour package.`;
 
     const encodedText = encodeURIComponent(waText);
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=917483156701&text=${encodedText}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=918792373736&text=${encodedText}`;
 
     // Asynchronously record enquiry in backend without blocking WhatsApp launch
     submitEnquiry({ 
       name: customerName,
-      phone: customerPhone,
+      phone: `+91${customerPhone}`,
       travellers: Number(travellers) || 1,
       travelDate: form.travelDate,
       packageId: id, 
@@ -114,14 +197,44 @@ const PackageDetail = () => {
         .pkg-hero {
           position: relative;
           height: 60vh;
-          min-height: 420px;
+          min-height: 440px;
           overflow: hidden;
         }
         .pkg-hero-img { width: 100%; height: 100%; object-fit: cover; }
         .pkg-hero-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to top, rgba(12,26,46,0.85) 0%, rgba(12,26,46,0.3) 60%, transparent 100%);
+          background: linear-gradient(to top, rgba(12,26,46,0.92) 0%, rgba(12,26,46,0.4) 55%, rgba(12,26,46,0.6) 100%);
+        }
+        .pkg-hero-top {
+          position: absolute;
+          top: 96px;
+          left: 0;
+          right: 0;
+          z-index: 10;
+        }
+        .pkg-back-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          color: #ffffff;
+          background: rgba(12, 26, 46, 0.65);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 8px 18px;
+          border-radius: 9999px;
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          font-size: 0.85rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.25s ease;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+        .pkg-back-btn:hover {
+          background: rgba(12, 26, 46, 0.9);
+          border-color: rgba(255, 255, 255, 0.5);
+          transform: translateX(-4px);
+          color: #5eead4;
         }
         .pkg-hero-content {
           position: absolute;
@@ -259,6 +372,68 @@ const PackageDetail = () => {
         }
         .enquiry-form { padding: var(--sp-6); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+        .form-error {
+          color: #ef4444;
+          font-size: 0.78rem;
+          font-weight: 500;
+          margin-top: 5px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .form-input.error {
+          border-color: #ef4444 !important;
+          background: #fef2f2 !important;
+        }
+        .phone-input-group {
+          display: flex;
+          align-items: stretch;
+          border: 1.5px solid var(--gray-200);
+          border-radius: var(--r-md);
+          background: var(--white);
+          overflow: hidden;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .phone-input-group:focus-within {
+          border-color: var(--blue, #0e6eb8);
+          box-shadow: 0 0 0 3px rgba(14,110,184,0.12);
+        }
+        .phone-input-group.error {
+          border-color: #ef4444 !important;
+          background: #fef2f2 !important;
+        }
+        .phone-prefix {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 0 12px;
+          background: #f1f5f9;
+          border-right: 1.5px solid var(--gray-200);
+          font-size: 0.92rem;
+          font-weight: 600;
+          color: #334155;
+          user-select: none;
+          flex-shrink: 0;
+        }
+        .phone-input-group.error .phone-prefix {
+          border-right-color: #ef4444;
+          background: #fee2e2;
+          color: #991b1b;
+        }
+        .flag-icon {
+          font-size: 1.05rem;
+          line-height: 1;
+        }
+        .phone-field {
+          flex: 1;
+          border: none;
+          outline: none;
+          padding: 0.75rem 1rem;
+          font-size: 0.95rem;
+          color: var(--gray-800);
+          background: transparent;
+          width: 100%;
+        }
         .success-banner {
           background: rgba(13,148,136,0.08);
           border: 1px solid var(--teal-light);
@@ -280,12 +455,21 @@ const PackageDetail = () => {
       <div className="pkg-hero" style={{ paddingTop: 0 }}>
         <img src={pkg.mainImage} alt={pkg.title} className="pkg-hero-img" />
         <div className="pkg-hero-overlay" />
-        <div className="pkg-hero-content">
+        
+        {/* Back to Packages at Left Hand Top */}
+        <div className="pkg-hero-top">
           <div className="container">
-            <Link to="/packages" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.7)', marginBottom: 16, fontSize: '0.875rem' }}>
+            <Link to="/packages" className="pkg-back-btn">
               <ArrowLeft size={16} /> Back to Packages
             </Link>
-            <span className="badge badge-teal" style={{ background: 'rgba(13,148,136,0.7)', color: 'white', marginBottom: 12 }}>{pkg.category}</span>
+          </div>
+        </div>
+
+        <div className="pkg-hero-content">
+          <div className="container">
+            <div style={{ marginBottom: 12 }}>
+              <span className="badge badge-teal" style={{ background: 'rgba(13,148,136,0.85)', color: 'white' }}>{pkg.category}</span>
+            </div>
             <h1 style={{ color: 'white', fontSize: 'clamp(1.8rem,4vw,2.8rem)', fontWeight: 800, marginBottom: 12 }}>{pkg.title}</h1>
             <div style={{ display: 'flex', gap: 20, color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><MapPin size={14} /> {pkg.destinationName}</span>
@@ -397,9 +581,9 @@ const PackageDetail = () => {
             <div className="booking-card">
               <div className="booking-header">
                 <div>
-                  <div className="booking-price-label">Starting from</div>
-                  <div className="booking-price">₹{Number(pkg.price).toLocaleString('en-IN')}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.55)' }}>per person</div>
+                  <div className="booking-price-label">Custom Itinerary</div>
+                  <div className="booking-price" style={{ fontSize: '1.25rem' }}>Best Rates on Enquiry</div>
+                  <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginTop: 2 }}>Tailored to your dates & travellers</div>
                 </div>
               </div>
               <div className="booking-body">
@@ -409,11 +593,11 @@ const PackageDetail = () => {
                   <div className="bm-row"><Star size={16} className="bm-icon" color="var(--teal)" /> {pkg.rating} Rating</div>
                   <div className="bm-row"><Users size={16} className="bm-icon" color="var(--teal)" /> Group & Individual tours</div>
                 </div>
-                <button className="btn btn-primary" style={{ width: '100%', marginBottom: 12 }} onClick={() => setEnquiryOpen(true)}>
+                <button className="btn btn-primary" style={{ width: '100%', marginBottom: 12 }} onClick={() => { setFormErrors({}); setTouched({}); setEnquiryOpen(true); }}>
                   Book Now via WhatsApp
                 </button>
-                <a href="tel:+917483156701" className="btn btn-outline-dark" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <Phone size={16} /> Call +91 74831 56701
+                <a href="tel:+918792373736" className="btn btn-outline-dark" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <Phone size={16} /> Call +91 87923 73736
                 </a>
                 <p style={{ fontSize: '0.8rem', color: 'var(--gray-400)', textAlign: 'center', marginTop: 16 }}>
                   Direct WhatsApp & Call · Instant Confirmation
@@ -450,26 +634,97 @@ const PackageDetail = () => {
                   <X size={20} />
                 </button>
               </div>
-              <form onSubmit={handleSubmit} className="enquiry-form">
+              <form onSubmit={handleSubmit} className="enquiry-form" noValidate>
                 {formErrors.submit && <div style={{ background: '#fef2f2', color: '#dc2626', borderRadius: 8, padding: '12px 16px', marginBottom: 16, fontSize: '0.875rem' }}>{formErrors.submit}</div>}
                 <div className="form-grid">
                   <div className="form-group">
-                    <label className="form-label">Full Name *</label>
-                    <input className={`form-input ${formErrors.name ? 'error' : ''}`} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your name" required />
-                    {formErrors.name && <span className="form-error">{formErrors.name}</span>}
+                    <label className="form-label" htmlFor="enquiry-name">
+                      Full Name <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input 
+                      id="enquiry-name"
+                      type="text"
+                      maxLength={60}
+                      className={`form-input ${formErrors.name ? 'error' : ''}`}
+                      value={form.name}
+                      onChange={e => handleInputChange('name', e.target.value)}
+                      onBlur={() => handleBlur('name')}
+                      placeholder="Your full name"
+                      autoComplete="name"
+                    />
+                    {formErrors.name && (
+                      <span className="form-error">
+                        <AlertCircle size={13} /> {formErrors.name}
+                      </span>
+                    )}
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Phone *</label>
-                    <input className={`form-input ${formErrors.phone ? 'error' : ''}`} value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="+91 98765 43210" required />
-                    {formErrors.phone && <span className="form-error">{formErrors.phone}</span>}
+                    <label className="form-label" htmlFor="enquiry-phone">
+                      Phone Number <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <div className={`phone-input-group ${formErrors.phone ? 'error' : ''}`}>
+                      <div className="phone-prefix">
+                        <span className="flag-icon">🇮🇳</span>
+                        <span>+91</span>
+                      </div>
+                      <input 
+                        id="enquiry-phone"
+                        type="tel"
+                        inputMode="numeric"
+                        maxLength={10}
+                        className="phone-field"
+                        value={form.phone}
+                        onChange={handlePhoneChange}
+                        onBlur={() => handleBlur('phone')}
+                        placeholder="10-digit mobile number"
+                        autoComplete="tel-national"
+                      />
+                    </div>
+                    {formErrors.phone && (
+                      <span className="form-error">
+                        <AlertCircle size={13} /> {formErrors.phone}
+                      </span>
+                    )}
                   </div>
                   <div className="form-group">
-                    <label className="form-label">No. of Travellers</label>
-                    <input type="number" min="1" className="form-input" value={form.travellers} onChange={e => setForm(p => ({ ...p, travellers: e.target.value }))} />
+                    <label className="form-label" htmlFor="enquiry-travellers">
+                      No. of Travellers <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input 
+                      id="enquiry-travellers"
+                      type="number"
+                      min="1"
+                      max="100"
+                      className={`form-input ${formErrors.travellers ? 'error' : ''}`}
+                      value={form.travellers}
+                      onChange={e => handleInputChange('travellers', e.target.value)}
+                      onBlur={() => handleBlur('travellers')}
+                      placeholder="e.g. 2"
+                    />
+                    {formErrors.travellers && (
+                      <span className="form-error">
+                        <AlertCircle size={13} /> {formErrors.travellers}
+                      </span>
+                    )}
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Date of Travel</label>
-                    <input type="date" className="form-input" value={form.travelDate} onChange={e => setForm(p => ({ ...p, travelDate: e.target.value }))} />
+                    <label className="form-label" htmlFor="enquiry-date">
+                      Date of Travel <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input 
+                      id="enquiry-date"
+                      type="date"
+                      min={new Date().toISOString().split('T')[0]}
+                      className={`form-input ${formErrors.travelDate ? 'error' : ''}`}
+                      value={form.travelDate}
+                      onChange={e => handleInputChange('travelDate', e.target.value)}
+                      onBlur={() => handleBlur('travelDate')}
+                    />
+                    {formErrors.travelDate && (
+                      <span className="form-error">
+                        <AlertCircle size={13} /> {formErrors.travelDate}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 20 }} disabled={submitting}>

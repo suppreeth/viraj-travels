@@ -110,9 +110,13 @@ const TestimonialCard = ({ t }) => (
   <div className="tc-card">
     <div className="tc-header">
       <img
-        src={t.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=0e6eb8&color=fff`}
+        src={t.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=0d9488&color=fff&bold=true`}
         alt={t.name}
         className="tc-avatar"
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=0d9488&color=fff&bold=true`;
+        }}
       />
       <div>
         <div className="tc-name">{t.name}</div>
@@ -158,7 +162,7 @@ const PACKAGE_SLIDES = [
     eyebrow: 'Instant Booking',
     title: 'Book Easily on',
     highlight: 'WhatsApp Direct',
-    subtitle: 'Get customized itineraries, transparent prices, and instant confirmations in minutes.'
+    subtitle: 'Get customized itineraries, handpicked stays, and instant confirmations in minutes.'
   }
 ];
 
@@ -331,12 +335,12 @@ const Home = () => {
   ];
 
   const staticDestinations = [
-    { id: 's1', name: 'Kashmir',  country: 'India',     category: 'Mountains', packageCount: 8,  image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?q=80&w=700' },
-    { id: 's2', name: 'Goa',      country: 'India',     category: 'Beach',     packageCount: 12, image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=700' },
-    { id: 's3', name: 'Kerala',   country: 'India',     category: 'Backwaters',packageCount: 10, image: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=700' },
-    { id: 's4', name: 'Manali',   country: 'India',     category: 'Adventure', packageCount: 6,  image: 'https://images.unsplash.com/photo-1598977123118-4e30ba8a6b24?q=80&w=700' },
-    { id: 's5', name: 'Dubai',    country: 'UAE',       category: 'Luxury',    packageCount: 9,  image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=700' },
-    { id: 's6', name: 'Bali',     country: 'Indonesia', category: 'Tropical',  packageCount: 7,  image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=700' },
+    { id: 'dest-coastal-karnataka', name: 'Gokarna & Coastal Karnataka', country: 'India', category: 'Beach', packageCount: 1, image: '/images/murdeshwar-coastal-tour.jpg' },
+    { id: 'dest-munnar-kerala', name: 'Munnar & Wayanad', country: 'India', category: 'Honeymoon', packageCount: 1, image: '/images/munnar-tea-estate.jpg' },
+    { id: 'dest-coorg', name: 'Coorg (Kodagu)', country: 'India', category: 'Nature', packageCount: 1, image: '/images/coorg-abbi-falls-tour.jpg' },
+    { id: 'dest-sakleshpur-chikmagalur', name: 'Sakleshpur & Chikmagalur', country: 'India', category: 'Adventure', packageCount: 1, image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=700' },
+    { id: 'dest-mysore', name: 'Mysore & Srirangapatna', country: 'India', category: 'Heritage', packageCount: 1, image: '/images/mysore-palace-tour.jpg' },
+    { id: 'dest-chikkamagaluru', name: 'Chikkamagaluru', country: 'India', category: 'Adventure', packageCount: 1, image: '/images/chikkamagaluru-hills-tour.jpg' },
   ];
   const displayDests = destinations.length > 0 ? destinations.slice(0, 6) : staticDestinations;
 
@@ -1035,10 +1039,50 @@ const Home = () => {
             padding: 0.55rem 1.25rem;
             font-size: 0.85rem;
           }
-          .hs-form { flex-direction: column; padding: var(--sp-5); gap: 0; }
-          .hs-field { padding: 0; padding-bottom: var(--sp-3); border-bottom: 1px solid var(--gray-100); }
+          .hs-form { 
+            flex-direction: column; 
+            padding: var(--sp-5); 
+            gap: 0; 
+            align-items: center; 
+            text-align: center;
+          }
+          .hs-field { 
+            width: 100%;
+            padding: var(--sp-3) 0 !important; 
+            border-bottom: 1px solid var(--gray-100); 
+            align-items: center;
+            text-align: center;
+          }
+          .hs-field:first-child { 
+            padding-top: 0 !important; 
+          }
+          .hs-label { 
+            justify-content: center; 
+            text-align: center; 
+            width: 100%; 
+          }
+          .hs-input { 
+            text-align: center; 
+            text-align-last: center; 
+            -webkit-text-align-last: center; 
+            -moz-text-align-last: center;
+            width: 100%; 
+          }
+          .hs-input::placeholder { 
+            text-align: center; 
+          }
+          .hs-input option {
+            text-align: center;
+          }
           .hs-sep { display: none; }
-          .hs-btn { width: 100%; justify-content: center; margin-left: 0; margin-top: var(--sp-4); }
+          .hs-btn { 
+            width: 100%; 
+            justify-content: center; 
+            align-items: center;
+            text-align: center;
+            margin-left: 0; 
+            margin-top: var(--sp-4); 
+          }
           .search-panel-wrap { margin-top: -24px; padding: 0 var(--sp-4); }
           .pkg-grid { grid-template-columns: 1fr; width: 100%; }
           .hero-packages .pkg-grid { 
@@ -1264,7 +1308,7 @@ const Home = () => {
                   key={dest.id}
                   className={`dest-card-ed${i === 0 ? ' dest-card-big' : ''}`}
                   onClick={() => navigate(
-                    String(dest.id).startsWith('s') ? '/destinations' : `/destinations/${dest.id}`
+                    `/packages?destination=${encodeURIComponent(dest.name)}&destinationId=${encodeURIComponent(dest.id)}`
                   )}
                   initial={{ opacity: 0, scale: 0.96 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -1447,8 +1491,8 @@ const Home = () => {
               Your Dream Destination Is<br />Closer Than You Think
             </h2>
             <p className="offer-desc">
-              Unlock exclusive travel deals on selected domestic and international
-              packages. Prices starting from ₹9,999.
+              Unlock exclusive customized travel packages tailored specifically
+              to your preferences, group size, and schedule.
             </p>
             <div className="offer-btns">
               <Link to="/packages" className="btn btn-primary btn-lg">

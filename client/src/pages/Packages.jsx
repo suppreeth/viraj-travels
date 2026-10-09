@@ -13,10 +13,21 @@ const Packages = () => {
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [category, setCategory] = useState(searchParams.get('category') || '');
   const [duration, setDuration] = useState(searchParams.get('duration') || '');
+  const [destination, setDestination] = useState(searchParams.get('destination') || '');
+  const [destinationId, setDestinationId] = useState(searchParams.get('destinationId') || '');
   const [sort, setSort] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const categories = ['Honeymoon', 'Family Tours', 'Adventure', 'Beach Holidays', 'International Tours', 'Luxury', 'Weekend', 'Group'];
+
+  // Sync state when URL search params change
+  useEffect(() => {
+    setSearch(searchParams.get('search') || '');
+    setCategory(searchParams.get('category') || '');
+    setDuration(searchParams.get('duration') || '');
+    setDestination(searchParams.get('destination') || '');
+    setDestinationId(searchParams.get('destinationId') || '');
+  }, [searchParams]);
 
   useEffect(() => {
     setLoading(true);
@@ -24,12 +35,14 @@ const Packages = () => {
     if (search) params.search = search;
     if (category) params.category = category;
     if (duration) params.duration = duration;
+    if (destination) params.destination = destination;
+    if (destinationId) params.destinationId = destinationId;
     if (sort) params.sort = sort;
     getPackages(params)
       .then(res => setPackages(res.data.data || []))
       .catch(() => setPackages([]))
       .finally(() => setLoading(false));
-  }, [search, category, duration, sort]);
+  }, [search, category, duration, destination, destinationId, sort]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -124,9 +137,21 @@ const Packages = () => {
       {/* Hero */}
       <div className="packages-page-hero">
         <div className="container">
-          <div className="section-eyebrow" style={{ justifyContent: 'center', color: 'var(--teal-light)' }}>Find Your Journey</div>
-          <h1 className="section-title" style={{ color: 'white', margin: '12px 0 16px' }}>Explore All Tour <span style={{ color: 'var(--teal-light)' }}>Packages</span></h1>
-          <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 500, margin: '0 auto' }}>Browse our curated collection of domestic and international travel experiences.</p>
+          <div className="section-eyebrow" style={{ justifyContent: 'center', color: 'var(--teal-light)' }}>
+            {destination ? `Destination: ${destination}` : 'Find Your Journey'}
+          </div>
+          <h1 className="section-title" style={{ color: 'white', margin: '12px 0 16px' }}>
+            {destination ? (
+              <>Tour Packages in <span style={{ color: 'var(--teal-light)' }}>{destination}</span></>
+            ) : (
+              <>Explore All Tour <span style={{ color: 'var(--teal-light)' }}>Packages</span></>
+            )}
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 500, margin: '0 auto' }}>
+            {destination
+              ? `Handcrafted tour itineraries and packages available for ${destination}.`
+              : 'Browse our curated collection of domestic and international travel experiences.'}
+          </p>
         </div>
       </div>
 
@@ -158,27 +183,52 @@ const Packages = () => {
 
           <select className="filter-select" value={sort} onChange={e => setSort(e.target.value)}>
             <option value="">Sort: Popular</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
             <option value="rating">Highest Rated</option>
           </select>
         </div>
 
-        {(search || category || duration) && (
+        {(search || category || duration || destination) && (
           <div className="container">
             <div className="active-filters">
+              {destination && (
+                <span className="active-filter-tag" onClick={() => {
+                  setDestination('');
+                  setDestinationId('');
+                  const nextParams = new URLSearchParams(searchParams);
+                  nextParams.delete('destination');
+                  nextParams.delete('destinationId');
+                  setSearchParams(nextParams);
+                }}>
+                  Destination: {destination} <X size={12} />
+                </span>
+              )}
               {search && (
-                <span className="active-filter-tag" onClick={() => setSearch('')}>
+                <span className="active-filter-tag" onClick={() => {
+                  setSearch('');
+                  const nextParams = new URLSearchParams(searchParams);
+                  nextParams.delete('search');
+                  setSearchParams(nextParams);
+                }}>
                   "{search}" <X size={12} />
                 </span>
               )}
               {category && (
-                <span className="active-filter-tag" onClick={() => setCategory('')}>
+                <span className="active-filter-tag" onClick={() => {
+                  setCategory('');
+                  const nextParams = new URLSearchParams(searchParams);
+                  nextParams.delete('category');
+                  setSearchParams(nextParams);
+                }}>
                   {category} <X size={12} />
                 </span>
               )}
               {duration && (
-                <span className="active-filter-tag" onClick={() => setDuration('')}>
+                <span className="active-filter-tag" onClick={() => {
+                  setDuration('');
+                  const nextParams = new URLSearchParams(searchParams);
+                  nextParams.delete('duration');
+                  setSearchParams(nextParams);
+                }}>
                   {duration} days <X size={12} />
                 </span>
               )}
@@ -201,7 +251,14 @@ const Packages = () => {
               <div style={{ fontSize: '4rem', marginBottom: 16 }}>🔍</div>
               <h3>No packages found</h3>
               <p style={{ marginBottom: 24 }}>Try adjusting your search or removing some filters.</p>
-              <button className="btn btn-primary" onClick={() => { setSearch(''); setCategory(''); setDuration(''); }}>
+              <button className="btn btn-primary" onClick={() => {
+                setSearch('');
+                setCategory('');
+                setDuration('');
+                setDestination('');
+                setDestinationId('');
+                setSearchParams({});
+              }}>
                 Clear All Filters
               </button>
             </div>

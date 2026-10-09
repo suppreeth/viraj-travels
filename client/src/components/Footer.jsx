@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plane, Phone, Mail, MapPin, MessageCircle, ArrowRight } from 'lucide-react';
+import { Plane, Phone, Mail, MapPin, MessageCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 const InstagramIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -31,6 +31,31 @@ const WhatsAppIcon = ({ size = 16, color = 'currentColor' }) => (
 
 const Footer = () => {
   const year = new Date().getFullYear();
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterMsg, setNewsletterMsg] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState('idle');
+
+  const handleNewsletterSubmit = (e) => {
+    e.preventDefault();
+    const emailTrim = newsletterEmail.trim();
+    if (!emailTrim) {
+      setNewsletterStatus('error');
+      setNewsletterMsg('Please enter your email address');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailTrim)) {
+      setNewsletterStatus('error');
+      setNewsletterMsg('Please enter a valid email address');
+      return;
+    }
+    setNewsletterStatus('success');
+    setNewsletterMsg('Thank you for subscribing to updates!');
+    setNewsletterEmail('');
+    setTimeout(() => {
+      setNewsletterMsg('');
+      setNewsletterStatus('idle');
+    }, 4000);
+  };
 
   return (
     <footer className="footer">
@@ -211,7 +236,7 @@ const Footer = () => {
               <a href="#" className="social-icon" aria-label="Instagram"><InstagramIcon /></a>
               <a href="#" className="social-icon" aria-label="Facebook"><FacebookIcon /></a>
               <a href="#" className="social-icon" aria-label="YouTube"><YoutubeIcon /></a>
-              <a href="https://wa.me/917483156701" className="social-icon" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={16} /></a>
+              <a href="https://wa.me/918792373736" className="social-icon" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={16} /></a>
             </div>
           </div>
 
@@ -231,12 +256,12 @@ const Footer = () => {
           <div>
             <h4 className="footer-heading">Popular Destinations</h4>
             <div className="footer-links">
-              <Link to="/packages?destination=Goa" className="footer-link">Goa</Link>
-              <Link to="/packages?destination=Kashmir" className="footer-link">Kashmir</Link>
-              <Link to="/packages?destination=Kerala" className="footer-link">Kerala</Link>
-              <Link to="/packages?destination=Dubai" className="footer-link">Dubai</Link>
-              <Link to="/packages?destination=Bali" className="footer-link">Bali</Link>
-              <Link to="/packages?destination=Maldives" className="footer-link">Maldives</Link>
+              <Link to="/packages?destinationId=dest-coorg" className="footer-link">Coorg (Kodagu)</Link>
+              <Link to="/packages?destinationId=dest-chikkamagaluru" className="footer-link">Chikkamagaluru</Link>
+              <Link to="/packages?destinationId=dest-coastal-karnataka" className="footer-link">Gokarna & Coastal</Link>
+              <Link to="/packages?destinationId=dest-munnar-kerala" className="footer-link">Munnar & Kerala</Link>
+              <Link to="/packages?destinationId=dest-sakleshpur-chikmagalur" className="footer-link">Sakleshpur</Link>
+              <Link to="/packages?destinationId=dest-mysore" className="footer-link">Mysore</Link>
             </div>
           </div>
 
@@ -246,7 +271,7 @@ const Footer = () => {
             <div className="footer-contact-item">
               <div className="footer-contact-icon"><Phone size={14} /></div>
               <div>
-                <div style={{ color: 'white', fontWeight: 500 }}>+91 74831 56701</div>
+                <div style={{ color: 'white', fontWeight: 500 }}>+91 87923 73736</div>
                 <div style={{ fontSize: '0.8rem' }}>Mon-Sat, 9am – 7pm</div>
               </div>
             </div>
@@ -259,15 +284,45 @@ const Footer = () => {
             <div className="footer-contact-item">
               <div className="footer-contact-icon"><MapPin size={14} /></div>
               <div>
-                <div style={{ color: 'white', fontWeight: 500 }}>Bengaluru, Karnataka</div>
-                <div style={{ fontSize: '0.8rem' }}>India - 560001</div>
+                <div style={{ color: 'white', fontWeight: 500 }}>Mysuru (Mysore), Karnataka</div>
+                <div style={{ fontSize: '0.8rem' }}>India - 570001</div>
               </div>
             </div>
             <p style={{ fontSize: '0.8rem', marginBottom: 'var(--sp-2)', marginTop: 'var(--sp-2)' }}>Get travel deals in your inbox:</p>
-            <div className="newsletter-input-group">
-              <input type="email" placeholder="Your email address" className="newsletter-input" />
-              <button className="newsletter-btn"><ArrowRight size={16} /></button>
-            </div>
+            <form onSubmit={handleNewsletterSubmit} noValidate>
+              <div className="newsletter-input-group">
+                <input 
+                  type="email" 
+                  placeholder="Your email address" 
+                  className="newsletter-input" 
+                  value={newsletterEmail}
+                  onChange={(e) => {
+                    setNewsletterEmail(e.target.value);
+                    if (newsletterStatus === 'error') {
+                      setNewsletterStatus('idle');
+                      setNewsletterMsg('');
+                    }
+                  }}
+                />
+                <button type="submit" className="newsletter-btn" aria-label="Subscribe to newsletter">
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+              {newsletterMsg && (
+                <div style={{
+                  fontSize: '0.75rem',
+                  marginTop: 6,
+                  color: newsletterStatus === 'error' ? '#f87171' : '#34d399',
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  {newsletterStatus === 'success' && <CheckCircle2 size={13} />}
+                  <span>{newsletterMsg}</span>
+                </div>
+              )}
+            </form>
           </div>
         </div>
 

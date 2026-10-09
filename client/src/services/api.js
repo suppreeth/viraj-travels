@@ -10,11 +10,23 @@ import { initialData } from '../data/travelData.js';
 
 const ADMIN_KEY = 'virajadmin2025';
 
-// Storage keys
+// Storage keys (v4 with manual packages only and South Indian testimonials)
 const STORAGE_LEADS = 'vt_leads';
-const STORAGE_TESTIMONIALS = 'vt_testimonials';
-const STORAGE_PACKAGES = 'vt_packages';
-const STORAGE_DESTINATIONS = 'vt_destinations';
+const STORAGE_TESTIMONIALS = 'vt_testimonials_v4';
+const STORAGE_PACKAGES = 'vt_packages_v4';
+const STORAGE_DESTINATIONS = 'vt_destinations_v4';
+
+// Clean up any stale cached packages or testimonials from previous storage keys
+if (typeof window !== 'undefined' && window.localStorage) {
+  try {
+    localStorage.removeItem('vt_packages');
+    localStorage.removeItem('vt_destinations');
+    localStorage.removeItem('vt_testimonials');
+    localStorage.removeItem('vt_testimonials_v2');
+  } catch (e) {
+    // Ignore storage errors
+  }
+}
 
 const memoryStore = {};
 
@@ -81,7 +93,7 @@ export const getPackages = async (params = {}) => {
   const allPackages = getStored(STORAGE_PACKAGES, initialData.packages);
   let list = [...allPackages];
 
-  const { category, destination, duration, sort, search, featured } = params;
+  const { category, destination, destinationId, duration, sort, search, featured } = params;
 
   if (featured === 'true' || featured === true) {
     list = list.filter((p) => p.featured === true || p.featured === 1);
@@ -103,9 +115,22 @@ export const getPackages = async (params = {}) => {
     list = list.filter((p) => p.category && p.category.toLowerCase().includes(c));
   }
 
-  if (destination && destination.trim()) {
+  if (destinationId && destinationId.trim()) {
+    const dId = destinationId.trim().toLowerCase();
+    list = list.filter((p) => p.destinationId && p.destinationId.toLowerCase() === dId);
+  } else if (destination && destination.trim()) {
     const d = destination.trim().toLowerCase();
-    list = list.filter((p) => p.destinationName && p.destinationName.toLowerCase().includes(d));
+    list = list.filter((p) => {
+      if (p.destinationId && p.destinationId.toLowerCase() === d) return true;
+      if (p.destinationName && p.destinationName.toLowerCase().includes(d)) return true;
+      if (p.title && p.title.toLowerCase().includes(d)) return true;
+      const firstWord = d.split(/[&,/\s]+/)[0];
+      if (firstWord && firstWord.length > 2) {
+        if (p.destinationName && p.destinationName.toLowerCase().includes(firstWord)) return true;
+        if (p.title && p.title.toLowerCase().includes(firstWord)) return true;
+      }
+      return false;
+    });
   }
 
   if (duration) {
