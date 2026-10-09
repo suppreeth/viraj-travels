@@ -15,9 +15,9 @@ const WhatsAppIcon = ({ size = 26, color = '#ffffff' }) => (
   </svg>
 );
 
-const PHONE_NUMBER = '+917483156701';
-const DISPLAY_PHONE = '+91 74831 56701';
-const WHATSAPP_NUMBER = '917483156701';
+const PHONE_NUMBER = '+918792373736';
+const DISPLAY_PHONE = '+91 87923 73736';
+const WHATSAPP_NUMBER = '918792373736';
 const WHATSAPP_MSG = encodeURIComponent('Hello V-RAJ Holidays! I would like to enquire about holiday packages.');
 
 const FloatingActions = () => {
@@ -37,6 +37,7 @@ const FloatingActions = () => {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
   const [reviewError, setReviewError] = useState('');
+  const [reviewErrors, setReviewErrors] = useState({});
 
   // Load reviews when review modal is opened
   useEffect(() => {
@@ -44,6 +45,7 @@ const FloatingActions = () => {
       fetchReviews();
       setReviewSuccess(false);
       setReviewError('');
+      setReviewErrors({});
     }
   }, [showReviewModal]);
 
@@ -61,12 +63,42 @@ const FloatingActions = () => {
     }
   };
 
+  const validateReview = () => {
+    const errs = {};
+    const nameTrim = reviewForm.name.trim();
+    if (!nameTrim) {
+      errs.name = 'Full name is required';
+    } else if (nameTrim.length < 2) {
+      errs.name = 'Name must be at least 2 characters';
+    } else if (!/^[a-zA-Z\s'.]+$/.test(nameTrim)) {
+      errs.name = 'Please enter letters only';
+    }
+
+    const destTrim = reviewForm.destination.trim();
+    if (!destTrim) {
+      errs.destination = 'Destination/tour name is required';
+    } else if (destTrim.length < 2) {
+      errs.destination = 'Must be at least 2 characters';
+    }
+
+    const reviewTrim = reviewForm.review.trim();
+    if (!reviewTrim) {
+      errs.review = 'Review message is required';
+    } else if (reviewTrim.length < 10) {
+      errs.review = 'Please write at least 10 characters';
+    }
+
+    return errs;
+  };
+
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    if (!reviewForm.name.trim() || !reviewForm.review.trim()) {
-      setReviewError('Please enter your name and review message.');
+    const errs = validateReview();
+    if (Object.keys(errs).length > 0) {
+      setReviewErrors(errs);
       return;
     }
+    setReviewErrors({});
     setSubmittingReview(true);
     setReviewError('');
     try {
@@ -561,7 +593,7 @@ const FloatingActions = () => {
                     </div>
                   )}
 
-                  <form onSubmit={handleReviewSubmit}>
+                  <form onSubmit={handleReviewSubmit} noValidate>
                     {/* Star selection */}
                     <div className="star-row">
                       <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginRight: 6 }}>Rating:</span>
@@ -583,30 +615,55 @@ const FloatingActions = () => {
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                      <input
-                        type="text"
-                        className="review-input"
-                        placeholder="Your Name *"
-                        value={reviewForm.name}
-                        onChange={(e) => setReviewForm(prev => ({ ...prev, name: e.target.value }))}
-                        required
-                      />
-                      <input
-                        type="text"
-                        className="review-input"
-                        placeholder="Destination / Tour (e.g. Goa)"
-                        value={reviewForm.destination}
-                        onChange={(e) => setReviewForm(prev => ({ ...prev, destination: e.target.value }))}
-                      />
+                      <div>
+                        <input
+                          type="text"
+                          className="review-input"
+                          style={reviewErrors.name ? { borderColor: '#ef4444', background: '#fef2f2' } : {}}
+                          placeholder="Your Name *"
+                          value={reviewForm.name}
+                          onChange={(e) => {
+                            setReviewForm(prev => ({ ...prev, name: e.target.value }));
+                            if (reviewErrors.name) setReviewErrors(prev => ({ ...prev, name: undefined }));
+                          }}
+                        />
+                        {reviewErrors.name && (
+                          <span style={{ color: '#ef4444', fontSize: '0.74rem', marginTop: 3, display: 'block' }}>{reviewErrors.name}</span>
+                        )}
+                      </div>
+                      <div>
+                        <input
+                          type="text"
+                          className="review-input"
+                          style={reviewErrors.destination ? { borderColor: '#ef4444', background: '#fef2f2' } : {}}
+                          placeholder="Destination / Tour *"
+                          value={reviewForm.destination}
+                          onChange={(e) => {
+                            setReviewForm(prev => ({ ...prev, destination: e.target.value }));
+                            if (reviewErrors.destination) setReviewErrors(prev => ({ ...prev, destination: undefined }));
+                          }}
+                        />
+                        {reviewErrors.destination && (
+                          <span style={{ color: '#ef4444', fontSize: '0.74rem', marginTop: 3, display: 'block' }}>{reviewErrors.destination}</span>
+                        )}
+                      </div>
                     </div>
 
-                    <textarea
-                      className="review-textarea"
-                      placeholder="Tell us about your trip with V-RAJ Holidays... *"
-                      value={reviewForm.review}
-                      onChange={(e) => setReviewForm(prev => ({ ...prev, review: e.target.value }))}
-                      required
-                    />
+                    <div style={{ marginTop: 10 }}>
+                      <textarea
+                        className="review-textarea"
+                        style={reviewErrors.review ? { borderColor: '#ef4444', background: '#fef2f2' } : {}}
+                        placeholder="Tell us about your trip with V-RAJ Holidays... (at least 10 characters) *"
+                        value={reviewForm.review}
+                        onChange={(e) => {
+                          setReviewForm(prev => ({ ...prev, review: e.target.value }));
+                          if (reviewErrors.review) setReviewErrors(prev => ({ ...prev, review: undefined }));
+                        }}
+                      />
+                      {reviewErrors.review && (
+                        <span style={{ color: '#ef4444', fontSize: '0.74rem', marginTop: 3, display: 'block' }}>{reviewErrors.review}</span>
+                      )}
+                    </div>
 
                     <button
                       type="submit"

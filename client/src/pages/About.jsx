@@ -94,7 +94,7 @@ const About = () => {
               <h2>We Believe Travel Is More Than Just A Destination</h2>
               <p>Founded in 2015, V-RAJ Holidays started with a simple belief: that travel should be transformative, not transactional. We didn't want to just sell tickets and hotel rooms; we wanted to craft experiences that stay with our travellers forever.</p>
               <p>Over the years, we've grown from a small passionate team to one of the most trusted travel agencies in India. Our secret? A relentless focus on quality, personalization, and 24/7 support.</p>
-              <p>Whether it's a romantic honeymoon in Bali, a family adventure in the Himalayas, or a luxury escape to Dubai, we handle every detail so you can focus on making memories.</p>
+              <p>Whether it's a tranquil retreat in Coorg, a coastal temple journey in Gokarna & Murdeshwar, or an enchanting backwater and tea garden tour in Munnar, we handle every detail so you can focus on making memories.</p>
               <div style={{ marginTop: 'var(--sp-8)' }}>
                 <Link to="/contact" className="btn btn-primary">Plan Your Next Trip <ArrowRight size={16} /></Link>
               </div>

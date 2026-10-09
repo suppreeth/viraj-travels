@@ -1,14 +1,29 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const PackageCard = ({ pkg, index = 0, staggerSlideshow = false }) => {
+  const navigate = useNavigate();
   const stars = Math.round(pkg.rating);
+
+  const handleCardClick = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    navigate(`/packages/${pkg.id}`);
+  };
 
   return (
     <motion.div
       className="pkg-card"
+      onClick={handleCardClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCardClick();
+        }
+      }}
       initial={{ opacity: 0, y: 25, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ 
@@ -119,28 +134,21 @@ const PackageCard = ({ pkg, index = 0, staggerSlideshow = false }) => {
           color: rgba(255,255,255,0.8);
           font-size: 0.78rem;
         }
-        .pkg-price-row {
+        .pkg-action-row {
           display: flex;
-          align-items: flex-end;
+          align-items: center;
           justify-content: space-between;
           gap: 8px;
-          padding-top: 6px;
+          padding-top: 8px;
           border-top: 1px solid rgba(255, 255, 255, 0.12);
           margin-top: 4px;
         }
-        .pkg-price {
-          font-size: 1.35rem;
-          font-weight: 800;
-          color: #ffffff;
-          line-height: 1.1;
-        }
-        .pkg-price-label {
-          font-size: 0.68rem;
-          color: rgba(255,255,255,0.6);
-          font-weight: 500;
-          text-transform: uppercase;
+        .pkg-badge-custom {
+          font-size: 0.72rem;
+          font-weight: 600;
+          color: #5eead4;
           letter-spacing: 0.04em;
-          margin-bottom: 2px;
+          text-transform: uppercase;
         }
         .pkg-btn-group {
           display: flex;
@@ -188,9 +196,6 @@ const PackageCard = ({ pkg, index = 0, staggerSlideshow = false }) => {
             font-size: 1.05rem;
             min-height: 2.5em;
           }
-          .pkg-price {
-            font-size: 1.25rem;
-          }
           .pkg-cta {
             padding: 0.5rem 1rem;
             font-size: 0.8rem;
@@ -202,9 +207,6 @@ const PackageCard = ({ pkg, index = 0, staggerSlideshow = false }) => {
           }
           .pkg-title {
             font-size: 0.98rem;
-          }
-          .pkg-price {
-            font-size: 1.15rem;
           }
         }
       `}</style>
@@ -220,7 +222,11 @@ const PackageCard = ({ pkg, index = 0, staggerSlideshow = false }) => {
         <div className="pkg-location">
           <MapPin size={12} /> {pkg.destinationName || pkg.destination}
         </div>
-        <Link to={`/packages/${pkg.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link 
+          to={`/packages/${pkg.id}`} 
+          style={{ textDecoration: 'none', color: 'inherit' }}
+          onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' })}
+        >
           <h3 className="pkg-title" style={{ transition: 'color 0.2s' }}>{pkg.title}</h3>
         </Link>
 
@@ -235,15 +241,13 @@ const PackageCard = ({ pkg, index = 0, staggerSlideshow = false }) => {
           </div>
         </div>
 
-        <div className="pkg-price-row">
-          <div>
-            <div className="pkg-price-label">Starting from</div>
-            <div className="pkg-price">₹{Number(pkg.price).toLocaleString('en-IN')}</div>
-          </div>
+        <div className="pkg-action-row">
+          <span className="pkg-badge-custom">Custom Itinerary</span>
           <Link
             to={`/packages/${pkg.id}`}
             className="pkg-cta pkg-cta-details"
             title="View package details"
+            onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' })}
           >
             Details
           </Link>

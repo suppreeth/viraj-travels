@@ -132,7 +132,7 @@ const Destinations = () => {
         ) : (
           <div className="dest-grid-full">
             {filteredDests.map((dest, i) => (
-              <Link to={`/packages?destination=${dest.name}`} key={dest.id}>
+              <Link to={`/packages?destination=${encodeURIComponent(dest.name)}&destinationId=${encodeURIComponent(dest.id)}`} key={dest.id}>
                 <motion.div 
                   className="dest-card-full"
                   initial={{ opacity: 0, y: 30 }}

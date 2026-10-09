@@ -26,7 +26,6 @@ const Navbar = () => {
     { to: '/packages', label: 'Tour Packages' },
     { to: '/destinations', label: 'Destinations' },
     { to: '/about', label: 'About Us' },
-    { to: '/contact', label: 'Contact' },
   ];
 
   return (

@@ -70,25 +70,27 @@ const LeadPopup = () => {
     const newErrors = {};
 
     // Validate Full Name
-    if (!formData.name.trim()) {
+    const nameTrim = formData.name.trim();
+    if (!nameTrim) {
       newErrors.name = 'Full name is required';
-    } else if (formData.name.trim().length < 2) {
+    } else if (nameTrim.length < 2) {
       newErrors.name = 'Please enter at least 2 characters';
+    } else if (!/^[a-zA-Z\s'.]+$/.test(nameTrim)) {
+      newErrors.name = 'Please enter letters only';
     }
 
     // Validate Phone Number
-    if (!formData.phone.trim()) {
+    const phoneTrim = formData.phone.trim();
+    const digitsOnly = phoneTrim.replace(/\D/g, '');
+    if (!phoneTrim) {
       newErrors.phone = 'Phone number is required';
-    } else {
-      const digitsOnly = formData.phone.replace(/\D/g, '');
-      if (digitsOnly.length < 7 || digitsOnly.length > 16) {
-        newErrors.phone = 'Please enter a valid phone number (min 7 digits)';
-      }
+    } else if (digitsOnly.length < 10 || digitsOnly.length > 13) {
+      newErrors.phone = 'Please enter a valid 10-digit mobile number';
     }
 
     // Validate Email ONLY if provided
     if (formData.email.trim()) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
       if (!emailRegex.test(formData.email.trim())) {
         newErrors.email = 'Please enter a valid email address';
       }
@@ -131,7 +133,7 @@ const LeadPopup = () => {
         (formData.requirement?.trim() ? `📝 *Requirement:* ${formData.requirement.trim()}\n` : '') +
         `─────────────────────────\n` +
         `_Sent via V-RAJ Holidays Website_`;
-      const waUrl = `https://wa.me/917483156701?text=${encodeURIComponent(waText)}`;
+      const waUrl = `https://wa.me/918792373736?text=${encodeURIComponent(waText)}`;
       window.open(waUrl, '_blank', 'noopener,noreferrer');
 
       // Auto-close modal after 3.5 seconds
