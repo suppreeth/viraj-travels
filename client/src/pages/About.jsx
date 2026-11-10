@@ -83,7 +83,7 @@ const About = () => {
         <div className="about-overlay" />
         <div className="about-content">
           <div className="section-eyebrow" style={{ justifyContent: 'center', color: 'var(--teal-light)' }}>Our Story</div>
-          <h1 className="section-title" style={{ color: 'white', margin: '12px 0' }}>Crafting Unforgettable<br />Journeys Since 2015</h1>
+          <h1 className="section-title" style={{ color: 'white', margin: '12px 0' }}>Crafting Unforgettable<br />Journeys Since 2002</h1>
         </div>
       </div>
 
@@ -92,9 +92,9 @@ const About = () => {
           <div className="story-grid">
             <motion.div className="story-text" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <h2>We Believe Travel Is More Than Just A Destination</h2>
-              <p>Founded in 2015, V-RAJ Holidays started with a simple belief: that travel should be transformative, not transactional. We didn't want to just sell tickets and hotel rooms; we wanted to craft experiences that stay with our travellers forever.</p>
+              <p>Founded in 2002, V-RAJ Holidays started with a simple belief: that travel should be transformative, not transactional. We didn't want to just sell tickets and hotel rooms; we wanted to craft experiences that stay with our travellers forever.</p>
               <p>Over the years, we've grown from a small passionate team to one of the most trusted travel agencies in India. Our secret? A relentless focus on quality, personalization, and 24/7 support.</p>
-              <p>Whether it's a tranquil retreat in Coorg, a coastal temple journey in Gokarna & Murdeshwar, or an enchanting backwater and tea garden tour in Munnar, we handle every detail so you can focus on making memories.</p>
+              <p>Whether it's a tranquil retreat in Coorg & Madikeri, a coastal temple journey in Gokarna & Murdeshwar, or an enchanting backwater and tea garden tour in Munnar, we handle every detail so you can focus on making memories.</p>
               <div style={{ marginTop: 'var(--sp-8)' }}>
                 <Link to="/contact" className="btn btn-primary">Plan Your Next Trip <ArrowRight size={16} /></Link>
               </div>
@@ -104,7 +104,7 @@ const About = () => {
               <div className="story-img-wrapper">
                 <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1000&auto=format&fit=crop" alt="Travelers" />
                 <div className="story-badge">
-                  <h4>10+</h4>
+                  <h4>20+</h4>
                   <p>Years Experience</p>
                 </div>
               </div>

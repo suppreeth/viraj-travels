@@ -234,7 +234,7 @@ const PackageCard = ({ pkg, index = 0, staggerSlideshow = false }) => {
           <div className="pkg-rating">
             <Star size={13} fill="currentColor" />
             <span>{pkg.rating}</span>
-            <span style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 400, fontSize: '0.72rem' }}>(86 reviews)</span>
+            <span style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 400, fontSize: '0.72rem' }}>({pkg.reviewCount || 120} reviews)</span>
           </div>
           <div className="pkg-meta-item">
             <Clock size={12} /> <span>{pkg.duration}</span>
