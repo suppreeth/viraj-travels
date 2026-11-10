@@ -230,7 +230,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="footer-desc">
-              Creating unforgettable travel experiences since 2015. We believe every journey should be a story worth telling.
+              Creating unforgettable travel experiences since 2002. We believe every journey should be a story worth telling.
             </p>
             <div className="footer-social">
               <a href="#" className="social-icon" aria-label="Instagram"><InstagramIcon /></a>
@@ -256,7 +256,7 @@ const Footer = () => {
           <div>
             <h4 className="footer-heading">Popular Destinations</h4>
             <div className="footer-links">
-              <Link to="/packages?destinationId=dest-coorg" className="footer-link">Coorg (Kodagu)</Link>
+              <Link to="/packages?destinationId=dest-coorg" className="footer-link">Coorg & Madikeri</Link>
               <Link to="/packages?destinationId=dest-chikkamagaluru" className="footer-link">Chikkamagaluru</Link>
               <Link to="/packages?destinationId=dest-coastal-karnataka" className="footer-link">Gokarna & Coastal</Link>
               <Link to="/packages?destinationId=dest-munnar-kerala" className="footer-link">Munnar & Kerala</Link>

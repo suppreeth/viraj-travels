@@ -474,7 +474,7 @@ const PackageDetail = () => {
             <div style={{ display: 'flex', gap: 20, color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', flexWrap: 'wrap' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><MapPin size={14} /> {pkg.destinationName}</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><Clock size={14} /> {pkg.duration}</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--gold-light)' }}><Star size={14} fill="currentColor" /> {pkg.rating} (86 reviews)</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--gold-light)' }}><Star size={14} fill="currentColor" /> {pkg.rating} ({pkg.reviewCount || 140} Google reviews)</span>
             </div>
           </div>
         </div>

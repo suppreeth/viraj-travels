@@ -10,11 +10,11 @@ import { initialData } from '../data/travelData.js';
 
 const ADMIN_KEY = 'virajadmin2025';
 
-// Storage keys (v4 with manual packages only and South Indian testimonials)
+// Storage keys (v7 with single Kannadiga names and smooth carousel)
 const STORAGE_LEADS = 'vt_leads';
-const STORAGE_TESTIMONIALS = 'vt_testimonials_v4';
-const STORAGE_PACKAGES = 'vt_packages_v4';
-const STORAGE_DESTINATIONS = 'vt_destinations_v4';
+const STORAGE_TESTIMONIALS = 'vt_testimonials_v7';
+const STORAGE_PACKAGES = 'vt_packages_v7';
+const STORAGE_DESTINATIONS = 'vt_destinations_v7';
 
 // Clean up any stale cached packages or testimonials from previous storage keys
 if (typeof window !== 'undefined' && window.localStorage) {
@@ -23,6 +23,15 @@ if (typeof window !== 'undefined' && window.localStorage) {
     localStorage.removeItem('vt_destinations');
     localStorage.removeItem('vt_testimonials');
     localStorage.removeItem('vt_testimonials_v2');
+    localStorage.removeItem('vt_testimonials_v4');
+    localStorage.removeItem('vt_packages_v4');
+    localStorage.removeItem('vt_destinations_v4');
+    localStorage.removeItem('vt_testimonials_v5');
+    localStorage.removeItem('vt_packages_v5');
+    localStorage.removeItem('vt_destinations_v5');
+    localStorage.removeItem('vt_testimonials_v6');
+    localStorage.removeItem('vt_packages_v6');
+    localStorage.removeItem('vt_destinations_v6');
   } catch (e) {
     // Ignore storage errors
   }

@@ -3,10 +3,23 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Search, MapPin, Compass, Clock, Star, ArrowRight,
-  CheckCircle2, Award, Globe, Zap, Shield, MessageSquare
+  CheckCircle2, Award, Globe, Zap, Shield, MessageSquare, ThumbsUp,
+  Pause, Play
 } from 'lucide-react';
 import PackageCard from '../components/PackageCard';
 import { getFeaturedPackages, getDestinations, getTestimonials } from '../services/api';
+
+/* ─────────────────────────────────────────
+   GOOGLE MY BUSINESS ICON
+───────────────────────────────────────── */
+const GoogleIcon = ({ size = 18 }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}>
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+  </svg>
+);
 
 /* ─────────────────────────────────────────
    HERO SEARCH
@@ -108,32 +121,63 @@ const PackageSkeleton = () => (
 ───────────────────────────────────────── */
 const TestimonialCard = ({ t }) => (
   <div className="tc-card">
-    <div className="tc-header">
-      <img
-        src={t.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=0d9488&color=fff&bold=true`}
-        alt={t.name}
-        className="tc-avatar"
-        onError={(e) => {
-          e.currentTarget.onerror = null;
-          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=0d9488&color=fff&bold=true`;
-        }}
-      />
-      <div>
-        <div className="tc-name">{t.name}</div>
-        <div className="tc-dest">{t.destination}</div>
+    <div className="tc-top-row">
+      <div className="tc-user-group">
+        <div className="tc-avatar-wrapper">
+          <img
+            src={t.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=0d9488&color=fff&bold=true`}
+            alt={t.name}
+            className="tc-avatar"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=0d9488&color=fff&bold=true`;
+            }}
+          />
+          <span className="tc-google-avatar-badge" title="Google Verified Reviewer">
+            <GoogleIcon size={13} />
+          </span>
+        </div>
+        <div>
+          <div className="tc-name">{t.name}</div>
+          <div className="tc-reviewer-badge">
+            <span className="tc-guide-star">★</span> {t.localGuide || 'Local Guide · Verified'}
+          </div>
+        </div>
+      </div>
+      <div className="tc-google-source-tag" title="Posted on Google My Business">
+        <GoogleIcon size={17} />
       </div>
     </div>
-    <div className="tc-stars">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star
-          key={i} size={13}
-          fill={i < Math.round(t.rating) ? 'var(--gold)' : 'none'}
-          color={i < Math.round(t.rating) ? 'var(--gold)' : 'var(--gray-300)'}
-        />
-      ))}
-      <span className="tc-rating-txt">{t.rating}</span>
+
+    <div className="tc-meta-row">
+      <div className="tc-stars">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i} size={14}
+            fill={i < Math.round(t.rating) ? '#fbbc04' : '#e2e8f0'}
+            color={i < Math.round(t.rating) ? '#fbbc04' : '#cbd5e1'}
+          />
+        ))}
+      </div>
+      <span className="tc-time-ago">{t.timeAgo || '2 weeks ago'}</span>
     </div>
+
+    {t.destination && (
+      <div className="tc-dest-tag">
+        <MapPin size={11} /> {t.destination}
+      </div>
+    )}
+
     <p className="tc-review">"{t.review}"</p>
+
+    <div className="tc-footer-row">
+      <div className="tc-verified-label">
+        <CheckCircle2 size={13} color="#059669" /> Verified Google Review
+      </div>
+      <div className="tc-helpful-btn" title="Travellers found this helpful">
+        <ThumbsUp size={12} /> {t.helpful || 12}
+      </div>
+    </div>
   </div>
 );
 
@@ -218,6 +262,8 @@ const Home = () => {
   const [packages,     setPackages]     = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
+  const [reviewDestFilter, setReviewDestFilter] = useState('All');
+  const [isReviewsPaused, setIsReviewsPaused] = useState(false);
   const [pkgLoading,   setPkgLoading]   = useState(true);
   const [destLoading,  setDestLoading]  = useState(true);
   const [pkgError,     setPkgError]     = useState(null);
@@ -337,12 +383,50 @@ const Home = () => {
   const staticDestinations = [
     { id: 'dest-coastal-karnataka', name: 'Gokarna & Coastal Karnataka', country: 'India', category: 'Beach', packageCount: 1, image: '/images/murdeshwar-coastal-tour.jpg' },
     { id: 'dest-munnar-kerala', name: 'Munnar & Wayanad', country: 'India', category: 'Honeymoon', packageCount: 1, image: '/images/munnar-tea-estate.jpg' },
-    { id: 'dest-coorg', name: 'Coorg (Kodagu)', country: 'India', category: 'Nature', packageCount: 1, image: '/images/coorg-abbi-falls-tour.jpg' },
+    { id: 'dest-coorg', name: 'Coorg & Madikeri', country: 'India', category: 'Nature', packageCount: 1, image: '/images/coorg-abbi-falls-tour.jpg' },
     { id: 'dest-sakleshpur-chikmagalur', name: 'Sakleshpur & Chikmagalur', country: 'India', category: 'Adventure', packageCount: 1, image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=700' },
     { id: 'dest-mysore', name: 'Mysore & Srirangapatna', country: 'India', category: 'Heritage', packageCount: 1, image: '/images/mysore-palace-tour.jpg' },
     { id: 'dest-chikkamagaluru', name: 'Chikkamagaluru', country: 'India', category: 'Adventure', packageCount: 1, image: '/images/chikkamagaluru-hills-tour.jpg' },
   ];
   const displayDests = destinations.length > 0 ? destinations.slice(0, 6) : staticDestinations;
+
+  const reviewDestTabs = [
+    { id: 'All', label: 'All Reviews' },
+    { id: 'dest-coorg', label: 'Coorg & Madikeri' },
+    { id: 'dest-coastal-karnataka', label: 'Gokarna & Coastal' },
+    { id: 'dest-chikkamagaluru', label: 'Chikkamagaluru' },
+    { id: 'dest-mysore', label: 'Mysore & Srirangapatna' },
+    { id: 'dest-munnar-kerala', label: 'Munnar & Wayanad' },
+    { id: 'dest-sakleshpur-chikmagalur', label: 'Sakleshpur' },
+  ];
+
+  const filteredTestimonials = reviewDestFilter === 'All'
+    ? testimonials
+    : testimonials.filter(t => t.destinationId === reviewDestFilter);
+
+  // Duplicate cards so marquee seamlessly loops in 1 continuous line from left to right
+  const marqueeReviews = React.useMemo(() => {
+    if (!filteredTestimonials || filteredTestimonials.length === 0) return [];
+    if (filteredTestimonials.length <= 4) {
+      return [
+        ...filteredTestimonials,
+        ...filteredTestimonials,
+        ...filteredTestimonials,
+        ...filteredTestimonials,
+        ...filteredTestimonials,
+        ...filteredTestimonials
+      ];
+    }
+    if (filteredTestimonials.length <= 8) {
+      return [
+        ...filteredTestimonials,
+        ...filteredTestimonials,
+        ...filteredTestimonials,
+        ...filteredTestimonials
+      ];
+    }
+    return [...filteredTestimonials, ...filteredTestimonials];
+  }, [filteredTestimonials]);
 
   return (
     <div className="home-page">
@@ -931,7 +1015,7 @@ const Home = () => {
         }
         .offer-btns { display: flex; gap: var(--sp-4); justify-content: center; flex-wrap: wrap; }
 
-        /* ─── TESTIMONIALS ─── */
+        /* ─── TESTIMONIALS (GOOGLE MY BUSINESS STYLE) ─── */
         .testimonials-section {
           position: relative;
           background: #f8fafc;
@@ -947,29 +1031,388 @@ const Home = () => {
           z-index: 0;
         }
         .testimonials-section .container { position: relative; z-index: 2; }
-        .testimonials-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-          gap: var(--sp-5);
+
+        .google-rating-summary-banner {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 16px 24px;
+          margin-bottom: var(--sp-8);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          gap: 20px;
+        }
+        .gr-summary-main {
+          display: flex;
+          align-items: center;
+          gap: 28px;
+          flex-wrap: wrap;
+        }
+        .gr-google-badge {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .gr-brand-name {
+          font-weight: 800;
+          font-size: 1.05rem;
+          color: #0f172a;
+          letter-spacing: -0.01em;
+        }
+        .gr-verified-pill {
+          font-size: 0.76rem;
+          color: #059669;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-top: 2px;
+        }
+        .gr-score-block {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-left: 24px;
+          border-left: 1px solid #e2e8f0;
+        }
+        .gr-score-number {
+          font-size: 2.2rem;
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1;
+        }
+        .gr-stars-row {
+          display: flex;
+          gap: 2px;
+          margin-bottom: 3px;
+        }
+        .gr-reviews-count {
+          font-size: 0.8rem;
+          color: #64748b;
+        }
+        .btn-outline-google {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          border: 1.5px solid #cbd5e1;
+          color: #334155;
+          font-size: 0.86rem;
+          font-weight: 600;
+          padding: 9px 18px;
+          border-radius: 10px;
+          background: #fff;
+          text-decoration: none;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+        }
+        .btn-outline-google:hover {
+          border-color: #4285F4;
+          color: #1e3a8a;
+          box-shadow: 0 4px 12px rgba(66,133,244,0.12);
+        }
+
+        .gr-dest-tabs {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          overflow-x: auto;
+          padding: 4px 4px 16px 4px;
+          margin-bottom: var(--sp-6);
+          scrollbar-width: thin;
+        }
+        .gr-tab-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          border-radius: 9999px;
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          color: #475569;
+          font-size: 0.84rem;
+          font-weight: 600;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: all 0.2s ease;
+        }
+        .gr-tab-btn:hover {
+          border-color: #0d9488;
+          color: #0f766e;
+          background: #f0fdfa;
+        }
+        .gr-tab-btn.active {
+          background: var(--navy, #0c1e34);
+          color: #ffffff;
+          border-color: var(--navy, #0c1e34);
+          box-shadow: 0 4px 12px rgba(12, 30, 52, 0.15);
+        }
+        .gr-tab-count {
+          font-size: 0.72rem;
+          padding: 2px 7px;
+          border-radius: 9999px;
+          background: rgba(0,0,0,0.06);
+          color: inherit;
+        }
+        .gr-tab-btn.active .gr-tab-count {
+          background: rgba(255,255,255,0.25);
+          color: #ffffff;
+        }
+        .gr-marquee-controls {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: var(--sp-4);
+          padding: 0 4px;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .gr-flow-indicator {
+          font-size: 0.82rem;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 500;
+        }
+        .gr-live-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #10b981;
+          display: inline-block;
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+          animation: pulseDot 2s infinite;
+        }
+        @keyframes pulseDot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.85); }
+        }
+        .gr-pause-toggle-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 14px;
+          border-radius: 9999px;
+          border: 1px solid #cbd5e1;
+          background: #ffffff;
+          color: #334155;
+          font-size: 0.78rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .gr-pause-toggle-btn:hover {
+          border-color: #0d9488;
+          color: #0f766e;
+          background: #f0fdfa;
+        }
+
+        /* ─── IN-LINE MOVING LEFT-TO-RIGHT MARQUEE ─── */
+        .tc-marquee-container {
+          position: relative;
+          width: 100vw;
+          margin-left: calc(-50vw + 50%);
+          overflow: hidden;
+          padding: 8px 0 20px 0;
+          mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+        }
+        .tc-marquee-track {
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
+          gap: 22px;
+          width: max-content;
+          animation: marqueeLeftToRight 65s linear infinite;
+          will-change: transform;
+        }
+        .tc-marquee-track:hover {
+          animation-play-state: paused !important;
+        }
+        @keyframes marqueeLeftToRight {
+          0% {
+            transform: translateX(-50%);
+          }
+          100% {
+            transform: translateX(0%);
+          }
         }
         .tc-card {
+          width: 360px;
+          min-width: 360px;
+          max-width: 360px;
+          flex-shrink: 0;
           background: #fff;
-          border-radius: var(--r-lg);
-          padding: var(--sp-6);
-          box-shadow: var(--shadow-card);
-          transition: box-shadow 0.3s;
+          border-radius: 16px;
+          padding: 22px 20px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          border: 1px solid #eef2f6;
+          display: flex;
+          flex-direction: column;
+          user-select: none;
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        .tc-card:hover { box-shadow: var(--shadow-card-hover); }
-        .tc-header { display: flex; align-items: center; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+        .tc-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 14px 32px rgba(0,0,0,0.09);
+        }
+        @media (max-width: 640px) {
+          .tc-card {
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
+            padding: 18px 16px;
+          }
+        }
+        .tc-top-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 12px;
+        }
+        .tc-user-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .tc-avatar-wrapper {
+          position: relative;
+          width: 48px;
+          height: 48px;
+          flex-shrink: 0;
+        }
         .tc-avatar {
-          width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
-          border: 2px solid var(--teal-light); flex-shrink: 0;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #f1f5f9;
         }
-        .tc-name { font-weight: 700; color: var(--navy); }
-        .tc-dest { font-size: 0.8rem; color: var(--teal); }
-        .tc-stars { display: flex; align-items: center; gap: 3px; margin-bottom: var(--sp-3); }
-        .tc-rating-txt { font-size: 0.78rem; color: var(--gray-500); margin-left: 4px; }
-        .tc-review { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; font-style: italic; }
+        .tc-google-avatar-badge {
+          position: absolute;
+          bottom: -2px;
+          right: -3px;
+          background: #fff;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .tc-name {
+          font-weight: 700;
+          color: #0f172a;
+          font-size: 0.96rem;
+        }
+        .tc-reviewer-badge {
+          font-size: 0.74rem;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-top: 2px;
+        }
+        .tc-guide-star {
+          color: #f97316;
+          font-weight: 800;
+        }
+        .tc-google-source-tag {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .tc-meta-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 10px;
+        }
+        .tc-stars {
+          display: flex;
+          align-items: center;
+          gap: 2px;
+        }
+        .tc-time-ago {
+          font-size: 0.74rem;
+          color: #94a3b8;
+        }
+        .tc-dest-tag {
+          background: rgba(13,148,136,0.08);
+          color: #0f766e;
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 4px 9px;
+          border-radius: 6px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          margin-bottom: 12px;
+          align-self: flex-start;
+        }
+        .tc-review {
+          font-size: 0.88rem;
+          color: #334155;
+          line-height: 1.65;
+          margin-bottom: 16px;
+          flex-grow: 1;
+        }
+        .tc-footer-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 12px;
+          border-top: 1px solid #f1f5f9;
+          margin-top: auto;
+        }
+        .tc-verified-label {
+          font-size: 0.74rem;
+          color: #059669;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .tc-helpful-btn {
+          font-size: 0.74rem;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          background: #f8fafc;
+          padding: 3px 8px;
+          border-radius: 12px;
+          border: 1px solid #f1f5f9;
+        }
+        @media (max-width: 768px) {
+          .google-rating-summary-banner {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .gr-score-block {
+            border-left: none;
+            padding-left: 0;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            width: 100%;
+          }
+          .gr-summary-action {
+            width: 100%;
+          }
+          .btn-outline-google {
+            width: 100%;
+            justify-content: center;
+          }
+        }
 
         /* ─── FINAL CTA ─── */
         .final-cta { background: #fff; padding: var(--sp-20) 0; text-align: center; }
@@ -1145,7 +1588,7 @@ const Home = () => {
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="hero-badge">
-                  ✈️ &nbsp; Premium Travel Experiences Since 2015
+                  ✈️ &nbsp; Premium Travel Experiences Since 2002
                 </div>
 
                 <TypedHeadline count={typed} slogan={currentSlogan} />
@@ -1229,28 +1672,129 @@ const Home = () => {
         </div>
       </div>
 
-      {/* ══ CUSTOMER REVIEWS (directly below the packages) ══ */}
+      {/* ══ CUSTOMER REVIEWS (GOOGLE MY BUSINESS) ══ */}
       {(testLoading || testimonials.length > 0) && (
         <section className="testimonials-section">
           <div className="container">
-            <div className="section-header centered" style={{ marginBottom: 'var(--sp-10)' }}>
+            <div className="section-header centered" style={{ marginBottom: 'var(--sp-6)' }}>
               <FadeUp>
-                <div className="section-eyebrow">Traveller Stories</div>
+                <div className="section-eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <GoogleIcon size={14} /> Google Verified Reviews
+                </div>
                 <h2 className="section-title">
                   Stories From Our <span>Travellers</span>
                 </h2>
               </FadeUp>
             </div>
-            <div className="testimonials-grid">
-              {testLoading
-                ? Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="skeleton" style={{ height: 200, borderRadius: 'var(--r-lg)' }} />
-                  ))
-                : testimonials.slice(0, 6).map((t, i) => (
-                    <FadeUp key={t.id} delay={i * 0.08}>
-                      <TestimonialCard t={t} />
-                    </FadeUp>
+
+            {/* Google Rating Overview Banner */}
+            <FadeUp delay={0.05}>
+              <div className="google-rating-summary-banner">
+                <div className="gr-summary-main">
+                  <div className="gr-google-badge">
+                    <GoogleIcon size={34} />
+                    <div>
+                      <div className="gr-brand-name">Google My Business</div>
+                      <div className="gr-verified-pill">
+                        <CheckCircle2 size={12} color="#059669" /> Verified Business Profile
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="gr-score-block">
+                    <span className="gr-score-number">4.9</span>
+                    <div>
+                      <div className="gr-stars-row">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={16} fill="#fbbc04" color="#fbbc04" />
+                        ))}
+                      </div>
+                      <div className="gr-reviews-count">
+                        Based on <strong>930+ verified reviews</strong> across Karnataka tours
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="gr-summary-action">
+                  <a
+                    href="https://www.google.com/search?q=V-RAJ+Holidays+Viraj+Travels+reviews"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline-google"
+                  >
+                    <GoogleIcon size={16} /> Write a Review
+                  </a>
+                </div>
+              </div>
+            </FadeUp>
+
+            {/* Destination Filter Tabs */}
+            <div className="gr-dest-tabs">
+              {reviewDestTabs.map(tab => {
+                const count = tab.id === 'All' 
+                  ? testimonials.length 
+                  : testimonials.filter(t => t.destinationId === tab.id).length;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    className={`gr-tab-btn ${reviewDestFilter === tab.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setReviewDestFilter(tab.id);
+                      setShowAllReviews(false);
+                    }}
+                  >
+                    <span>{tab.label}</span>
+                    <span className="gr-tab-count">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* In-line Moving Controls & Info */}
+            <div className="gr-marquee-controls">
+              <div className="gr-flow-indicator">
+                <span className="gr-live-dot" /> Auto-moving in 1 line from Left to Right · Hover any card to pause
+              </div>
+              <button
+                type="button"
+                className="gr-pause-toggle-btn"
+                onClick={() => setIsReviewsPaused(prev => !prev)}
+                title={isReviewsPaused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
+              >
+                {isReviewsPaused ? (
+                  <>
+                    <Play size={13} fill="currentColor" /> Resume
+                  </>
+                ) : (
+                  <>
+                    <Pause size={13} fill="currentColor" /> Pause
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* In-Line Horizontal Moving Reviews Track */}
+            <div className="tc-marquee-container">
+              {testLoading ? (
+                <div style={{ display: 'flex', gap: 22, padding: '0 20px' }}>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="skeleton" style={{ width: 360, height: 260, borderRadius: '16px', flexShrink: 0 }} />
                   ))}
+                </div>
+              ) : (
+                <div
+                  className="tc-marquee-track"
+                  style={{
+                    animationPlayState: isReviewsPaused ? 'paused' : 'running'
+                  }}
+                >
+                  {marqueeReviews.map((t, i) => (
+                    <TestimonialCard key={`${t.id}-${i}`} t={t} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -1451,7 +1995,7 @@ const Home = () => {
         <div className="container">
           <div className="stats-band-grid">
             {[
-              { end: 10,   suffix: '+', label: 'Years of Experience'  },
+              { end: 20,   suffix: '+', label: 'Years of Experience'  },
               { end: 5000, suffix: '+', label: 'Happy Travellers'     },
               { end: 100,  suffix: '+', label: 'Destinations Covered' },
               { end: 50,   suffix: '+', label: 'Curated Packages'     },
