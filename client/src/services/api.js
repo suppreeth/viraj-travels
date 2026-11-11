@@ -10,11 +10,11 @@ import { initialData } from '../data/travelData.js';
 
 const ADMIN_KEY = 'virajadmin2025';
 
-// Storage keys (v7 with single Kannadiga names and smooth carousel)
+// Storage keys (v8 with clean in-line moving reviews)
 const STORAGE_LEADS = 'vt_leads';
-const STORAGE_TESTIMONIALS = 'vt_testimonials_v7';
-const STORAGE_PACKAGES = 'vt_packages_v7';
-const STORAGE_DESTINATIONS = 'vt_destinations_v7';
+const STORAGE_TESTIMONIALS = 'vt_testimonials_v8';
+const STORAGE_PACKAGES = 'vt_packages_v8';
+const STORAGE_DESTINATIONS = 'vt_destinations_v8';
 
 // Clean up any stale cached packages or testimonials from previous storage keys
 if (typeof window !== 'undefined' && window.localStorage) {
@@ -32,6 +32,9 @@ if (typeof window !== 'undefined' && window.localStorage) {
     localStorage.removeItem('vt_testimonials_v6');
     localStorage.removeItem('vt_packages_v6');
     localStorage.removeItem('vt_destinations_v6');
+    localStorage.removeItem('vt_testimonials_v7');
+    localStorage.removeItem('vt_packages_v7');
+    localStorage.removeItem('vt_destinations_v7');
   } catch (e) {
     // Ignore storage errors
   }

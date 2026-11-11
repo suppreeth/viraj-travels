@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Plane, ChevronDown } from 'lucide-react';
+import { Menu, X, Plane, ChevronDown, Palette, Check, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme, THEMES } from '../context/ThemeContext';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
+  const themeDropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -17,7 +21,21 @@ const Navbar = () => {
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() => { setMobileOpen(false); }, [location]);
+  useEffect(() => { 
+    setMobileOpen(false); 
+    setThemeOpen(false);
+  }, [location]);
+
+  // Click outside listener for theme dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (themeDropdownRef.current && !themeDropdownRef.current.contains(e.target)) {
+        setThemeOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const solid = scrolled || !isHome;
 
@@ -26,6 +44,30 @@ const Navbar = () => {
     { to: '/packages', label: 'Tour Packages' },
     { to: '/destinations', label: 'Destinations' },
     { to: '/about', label: 'About Us' },
+  ];
+
+  const themeOptions = [
+    {
+      id: THEMES.MIDNIGHT_LIME,
+      name: 'Midnight Teal & Neon Lime',
+      subtitle: 'Deep midnight teal, soft pearl & vibrant neon lime',
+      badge: 'Luxury Dark',
+      colors: ['#06131e', '#f8fafc', '#bbf43d'],
+    },
+    {
+      id: THEMES.GRAPHITE_YELLOW,
+      name: 'Deep Graphite & Sunshine Yellow',
+      subtitle: 'Deep graphite, soft cloud white & sunshine yellow',
+      badge: 'Radiant Dark',
+      colors: ['#101216', '#f8fafc', '#facc15'],
+    },
+    {
+      id: THEMES.CLASSIC,
+      name: 'Classic Coastal',
+      subtitle: 'Crisp coastal blue, deep navy & warm gold',
+      badge: 'Original Light',
+      colors: ['#ffffff', '#0c1e34', '#0d9488'],
+    },
   ];
 
   return (
@@ -50,6 +92,10 @@ const Navbar = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          width: 100%;
+          max-width: 1680px;
+          margin: 0 auto;
+          padding: 0 var(--sp-8);
         }
         .nav-logo {
           display: flex;
@@ -141,6 +187,335 @@ const Navbar = () => {
           box-shadow: 0 6px 20px rgba(14,110,184,0.45);
           background: ${solid ? '' : 'rgba(255,255,255,0.2) !important'};
         }
+
+        /* ─── THEME DROPDOWN BUTTON & PANEL ─── */
+        .theme-selector-wrap {
+          position: relative;
+          margin-left: 8px;
+        }
+        .theme-trigger-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 0.55rem 0.95rem;
+          border-radius: var(--r-full);
+          font-weight: 600;
+          font-size: 0.86rem;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          border: 1.5px solid transparent;
+          background: ${solid ? 'var(--gray-100)' : 'rgba(255,255,255,0.18)'};
+          color: ${solid ? 'var(--navy)' : '#ffffff'};
+          backdrop-filter: blur(10px);
+        }
+        .theme-trigger-btn:hover {
+          transform: translateY(-1px);
+          background: ${solid ? 'var(--gray-200)' : 'rgba(255,255,255,0.28)'};
+        }
+        .theme-trigger-btn.is-lime {
+          background: rgba(187, 244, 61, 0.14) !important;
+          color: #bbf43d !important;
+          border-color: rgba(187, 244, 61, 0.4) !important;
+          box-shadow: 0 0 16px rgba(187, 244, 61, 0.2);
+        }
+        .theme-trigger-btn.is-lime:hover {
+          background: rgba(187, 244, 61, 0.24) !important;
+          border-color: #bbf43d !important;
+          box-shadow: 0 0 22px rgba(187, 244, 61, 0.35);
+        }
+        .theme-trigger-btn.is-yellow {
+          background: rgba(250, 204, 21, 0.14) !important;
+          color: #facc15 !important;
+          border-color: rgba(250, 204, 21, 0.4) !important;
+          box-shadow: 0 0 16px rgba(250, 204, 21, 0.2);
+        }
+        .theme-trigger-btn.is-yellow:hover {
+          background: rgba(250, 204, 21, 0.24) !important;
+          border-color: #facc15 !important;
+          box-shadow: 0 0 22px rgba(250, 204, 21, 0.35);
+        }
+        .theme-chevron {
+          transition: transform 0.2s ease;
+        }
+        .theme-chevron.rotated {
+          transform: rotate(180deg);
+        }
+
+        .theme-dropdown-panel {
+          position: absolute;
+          top: calc(100% + 10px);
+          right: 0;
+          width: 320px;
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 14px;
+          box-shadow: 0 16px 45px rgba(12, 26, 46, 0.18);
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          z-index: 1000;
+        }
+        .theme-dropdown-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 10px;
+          margin-bottom: 10px;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .theme-header-title {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          color: #64748b;
+        }
+        .theme-header-hint {
+          font-size: 0.72rem;
+          color: #94a3b8;
+        }
+        .theme-options-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .theme-option-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          padding: 12px;
+          border-radius: 12px;
+          border: 1.5px solid #e2e8f0;
+          background: #f8fafc;
+          text-align: left;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .theme-option-item:hover {
+          border-color: #cbd5e1;
+          transform: translateY(-1px);
+        }
+        .theme-option-item.active {
+          border-color: var(--teal);
+          background: rgba(13, 148, 136, 0.06);
+          box-shadow: 0 4px 14px rgba(13, 148, 136, 0.12);
+        }
+        .theme-item-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .theme-item-name {
+          font-size: 0.88rem;
+          font-weight: 700;
+          color: #0f172a;
+        }
+        .theme-item-badge {
+          font-size: 0.68rem;
+          font-weight: 700;
+          padding: 2px 7px;
+          border-radius: 999px;
+          background: #e2e8f0;
+          color: #475569;
+          text-transform: uppercase;
+        }
+        .theme-item-sub {
+          font-size: 0.76rem;
+          color: #64748b;
+          line-height: 1.35;
+        }
+        .theme-swatch-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 4px;
+          padding-top: 6px;
+        }
+        .theme-swatches {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .theme-color-dot {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          border: 1.5px solid rgba(0,0,0,0.15);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .theme-active-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #0d9488;
+        }
+        .theme-select-hint {
+          font-size: 0.72rem;
+          color: #94a3b8;
+          font-weight: 600;
+        }
+
+        /* Dark Theme overrides for the panel */
+        [data-theme="midnight-lime"] .theme-dropdown-panel {
+          background: #091a27 !important;
+          border-color: rgba(187, 244, 61, 0.28) !important;
+          box-shadow: 0 16px 50px rgba(0, 0, 0, 0.75), 0 0 25px rgba(187, 244, 61, 0.15) !important;
+        }
+        [data-theme="midnight-lime"] .theme-dropdown-header {
+          border-bottom-color: rgba(187, 244, 61, 0.15) !important;
+        }
+        [data-theme="midnight-lime"] .theme-header-title {
+          color: #bbf43d !important;
+        }
+        [data-theme="midnight-lime"] .theme-option-item {
+          background: #0d2234 !important;
+          border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        [data-theme="midnight-lime"] .theme-option-item:hover {
+          border-color: rgba(187, 244, 61, 0.4) !important;
+          background: #112a40 !important;
+        }
+        [data-theme="midnight-lime"] .theme-option-item.active {
+          border-color: #bbf43d !important;
+          background: rgba(187, 244, 61, 0.12) !important;
+          box-shadow: 0 0 20px rgba(187, 244, 61, 0.18) !important;
+        }
+        [data-theme="midnight-lime"] .theme-item-name {
+          color: #f8fafc !important;
+        }
+        [data-theme="midnight-lime"] .theme-item-badge {
+          background: rgba(187, 244, 61, 0.15) !important;
+          color: #bbf43d !important;
+        }
+        [data-theme="midnight-lime"] .theme-item-sub {
+          color: #94a3b8 !important;
+        }
+        [data-theme="midnight-lime"] .theme-active-tag {
+          color: #bbf43d !important;
+        }
+        [data-theme="midnight-lime"] .theme-color-dot {
+          border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Graphite Yellow Theme overrides for the panel */
+        [data-theme="graphite-yellow"] .theme-dropdown-panel {
+          background: #16191f !important;
+          border-color: rgba(250, 204, 21, 0.3) !important;
+          box-shadow: 0 16px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(250, 204, 21, 0.15) !important;
+        }
+        [data-theme="graphite-yellow"] .theme-dropdown-header {
+          border-bottom-color: rgba(250, 204, 21, 0.15) !important;
+        }
+        [data-theme="graphite-yellow"] .theme-header-title {
+          color: #facc15 !important;
+        }
+        [data-theme="graphite-yellow"] .theme-option-item {
+          background: #1c2027 !important;
+          border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-theme="graphite-yellow"] .theme-option-item:hover {
+          border-color: rgba(250, 204, 21, 0.45) !important;
+          background: #242932 !important;
+        }
+        [data-theme="graphite-yellow"] .theme-option-item.active {
+          border-color: #facc15 !important;
+          background: rgba(250, 204, 21, 0.12) !important;
+          box-shadow: 0 0 20px rgba(250, 204, 21, 0.18) !important;
+        }
+        [data-theme="graphite-yellow"] .theme-item-name {
+          color: #f8fafc !important;
+        }
+        [data-theme="graphite-yellow"] .theme-item-badge {
+          background: rgba(250, 204, 21, 0.15) !important;
+          color: #facc15 !important;
+        }
+        [data-theme="graphite-yellow"] .theme-item-sub {
+          color: #94a3b8 !important;
+        }
+        [data-theme="graphite-yellow"] .theme-active-tag {
+          color: #facc15 !important;
+        }
+        [data-theme="graphite-yellow"] .theme-color-dot {
+          border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Mobile theme selector */
+        .mobile-theme-section {
+          margin-top: var(--sp-6);
+          padding-top: var(--sp-4);
+          border-top: 1px solid var(--gray-200);
+        }
+        .mobile-theme-header {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--gray-500);
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          margin-bottom: var(--sp-3);
+        }
+        .mobile-theme-options {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .mobile-theme-btn {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 12px;
+          border-radius: var(--r-md);
+          border: 1.5px solid var(--gray-200);
+          background: var(--gray-50);
+          font-size: 0.88rem;
+          cursor: pointer;
+          color: var(--gray-800);
+          transition: all 0.2s;
+        }
+        .mobile-theme-btn.active {
+          border-color: var(--teal);
+          background: rgba(13, 148, 136, 0.08);
+          color: var(--teal);
+          font-weight: 600;
+        }
+        [data-theme="midnight-lime"] .mobile-theme-section {
+          border-top-color: rgba(187, 244, 61, 0.15) !important;
+        }
+        [data-theme="midnight-lime"] .mobile-theme-header {
+          color: #bbf43d !important;
+        }
+        [data-theme="midnight-lime"] .mobile-theme-btn {
+          background: #0d2234 !important;
+          border-color: rgba(255, 255, 255, 0.1) !important;
+          color: #cbd5e1 !important;
+        }
+        [data-theme="midnight-lime"] .mobile-theme-btn.active {
+          border-color: #bbf43d !important;
+          background: rgba(187, 244, 61, 0.12) !important;
+          color: #bbf43d !important;
+        }
+
+        [data-theme="graphite-yellow"] .mobile-theme-section {
+          border-top-color: rgba(250, 204, 21, 0.15) !important;
+        }
+        [data-theme="graphite-yellow"] .mobile-theme-header {
+          color: #facc15 !important;
+        }
+        [data-theme="graphite-yellow"] .mobile-theme-btn {
+          background: #1c2027 !important;
+          border-color: rgba(255, 255, 255, 0.08) !important;
+          color: #cbd5e1 !important;
+        }
+        [data-theme="graphite-yellow"] .mobile-theme-btn.active {
+          border-color: #facc15 !important;
+          background: rgba(250, 204, 21, 0.12) !important;
+          color: #facc15 !important;
+        }
+
         .hamburger {
           background: none;
           border: none;
@@ -218,6 +593,7 @@ const Navbar = () => {
           }
           .nav-inner {
             width: 100%;
+            padding: 0 var(--sp-4);
           }
           .nav-logo-badge {
             height: 38px;
@@ -232,7 +608,7 @@ const Navbar = () => {
       `}</style>
 
       <nav className={`navbar ${solid ? 'navbar-solid' : 'navbar-transparent'}`}>
-        <div className="container nav-inner">
+        <div className="nav-inner">
           <Link to="/" className="nav-logo">
             <div className="nav-logo-badge">
               <img
@@ -260,9 +636,87 @@ const Navbar = () => {
                 {label}
               </NavLink>
             ))}
+            
             <Link to="/contact" className="nav-link nav-cta" style={{ marginLeft: 'var(--sp-2)' }}>
               Plan Your Trip
             </Link>
+
+            {/* ─── THEMES OPTION NEXT TO PLAN YOUR TRIP ─── */}
+            <div className="theme-selector-wrap" ref={themeDropdownRef}>
+              <button
+                type="button"
+                className={`theme-trigger-btn ${theme === THEMES.MIDNIGHT_LIME ? 'is-lime' : ''} ${theme === THEMES.GRAPHITE_YELLOW ? 'is-yellow' : ''} ${themeOpen ? 'open' : ''}`}
+                onClick={() => setThemeOpen(!themeOpen)}
+                aria-label="Website Themes"
+                title="Change Website Theme"
+              >
+                <Palette size={16} />
+                <span>Themes</span>
+                <ChevronDown size={14} className={`theme-chevron ${themeOpen ? 'rotated' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {themeOpen && (
+                  <motion.div
+                    className="theme-dropdown-panel"
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                  >
+                    <div className="theme-dropdown-header">
+                      <div className="theme-header-title">
+                        <Sparkles size={14} />
+                        <span>WEBSITE THEMES</span>
+                      </div>
+                      <span className="theme-header-hint">Choose aesthetic</span>
+                    </div>
+
+                    <div className="theme-options-list">
+                      {themeOptions.map((opt) => {
+                        const isActive = theme === opt.id;
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            className={`theme-option-item ${isActive ? 'active' : ''}`}
+                            onClick={() => {
+                              setTheme(opt.id);
+                              setThemeOpen(false);
+                            }}
+                          >
+                            <div className="theme-item-top">
+                              <span className="theme-item-name">{opt.name}</span>
+                              <span className="theme-item-badge">{opt.badge}</span>
+                            </div>
+                            <div className="theme-item-sub">{opt.subtitle}</div>
+                            <div className="theme-swatch-row">
+                              <div className="theme-swatches">
+                                {opt.colors.map((c, i) => (
+                                  <span
+                                    key={i}
+                                    className="theme-color-dot"
+                                    style={{ backgroundColor: c }}
+                                    title={c}
+                                  />
+                                ))}
+                              </div>
+                              {isActive ? (
+                                <span className="theme-active-tag">
+                                  <Check size={13} strokeWidth={3} /> Active
+                                </span>
+                              ) : (
+                                <span className="theme-select-hint">Select</span>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           <button className="hamburger" onClick={() => setMobileOpen(true)} aria-label="Open menu">
@@ -329,6 +783,40 @@ const Navbar = () => {
               >
                 Plan Your Trip
               </Link>
+
+              {/* Mobile Themes Section */}
+              <div className="mobile-theme-section">
+                <div className="mobile-theme-header">
+                  <Palette size={16} />
+                  <span>Choose Theme</span>
+                </div>
+                <div className="mobile-theme-options">
+                  {themeOptions.map((opt) => {
+                    const isActive = theme === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        className={`mobile-theme-btn ${isActive ? 'active' : ''}`}
+                        onClick={() => {
+                          setTheme(opt.id);
+                          setMobileOpen(false);
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div className="theme-swatches" style={{ gap: 4 }}>
+                            {opt.colors.map((c, i) => (
+                              <span key={i} className="theme-color-dot" style={{ backgroundColor: c }} />
+                            ))}
+                          </div>
+                          <span style={{ fontWeight: 600 }}>{opt.name}</span>
+                        </div>
+                        {isActive && <Check size={16} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </motion.div>
           </>
         )}
