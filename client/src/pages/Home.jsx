@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Search, MapPin, Compass, Clock, Star, ArrowRight,
-  CheckCircle2, Award, Globe, Zap, Shield, MessageSquare, ThumbsUp,
-  Pause, Play
+  CheckCircle2, Award, Globe, Zap, Shield, MessageSquare, ThumbsUp
 } from 'lucide-react';
 import PackageCard from '../components/PackageCard';
 import { getFeaturedPackages, getDestinations, getTestimonials } from '../services/api';
@@ -262,8 +261,6 @@ const Home = () => {
   const [packages,     setPackages]     = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
-  const [reviewDestFilter, setReviewDestFilter] = useState('All');
-  const [isReviewsPaused, setIsReviewsPaused] = useState(false);
   const [pkgLoading,   setPkgLoading]   = useState(true);
   const [destLoading,  setDestLoading]  = useState(true);
   const [pkgError,     setPkgError]     = useState(null);
@@ -390,43 +387,19 @@ const Home = () => {
   ];
   const displayDests = destinations.length > 0 ? destinations.slice(0, 6) : staticDestinations;
 
-  const reviewDestTabs = [
-    { id: 'All', label: 'All Reviews' },
-    { id: 'dest-coorg', label: 'Coorg & Madikeri' },
-    { id: 'dest-coastal-karnataka', label: 'Gokarna & Coastal' },
-    { id: 'dest-chikkamagaluru', label: 'Chikkamagaluru' },
-    { id: 'dest-mysore', label: 'Mysore & Srirangapatna' },
-    { id: 'dest-munnar-kerala', label: 'Munnar & Wayanad' },
-    { id: 'dest-sakleshpur-chikmagalur', label: 'Sakleshpur' },
-  ];
-
-  const filteredTestimonials = reviewDestFilter === 'All'
-    ? testimonials
-    : testimonials.filter(t => t.destinationId === reviewDestFilter);
-
   // Duplicate cards so marquee seamlessly loops in 1 continuous line from left to right
   const marqueeReviews = React.useMemo(() => {
-    if (!filteredTestimonials || filteredTestimonials.length === 0) return [];
-    if (filteredTestimonials.length <= 4) {
+    if (!testimonials || testimonials.length === 0) return [];
+    if (testimonials.length <= 4) {
       return [
-        ...filteredTestimonials,
-        ...filteredTestimonials,
-        ...filteredTestimonials,
-        ...filteredTestimonials,
-        ...filteredTestimonials,
-        ...filteredTestimonials
+        ...testimonials,
+        ...testimonials,
+        ...testimonials,
+        ...testimonials
       ];
     }
-    if (filteredTestimonials.length <= 8) {
-      return [
-        ...filteredTestimonials,
-        ...filteredTestimonials,
-        ...filteredTestimonials,
-        ...filteredTestimonials
-      ];
-    }
-    return [...filteredTestimonials, ...filteredTestimonials];
-  }, [filteredTestimonials]);
+    return [...testimonials, ...testimonials];
+  }, [testimonials]);
 
   return (
     <div className="home-page">
@@ -474,7 +447,8 @@ const Home = () => {
           z-index: 1;
           pointer-events: none;
         }
-        .hero-body {
+        .hero-body,
+        .hero-body-wide {
           position: relative;
           z-index: 10;
           flex: 1;
@@ -483,8 +457,8 @@ const Home = () => {
           align-items: center;
           justify-content: center;
           text-align: center;
-          padding: 120px var(--sp-6) 64px;
-          max-width: 900px;
+          padding: 120px var(--sp-8) 64px;
+          max-width: 1400px;
           margin: 0 auto;
           width: 100%;
         }
@@ -496,9 +470,9 @@ const Home = () => {
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
           border: 1px solid rgba(255, 255, 255, 0.45);
-          padding: 0.42rem 1.15rem;
+          padding: 0.46rem 1.3rem;
           border-radius: var(--r-full);
-          font-size: 0.8rem;
+          font-size: 0.82rem;
           font-weight: 700;
           color: #fff;
           letter-spacing: 0.08em;
@@ -513,81 +487,127 @@ const Home = () => {
         }
         .hero-h1 {
           font-family: 'Playfair Display', var(--font-serif);
-          font-size: clamp(2.8rem, 6vw, 5.2rem);
-          font-weight: 700;
+          font-size: clamp(3.2rem, 6.2vw, 5.8rem);
+          font-weight: 800;
           color: #ffffff;
-          line-height: 1.15;
-          letter-spacing: -0.01em;
+          line-height: 1.12;
+          letter-spacing: -0.02em;
           margin-bottom: var(--sp-5);
-          text-shadow: 0 3px 20px rgba(10, 28, 50, 0.6);
+          text-shadow: 0 4px 28px rgba(0, 0, 0, 0.65);
+          max-width: 1180px;
+          width: 100%;
         }
         .hero-h1 em {
           font-style: italic;
           color: #fcd34d;
           display: block;
-          margin-top: 0.14em;
-          text-shadow: 0 3px 20px rgba(10, 28, 50, 0.55);
+          margin-top: 0.12em;
+          text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
         }
         .hero-desc {
-          font-size: clamp(0.98rem, 1.8vw, 1.18rem);
+          font-size: clamp(1.05rem, 1.6vw, 1.25rem);
           color: rgba(255,255,255,0.95);
-          line-height: 1.8;
-          max-width: 580px;
+          line-height: 1.75;
+          max-width: 820px;
           margin: 0 auto;
           text-shadow: 0 2px 14px rgba(10, 28, 50, 0.6);
         }
 
         /* packages shown inside the hero */
-        .hero-packages {
+        .hero-packages,
+        .hero-packages-wide {
           position: relative;
           z-index: 10;
-          padding-top: 100px;
-          padding-bottom: 112px;
+          width: 100%;
+          max-width: 1680px;
+          margin: 0 auto;
+          padding: 105px var(--sp-8) 60px;
+          display: flex;
+          flex-direction: column;
         }
-        .hero-packages .section-eyebrow { color: #5eead4; }
-        .hero-packages .section-eyebrow::before { background: #5eead4; }
-        .hero-packages .section-title {
+        .hero-packages .section-eyebrow,
+        .hero-packages-wide .section-eyebrow {
+          color: #5eead4;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+        .hero-packages .section-eyebrow::before,
+        .hero-packages-wide .section-eyebrow::before {
+          content: '';
+          display: inline-block;
+          width: 24px;
+          height: 2px;
+          background: #5eead4;
+          border-radius: 2px;
+        }
+        .hero-packages .section-title,
+        .hero-packages-wide .section-title {
           color: #fff;
-          font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+          font-size: clamp(2rem, 3.6vw, 3.4rem);
+          font-weight: 800;
+          line-height: 1.15;
           text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+          margin: 0;
         }
-        .hero-packages .section-title span { color: #fcd34d; }
-        .hero-packages .section-subtitle {
+        .hero-packages .section-title span,
+        .hero-packages-wide .section-title span { color: #fcd34d; }
+        .hero-packages .section-subtitle,
+        .hero-packages-wide .section-subtitle {
           color: rgba(255,255,255,0.9);
           text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+          font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+          line-height: 1.65;
+          margin-top: 10px;
+          max-width: 780px;
         }
-        .hero-packages .pkg-grid {
+        .hero-packages .pkg-grid,
+        .hero-packages-wide .pkg-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: var(--sp-5);
-          max-width: 1240px;
+          gap: 22px;
+          width: 100%;
+          max-width: 100%;
           margin: 0 auto;
         }
-        .hero-packages .pkg-card {
+        .hero-packages .pkg-card,
+        .hero-packages-wide .pkg-card {
+          min-height: 480px;
           box-shadow: 0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .hero-packages .pkg-card:hover {
+        .hero-packages .pkg-card:hover,
+        .hero-packages-wide .pkg-card:hover {
           transform: translateY(-6px);
           box-shadow: 0 24px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.2);
         }
-        .hero-packages .skeleton {
+        .hero-packages .skeleton,
+        .hero-packages-wide .skeleton {
           background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 75%);
           background-size: 800px 100%;
         }
         .hero-packages .error-state,
-        .hero-packages .error-state h3 { color: rgba(255,255,255,0.85); }
+        .hero-packages-wide .error-state,
+        .hero-packages .error-state h3,
+        .hero-packages-wide .error-state h3 { color: rgba(255,255,255,0.85); }
 
         /* ─── SEARCH PANEL ─── */
         .search-panel-wrap {
           position: relative;
           z-index: 20;
-          padding: 0 var(--sp-6);
-          margin-top: -50px;
+          padding: 0 var(--sp-8);
+          margin-top: -46px;
           margin-bottom: var(--sp-4);
+          width: 100%;
         }
         .search-panel-inner {
-          max-width: 1040px;
+          max-width: 1360px;
+          width: 100%;
           margin: 0 auto;
         }
         .hs-form {
@@ -595,59 +615,63 @@ const Home = () => {
           border-radius: var(--r-xl);
           box-shadow: 0 24px 64px rgba(10,20,40,0.22);
           border: 1px solid var(--gray-100);
-          padding: var(--sp-5) var(--sp-6);
+          padding: 1.15rem 1.85rem;
           display: flex;
-          align-items: flex-end;
+          align-items: center;
+          width: 100%;
           gap: 0;
         }
         .hs-field {
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: var(--sp-2);
+          gap: 6px;
           padding: 0 var(--sp-5);
           min-width: 0;
         }
-        .hs-field:first-child { padding-left: 0; }
+        .hs-field:first-child { 
+          padding-left: 0; 
+          flex: 1.35;
+        }
         .hs-label {
-          font-size: 0.72rem;
+          font-size: 0.74rem;
           font-weight: 700;
           color: var(--gray-400);
           text-transform: uppercase;
           letter-spacing: 0.08em;
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 6px;
           white-space: nowrap;
         }
         .hs-input {
           border: none;
           background: transparent;
-          font-size: 0.95rem;
+          font-size: 0.98rem;
           color: var(--navy);
-          font-weight: 500;
-          padding: 0.2rem 0;
+          font-weight: 600;
+          padding: 0.25rem 0;
           width: 100%;
         }
         .hs-input:focus { outline: none; }
         .hs-input::placeholder { color: var(--gray-400); font-weight: 400; }
         .hs-sep {
           width: 1px;
-          height: 36px;
+          height: 42px;
           background: var(--gray-200);
           flex-shrink: 0;
-          align-self: flex-end;
-          margin-bottom: 6px;
+          align-self: center;
         }
         .hs-btn {
-          display: flex;
+          display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: var(--sp-2);
-          padding: 0.85rem 1.75rem;
+          padding: 0.95rem 2rem;
           background: linear-gradient(135deg, var(--blue), var(--teal));
           color: #fff;
           border: none;
-          border-radius: var(--r-lg);
+          border-radius: var(--r-full);
           font-weight: 700;
           font-size: 0.95rem;
           cursor: pointer;
@@ -1036,13 +1060,13 @@ const Home = () => {
           background: #ffffff;
           border: 1px solid #e2e8f0;
           border-radius: 16px;
-          padding: 16px 24px;
-          margin-bottom: var(--sp-8);
+          padding: 16px 32px;
+          margin: 0 auto var(--sp-8);
+          max-width: fit-content;
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
           box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-          gap: 20px;
         }
         .gr-summary-main {
           display: flex;
@@ -1091,122 +1115,6 @@ const Home = () => {
         .gr-reviews-count {
           font-size: 0.8rem;
           color: #64748b;
-        }
-        .btn-outline-google {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          border: 1.5px solid #cbd5e1;
-          color: #334155;
-          font-size: 0.86rem;
-          font-weight: 600;
-          padding: 9px 18px;
-          border-radius: 10px;
-          background: #fff;
-          text-decoration: none;
-          transition: all 0.2s ease;
-          white-space: nowrap;
-        }
-        .btn-outline-google:hover {
-          border-color: #4285F4;
-          color: #1e3a8a;
-          box-shadow: 0 4px 12px rgba(66,133,244,0.12);
-        }
-
-        .gr-dest-tabs {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          overflow-x: auto;
-          padding: 4px 4px 16px 4px;
-          margin-bottom: var(--sp-6);
-          scrollbar-width: thin;
-        }
-        .gr-tab-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 16px;
-          border-radius: 9999px;
-          border: 1px solid #e2e8f0;
-          background: #ffffff;
-          color: #475569;
-          font-size: 0.84rem;
-          font-weight: 600;
-          cursor: pointer;
-          white-space: nowrap;
-          transition: all 0.2s ease;
-        }
-        .gr-tab-btn:hover {
-          border-color: #0d9488;
-          color: #0f766e;
-          background: #f0fdfa;
-        }
-        .gr-tab-btn.active {
-          background: var(--navy, #0c1e34);
-          color: #ffffff;
-          border-color: var(--navy, #0c1e34);
-          box-shadow: 0 4px 12px rgba(12, 30, 52, 0.15);
-        }
-        .gr-tab-count {
-          font-size: 0.72rem;
-          padding: 2px 7px;
-          border-radius: 9999px;
-          background: rgba(0,0,0,0.06);
-          color: inherit;
-        }
-        .gr-tab-btn.active .gr-tab-count {
-          background: rgba(255,255,255,0.25);
-          color: #ffffff;
-        }
-        .gr-marquee-controls {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: var(--sp-4);
-          padding: 0 4px;
-          flex-wrap: wrap;
-          gap: 12px;
-        }
-        .gr-flow-indicator {
-          font-size: 0.82rem;
-          color: #64748b;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-weight: 500;
-        }
-        .gr-live-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: #10b981;
-          display: inline-block;
-          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-          animation: pulseDot 2s infinite;
-        }
-        @keyframes pulseDot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(0.85); }
-        }
-        .gr-pause-toggle-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          border-radius: 9999px;
-          border: 1px solid #cbd5e1;
-          background: #ffffff;
-          color: #334155;
-          font-size: 0.78rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        .gr-pause-toggle-btn:hover {
-          border-color: #0d9488;
-          color: #0f766e;
-          background: #f0fdfa;
         }
 
         /* ─── IN-LINE MOVING LEFT-TO-RIGHT MARQUEE ─── */
@@ -1405,13 +1313,6 @@ const Home = () => {
             border-top: 1px solid #e2e8f0;
             width: 100%;
           }
-          .gr-summary-action {
-            width: 100%;
-          }
-          .btn-outline-google {
-            width: 100%;
-            justify-content: center;
-          }
         }
 
         /* ─── FINAL CTA ─── */
@@ -1452,18 +1353,24 @@ const Home = () => {
           .hero-scene {
             width: 100%;
           }
-          .hero-body { padding: 80px var(--sp-4) 36px; }
-          .hero-packages {
+          .hero-body,
+          .hero-body-wide { padding: 80px var(--sp-4) 36px; }
+          .hero-packages,
+          .hero-packages-wide {
             padding-top: 72px;
             padding-bottom: 50px;
+            padding-left: var(--sp-4);
+            padding-right: var(--sp-4);
             width: 100%;
           }
-          .hero-packages .section-title {
+          .hero-packages .section-title,
+          .hero-packages-wide .section-title {
             font-size: 1.55rem;
             line-height: 1.25;
             word-break: break-word;
           }
-          .hero-packages .section-subtitle {
+          .hero-packages .section-subtitle,
+          .hero-packages-wide .section-subtitle {
             font-size: 0.9rem;
             line-height: 1.6;
           }
@@ -1528,7 +1435,8 @@ const Home = () => {
           }
           .search-panel-wrap { margin-top: -24px; padding: 0 var(--sp-4); }
           .pkg-grid { grid-template-columns: 1fr; width: 100%; }
-          .hero-packages .pkg-grid { 
+          .hero-packages .pkg-grid,
+          .hero-packages-wide .pkg-grid { 
             grid-template-columns: 1fr; 
             gap: var(--sp-4);
             width: 100%;
@@ -1544,19 +1452,26 @@ const Home = () => {
             min-height: auto;
             overflow: visible;
           }
-          .hero-body { padding: 74px var(--sp-3) 28px; }
-          .hero-packages {
+          .hero-body,
+          .hero-body-wide { padding: 74px var(--sp-3) 28px; }
+          .hero-packages,
+          .hero-packages-wide {
             padding-top: 64px;
             padding-bottom: 40px;
+            padding-left: var(--sp-3);
+            padding-right: var(--sp-3);
           }
-          .hero-packages .section-title {
+          .hero-packages .section-title,
+          .hero-packages-wide .section-title {
             font-size: 1.38rem;
             line-height: 1.25;
           }
-          .hero-packages .section-subtitle {
+          .hero-packages .section-subtitle,
+          .hero-packages-wide .section-subtitle {
             font-size: 0.84rem;
           }
-          .hero-packages .section-eyebrow {
+          .hero-packages .section-eyebrow,
+          .hero-packages-wide .section-eyebrow {
             font-size: 0.74rem;
           }
           .pkg-header .btn {
@@ -1581,7 +1496,7 @@ const Home = () => {
             {phase === 'intro' ? (
               <motion.div
                 key="intro"
-                className="hero-body"
+                className="hero-body-wide"
                 initial={{ opacity: 0, y: 22 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -1601,14 +1516,14 @@ const Home = () => {
             ) : (
               <motion.div
                 key="packages"
-                className="container hero-packages"
+                className="hero-packages-wide"
                 initial={{ opacity: 0, y: 24, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -20, scale: 0.98 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="pkg-header">
-                  <div className="pkg-header-title-box" style={{ minHeight: 120 }}>
+                  <div className="pkg-header-title-box" style={{ minHeight: 110 }}>
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={slideIndex}
@@ -1621,13 +1536,13 @@ const Home = () => {
                         <h2 className="section-title">
                           {currentSlide.title} <span>{currentSlide.highlight}</span>
                         </h2>
-                        <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 480 }}>
+                        <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 780 }}>
                           {currentSlide.subtitle}
                         </p>
                       </motion.div>
                     </AnimatePresence>
                   </div>
-                  <Link to="/packages" className="btn btn-outline" style={{ alignSelf: 'flex-start', marginTop: 10 }}>
+                  <Link to="/packages" className="btn btn-outline" style={{ alignSelf: 'flex-end', marginBottom: 8, whiteSpace: 'nowrap' }}>
                     View All Packages <ArrowRight size={16} />
                   </Link>
                 </div>
@@ -1715,65 +1630,8 @@ const Home = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="gr-summary-action">
-                  <a
-                    href="https://www.google.com/search?q=V-RAJ+Holidays+Viraj+Travels+reviews"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-outline-google"
-                  >
-                    <GoogleIcon size={16} /> Write a Review
-                  </a>
-                </div>
               </div>
             </FadeUp>
-
-            {/* Destination Filter Tabs */}
-            <div className="gr-dest-tabs">
-              {reviewDestTabs.map(tab => {
-                const count = tab.id === 'All' 
-                  ? testimonials.length 
-                  : testimonials.filter(t => t.destinationId === tab.id).length;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    className={`gr-tab-btn ${reviewDestFilter === tab.id ? 'active' : ''}`}
-                    onClick={() => {
-                      setReviewDestFilter(tab.id);
-                      setShowAllReviews(false);
-                    }}
-                  >
-                    <span>{tab.label}</span>
-                    <span className="gr-tab-count">{count}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* In-line Moving Controls & Info */}
-            <div className="gr-marquee-controls">
-              <div className="gr-flow-indicator">
-                <span className="gr-live-dot" /> Auto-moving in 1 line from Left to Right · Hover any card to pause
-              </div>
-              <button
-                type="button"
-                className="gr-pause-toggle-btn"
-                onClick={() => setIsReviewsPaused(prev => !prev)}
-                title={isReviewsPaused ? 'Resume auto-scroll' : 'Pause auto-scroll'}
-              >
-                {isReviewsPaused ? (
-                  <>
-                    <Play size={13} fill="currentColor" /> Resume
-                  </>
-                ) : (
-                  <>
-                    <Pause size={13} fill="currentColor" /> Pause
-                  </>
-                )}
-              </button>
-            </div>
 
             {/* In-Line Horizontal Moving Reviews Track */}
             <div className="tc-marquee-container">
@@ -1784,12 +1642,7 @@ const Home = () => {
                   ))}
                 </div>
               ) : (
-                <div
-                  className="tc-marquee-track"
-                  style={{
-                    animationPlayState: isReviewsPaused ? 'paused' : 'running'
-                  }}
-                >
+                <div className="tc-marquee-track">
                   {marqueeReviews.map((t, i) => (
                     <TestimonialCard key={`${t.id}-${i}`} t={t} />
                   ))}
