@@ -237,23 +237,57 @@
 [data-theme="midnight-lime"] .hero-desc {
   color: #cbd5e1 !important;
 }
-[data-theme="midnight-lime"] .hero-packages-wide .section-title span,
-[data-theme="midnight-lime"] .hero-packages .section-title span {
+/* Featured packages section in midnight-lime */
+[data-theme="midnight-lime"] .featured-packages-section {
+  background: #06131e !important;
+}
+[data-theme="midnight-lime"] .featured-packages-section::before {
+  background: radial-gradient(circle at 50% 0%, rgba(187, 244, 61, 0.05) 0%, transparent 70%) !important;
+}
+[data-theme="midnight-lime"] .featured-packages-section .section-title {
+  color: #f8fafc !important;
+}
+[data-theme="midnight-lime"] .featured-packages-section .section-title span {
   color: #bbf43d !important;
   text-shadow: 0 0 25px rgba(187, 244, 61, 0.35);
 }
-[data-theme="midnight-lime"] .hero-packages-wide .section-eyebrow,
-[data-theme="midnight-lime"] .hero-packages .section-eyebrow {
+[data-theme="midnight-lime"] .featured-packages-section .section-eyebrow {
   color: #bbf43d !important;
 }
-[data-theme="midnight-lime"] .hero-packages-wide .section-eyebrow::before,
-[data-theme="midnight-lime"] .hero-packages .section-eyebrow::before {
+[data-theme="midnight-lime"] .featured-packages-section .section-eyebrow::before {
   background: #bbf43d !important;
   box-shadow: 0 0 10px #bbf43d;
 }
-[data-theme="midnight-lime"] .hero-packages-wide .section-subtitle,
-[data-theme="midnight-lime"] .hero-packages .section-subtitle {
+[data-theme="midnight-lime"] .featured-packages-section .section-subtitle {
+  color: #94a3b8 !important;
+}
+[data-theme="midnight-lime"] .pkg-marquee-hint {
+  background: #0b1f2f !important;
+  border-color: rgba(187, 244, 61, 0.25) !important;
   color: #cbd5e1 !important;
+}
+[data-theme="midnight-lime"] .pkg-live-dot {
+  background: #bbf43d !important;
+  box-shadow: 0 0 0 3px rgba(187, 244, 61, 0.3) !important;
+}
+[data-theme="midnight-lime"] .featured-packages-section .btn-outline {
+  border-color: rgba(187, 244, 61, 0.45) !important;
+  color: #bbf43d !important;
+  background: rgba(187, 244, 61, 0.06) !important;
+}
+[data-theme="midnight-lime"] .featured-packages-section .btn-outline:hover {
+  background: #bbf43d !important;
+  color: #06131e !important;
+  border-color: #bbf43d !important;
+  box-shadow: 0 0 20px rgba(187, 244, 61, 0.35) !important;
+}
+[data-theme="midnight-lime"] .pkg-marquee-track .pkg-card {
+  border: 1px solid rgba(187, 244, 61, 0.22) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+[data-theme="midnight-lime"] .pkg-marquee-track .pkg-card:hover {
+  border-color: #bbf43d !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 20px rgba(187, 244, 61, 0.25) !important;
 }
 [data-theme="midnight-lime"] .hero-features-bar {
   background: rgba(10, 27, 41, 0.85) !important;

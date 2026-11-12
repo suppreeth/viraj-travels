@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Search, MapPin, Compass, Clock, Star, ArrowRight,
-  CheckCircle2, Award, Globe, Zap, Shield, MessageSquare, ThumbsUp
+  CheckCircle2, Award, Globe, Zap, Shield, MessageSquare, ThumbsUp, Sparkles
 } from 'lucide-react';
 import PackageCard from '../components/PackageCard';
 import { getFeaturedPackages, getDestinations, getTestimonials } from '../services/api';
@@ -184,36 +184,15 @@ const TestimonialCard = ({ t }) => (
    HERO HEADLINES & CYCLING SLOGANS
 ───────────────────────────────────────── */
 const SLOGANS = [
-  { line1: 'Your Journey.', line2: 'Your Way.' },
   { line1: 'Explore Paradise.', line2: 'Create Memories.' },
+  { line1: 'Your Journey.', line2: 'Your Way.' },
+  { line1: 'Discover Karnataka.', line2: 'Travel Comfortable.' },
 ];
 
-const PACKAGE_SLIDES = [
-  {
-    eyebrow: 'Our Top Picks',
-    title: 'Explore Our Most',
-    highlight: 'Loved Journeys',
-    subtitle: 'Handpicked experiences designed to turn your next holiday into a story worth remembering.'
-  },
-  {
-    eyebrow: 'Bespoke Escapes',
-    title: 'Discover Unmatched',
-    highlight: 'Holiday Wonders',
-    subtitle: 'Scenic coastlines, mist-covered hills, and heritage adventures crafted just for you.'
-  },
-  {
-    eyebrow: 'Instant Booking',
-    title: 'Book Easily on',
-    highlight: 'WhatsApp Direct',
-    subtitle: 'Get customized itineraries, handpicked stays, and instant confirmations in minutes.'
-  }
-];
-
-const TYPE_START_MS    = 300;   // wait before typing starts
-const TYPE_SPEED_MS    = 150;   // smooth typing speed per character
-const LINE_PAUSE_MS    = 350;   // pause between line 1 and line 2
-const SLOGAN_WAIT_MS   = 1200;  // wait after slogan completes before next slogan or transition
-const PACKAGES_HOLD_MS = 11000; // 4 cards stagger in every 1.5s (0s, 1.5s, 3s, 4.5s) + 6.5s showcase time
+const TYPE_START_MS  = 300;   // wait before typing starts
+const TYPE_SPEED_MS  = 130;   // smooth typing speed per character
+const LINE_PAUSE_MS  = 350;   // pause between line 1 and line 2
+const SLOGAN_WAIT_MS = 2800;  // hold after slogan completes before starting next slogan in slideshow
 
 const TypedLine = ({ text, count }) => (
   <>
@@ -266,33 +245,15 @@ const Home = () => {
   const [pkgError,     setPkgError]     = useState(null);
   const [testLoading,  setTestLoading]  = useState(true);
 
-  // Phase: 'intro' (slogans typing) <-> 'packages' (featured cards) looping continuously
-  const [phase, setPhase] = useState(() =>
-    typeof window !== 'undefined' &&
-    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-      ? 'packages'
-      : 'intro'
-  );
+  // Continuous typing slogan slideshow in the hero
   const [sloganIndex, setSloganIndex] = useState(0);
   const [typed, setTyped] = useState(0);
-  const [slideIndex, setSlideIndex] = useState(0);
 
   const currentSlogan = SLOGANS[sloganIndex] || SLOGANS[0];
   const totalChars = currentSlogan.line1.length + currentSlogan.line2.length;
-  const currentSlide = PACKAGE_SLIDES[slideIndex] || PACKAGE_SLIDES[0];
 
-  // Slideshow timer for the package section texts
+  // Typing effect and slogan transitions (continuous slideshow)
   useEffect(() => {
-    const slideTimer = setInterval(() => {
-      setSlideIndex(prev => (prev + 1) % PACKAGE_SLIDES.length);
-    }, 3800);
-    return () => clearInterval(slideTimer);
-  }, []);
-
-  // Typing effect and slogan transitions
-  useEffect(() => {
-    if (phase !== 'intro') return;
-
     setTyped(0);
     let i = 0;
     let timer;
@@ -302,13 +263,9 @@ const Home = () => {
       setTyped(i);
 
       if (i >= totalChars) {
-        // Slogan finished; wait before moving to next slogan or packages
+        // Slogan finished; hold for 2.8s before advancing to next slogan in slideshow
         timer = setTimeout(() => {
-          if (sloganIndex + 1 < SLOGANS.length) {
-            setSloganIndex(prev => prev + 1);
-          } else {
-            setPhase('packages');
-          }
+          setSloganIndex(prev => (prev + 1) % SLOGANS.length);
         }, SLOGAN_WAIT_MS);
         return;
       }
@@ -322,20 +279,7 @@ const Home = () => {
 
     timer = setTimeout(tick, TYPE_START_MS);
     return () => clearTimeout(timer);
-  }, [phase, sloganIndex, totalChars, currentSlogan.line1.length]);
-
-  // When packages appear, hold them with ample time for all cards to sequence in, then loop back
-  useEffect(() => {
-    if (phase !== 'packages') return;
-
-    const loopTimer = setTimeout(() => {
-      setSloganIndex(0);
-      setTyped(0);
-      setPhase('intro');
-    }, PACKAGES_HOLD_MS);
-
-    return () => clearTimeout(loopTimer);
-  }, [phase]);
+  }, [sloganIndex, totalChars, currentSlogan.line1.length]);
 
 
 
@@ -358,14 +302,14 @@ const Home = () => {
   }, []);
 
   const categories = [
-    { icon: '\u2764\uFE0F', label: 'Honeymoon',      value: 'Honeymoon',          img: 'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?q=80&w=500' },
-    { icon: '\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67', label: 'Family', value: 'Family Tours', img: 'https://images.unsplash.com/photo-1511895426328-dc8714191011?q=80&w=500' },
-    { icon: '\uD83C\uDFD4', label: 'Adventure',     value: 'Adventure',          img: 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=500' },
-    { icon: '\uD83C\uDFD6', label: 'Beach',         value: 'Beach Holidays',     img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=500' },
-    { icon: '\uD83C\uDF0E', label: 'International', value: 'International Tours', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=500' },
-    { icon: '\u2728',       label: 'Luxury',        value: 'Luxury',             img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=500' },
-    { icon: '\uD83D\uDE97', label: 'Weekend',       value: 'Weekend',            img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=500' },
-    { icon: '\uD83D\uDC65', label: 'Group Tours',   value: 'Group',              img: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?q=80&w=500' },
+    { icon: '\u2764\uFE0F', label: 'Honeymoon',      value: 'Honeymoon',          img: 'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?q=80&w=800&auto=format&fit=crop' },
+    { icon: '\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67', label: 'Family', value: 'Family Tours', img: 'https://images.unsplash.com/photo-1475503572774-15a45e5d60b9?q=80&w=800&auto=format&fit=crop' },
+    { icon: '\uD83C\uDFD4', label: 'Adventure',     value: 'Adventure',          img: 'https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=800&auto=format&fit=crop' },
+    { icon: '\uD83C\uDFD6', label: 'Beach',         value: 'Beach Holidays',     img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop' },
+    { icon: '\uD83C\uDF0E', label: 'International', value: 'International Tours', img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop' },
+    { icon: '\u2728',       label: 'Luxury',        value: 'Luxury',             img: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=800&auto=format&fit=crop' },
+    { icon: '\uD83D\uDE97', label: 'Weekend',       value: 'Weekend',            img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop' },
+    { icon: '\uD83D\uDC65', label: 'Group Tours',   value: 'Group',              img: 'https://images.unsplash.com/photo-1539635278303-d4002c07eae3?q=80&w=800&auto=format&fit=crop' },
   ];
 
   const whyUs = [
@@ -381,11 +325,26 @@ const Home = () => {
     { id: 'dest-coastal-karnataka', name: 'Gokarna & Coastal Karnataka', country: 'India', category: 'Beach', packageCount: 1, image: '/images/murdeshwar-coastal-tour.jpg' },
     { id: 'dest-munnar-kerala', name: 'Munnar & Wayanad', country: 'India', category: 'Honeymoon', packageCount: 1, image: '/images/munnar-tea-estate.jpg' },
     { id: 'dest-coorg', name: 'Coorg & Madikeri', country: 'India', category: 'Nature', packageCount: 1, image: '/images/coorg-abbi-falls-tour.jpg' },
-    { id: 'dest-sakleshpur-chikmagalur', name: 'Sakleshpur & Chikmagalur', country: 'India', category: 'Adventure', packageCount: 1, image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=700' },
     { id: 'dest-mysore', name: 'Mysore & Srirangapatna', country: 'India', category: 'Heritage', packageCount: 1, image: '/images/mysore-palace-tour.jpg' },
     { id: 'dest-chikkamagaluru', name: 'Chikkamagaluru', country: 'India', category: 'Adventure', packageCount: 1, image: '/images/chikkamagaluru-hills-tour.jpg' },
   ];
-  const displayDests = destinations.length > 0 ? destinations.slice(0, 6) : staticDestinations;
+  const displayDests = (destinations.length > 0 ? destinations : staticDestinations)
+    .filter(d => d.id !== 'dest-sakleshpur-chikmagalur' && !d.name?.toLowerCase().includes('sakleshpur'))
+    .slice(0, 5);
+
+  // Duplicate packages so marquee seamlessly loops in 1 continuous line from left to right
+  const marqueePackages = React.useMemo(() => {
+    if (!packages || packages.length === 0) return [];
+    if (packages.length <= 4) {
+      return [
+        ...packages,
+        ...packages,
+        ...packages,
+        ...packages
+      ];
+    }
+    return [...packages, ...packages, ...packages];
+  }, [packages]);
 
   // Duplicate cards so marquee seamlessly loops in 1 continuous line from left to right
   const marqueeReviews = React.useMemo(() => {
@@ -513,88 +472,133 @@ const Home = () => {
           text-shadow: 0 2px 14px rgba(10, 28, 50, 0.6);
         }
 
-        /* packages shown inside the hero */
-        .hero-packages,
-        .hero-packages-wide {
+        /* ─── FEATURED TOUR PACKAGES (LEFT-TO-RIGHT MARQUEE) ─── */
+        .featured-packages-section {
           position: relative;
-          z-index: 10;
-          width: 100%;
-          max-width: 1680px;
+          padding: 80px 0 95px;
+          background: #ffffff;
+          overflow: hidden;
+        }
+        .featured-packages-section::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 50% 0%, rgba(2, 132, 199, 0.04) 0%, transparent 60%);
+          pointer-events: none;
+        }
+        .featured-packages-section .container {
+          position: relative;
+          z-index: 2;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 105px var(--sp-8) 60px;
+          padding: 0 var(--sp-6);
+        }
+        .pkg-header {
           display: flex;
           flex-direction: column;
+          align-items: center;
+          text-align: center;
+          max-width: 820px;
+          margin: 0 auto var(--sp-6);
+          gap: var(--sp-2);
         }
-        .hero-packages .section-eyebrow,
-        .hero-packages-wide .section-eyebrow {
-          color: #5eead4;
+        .pkg-header .section-eyebrow {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--sp-2);
+          margin-bottom: 4px;
+        }
+        .pkg-header .section-title {
+          text-align: center;
+          margin: 0;
+        }
+        .pkg-header .section-subtitle {
+          text-align: center;
+          margin: 8px auto var(--sp-4);
+          max-width: 720px;
+        }
+        .pkg-header-actions {
+          display: flex;
+          justify-content: center;
+          margin-top: 2px;
+        }
+        .pkg-marquee-hint-wrap {
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          margin-bottom: var(--sp-4);
+        }
+        .pkg-marquee-hint {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          font-size: 0.82rem;
-          font-weight: 700;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          margin-bottom: 8px;
+          font-size: 0.8rem;
+          color: var(--gray-600);
+          padding: 7px 16px;
+          background: var(--gray-50);
+          border: 1px solid var(--gray-200);
+          border-radius: var(--r-full);
+          font-weight: 500;
         }
-        .hero-packages .section-eyebrow::before,
-        .hero-packages-wide .section-eyebrow::before {
-          content: '';
-          display: inline-block;
-          width: 24px;
-          height: 2px;
-          background: #5eead4;
-          border-radius: 2px;
+        .pkg-live-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+          animation: pulseDot 2s infinite;
         }
-        .hero-packages .section-title,
-        .hero-packages-wide .section-title {
-          color: #fff;
-          font-size: clamp(2rem, 3.6vw, 3.4rem);
-          font-weight: 800;
-          line-height: 1.15;
-          text-shadow: 0 4px 20px rgba(0,0,0,0.4);
-          margin: 0;
+        @keyframes pulseDot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.15); }
         }
-        .hero-packages .section-title span,
-        .hero-packages-wide .section-title span { color: #fcd34d; }
-        .hero-packages .section-subtitle,
-        .hero-packages-wide .section-subtitle {
-          color: rgba(255,255,255,0.9);
-          text-shadow: 0 2px 12px rgba(0,0,0,0.35);
-          font-size: clamp(0.95rem, 1.4vw, 1.12rem);
-          line-height: 1.65;
-          margin-top: 10px;
-          max-width: 780px;
+
+        .pkg-marquee-container {
+          position: relative;
+          width: 100vw;
+          margin-left: calc(-50vw + 50%);
+          overflow: hidden;
+          padding: 10px 0 25px 0;
+          mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
         }
-        .hero-packages .pkg-grid,
-        .hero-packages-wide .pkg-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 22px;
-          width: 100%;
-          max-width: 100%;
-          margin: 0 auto;
+        .pkg-marquee-track {
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
+          gap: 24px;
+          width: max-content;
+          animation: pkgMarqueeLeftToRight 55s linear infinite;
+          will-change: transform;
         }
-        .hero-packages .pkg-card,
-        .hero-packages-wide .pkg-card {
+        .pkg-marquee-track:hover {
+          animation-play-state: paused !important;
+        }
+        @keyframes pkgMarqueeLeftToRight {
+          0% {
+            transform: translateX(-50%);
+          }
+          100% {
+            transform: translateX(0%);
+          }
+        }
+        .pkg-marquee-track .pkg-card {
+          width: 340px;
+          min-width: 340px;
+          max-width: 340px;
+          height: 480px;
           min-height: 480px;
-          box-shadow: 0 16px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
+          flex-shrink: 0;
+          box-shadow: 0 10px 30px rgba(10, 20, 40, 0.12);
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .hero-packages .pkg-card:hover,
-        .hero-packages-wide .pkg-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 24px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.2);
+        .pkg-marquee-track .pkg-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 45px rgba(10, 20, 40, 0.22);
         }
-        .hero-packages .skeleton,
-        .hero-packages-wide .skeleton {
-          background: linear-gradient(90deg, rgba(255,255,255,0.08) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.08) 75%);
-          background-size: 800px 100%;
-        }
-        .hero-packages .error-state,
-        .hero-packages-wide .error-state,
-        .hero-packages .error-state h3,
-        .hero-packages-wide .error-state h3 { color: rgba(255,255,255,0.85); }
+        .error-state { text-align: center; padding: var(--sp-12); color: var(--gray-500); }
+        .error-state h3 { color: var(--gray-700); margin-bottom: var(--sp-2); }
 
         /* ─── SEARCH PANEL ─── */
         .search-panel-wrap {
@@ -1354,40 +1358,28 @@ const Home = () => {
             width: 100%;
           }
           .hero-body,
-          .hero-body-wide { padding: 80px var(--sp-4) 36px; }
-          .hero-packages,
-          .hero-packages-wide {
-            padding-top: 72px;
-            padding-bottom: 50px;
-            padding-left: var(--sp-4);
-            padding-right: var(--sp-4);
-            width: 100%;
-          }
-          .hero-packages .section-title,
-          .hero-packages-wide .section-title {
-            font-size: 1.55rem;
-            line-height: 1.25;
-            word-break: break-word;
-          }
-          .hero-packages .section-subtitle,
-          .hero-packages-wide .section-subtitle {
-            font-size: 0.9rem;
-            line-height: 1.6;
+          .hero-body-wide { padding: 90px var(--sp-4) 40px; }
+          .featured-packages-section {
+            padding: 50px 0 65px;
           }
           .pkg-header { 
             flex-direction: column; 
-            align-items: flex-start;
-            margin-bottom: var(--sp-5);
-            gap: var(--sp-3);
-            width: 100%;
-          }
-          .pkg-header-title-box {
-            min-height: auto !important;
+            align-items: center;
+            text-align: center;
+            margin-bottom: var(--sp-4);
+            gap: var(--sp-2);
             width: 100%;
           }
           .pkg-header .btn {
             padding: 0.55rem 1.25rem;
             font-size: 0.85rem;
+          }
+          .pkg-marquee-track .pkg-card {
+            width: 290px;
+            min-width: 290px;
+            max-width: 290px;
+            height: 440px;
+            min-height: 440px;
           }
           .hs-form { 
             flex-direction: column; 
@@ -1435,12 +1427,6 @@ const Home = () => {
           }
           .search-panel-wrap { margin-top: -24px; padding: 0 var(--sp-4); }
           .pkg-grid { grid-template-columns: 1fr; width: 100%; }
-          .hero-packages .pkg-grid,
-          .hero-packages-wide .pkg-grid { 
-            grid-template-columns: 1fr; 
-            gap: var(--sp-4);
-            width: 100%;
-          }
           .dest-editorial-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
           .dest-card-big { grid-column: span 1; min-height: 260px; }
           .dest-card-ed { min-height: 220px; }
@@ -1453,26 +1439,20 @@ const Home = () => {
             overflow: visible;
           }
           .hero-body,
-          .hero-body-wide { padding: 74px var(--sp-3) 28px; }
-          .hero-packages,
-          .hero-packages-wide {
-            padding-top: 64px;
-            padding-bottom: 40px;
-            padding-left: var(--sp-3);
-            padding-right: var(--sp-3);
+          .hero-body-wide { padding: 78px var(--sp-3) 32px; }
+          .featured-packages-section {
+            padding: 40px 0 55px;
           }
-          .hero-packages .section-title,
-          .hero-packages-wide .section-title {
-            font-size: 1.38rem;
-            line-height: 1.25;
+          .pkg-marquee-track {
+            gap: 16px;
+            animation-duration: 40s;
           }
-          .hero-packages .section-subtitle,
-          .hero-packages-wide .section-subtitle {
-            font-size: 0.84rem;
-          }
-          .hero-packages .section-eyebrow,
-          .hero-packages-wide .section-eyebrow {
-            font-size: 0.74rem;
+          .pkg-marquee-track .pkg-card {
+            width: 275px;
+            min-width: 275px;
+            max-width: 275px;
+            height: 420px;
+            min-height: 420px;
           }
           .pkg-header .btn {
             width: 100%;
@@ -1484,93 +1464,26 @@ const Home = () => {
         }
       `}</style>
 
-      {/* ══ HERO SECTION: clean, elegant cycling intro & featured packages ══ */}
-      <section className={`hero-section${phase === 'packages' ? ' hero-open' : ''}`}>
+      {/* ══ HERO SECTION: clean, elegant cycling slogan slideshow ══ */}
+      <section className="hero-section">
         <div className="hero-scene">
           {/* Deep Background Layer */}
           <div className="hero-bg" />
           {/* Atmosphere & Lighting Layer */}
           <div className="hero-overlay" />
 
-          <AnimatePresence mode="wait">
-            {phase === 'intro' ? (
-              <motion.div
-                key="intro"
-                className="hero-body-wide"
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="hero-badge">
-                  ✈️ &nbsp; Premium Travel Experiences Since 2002
-                </div>
+          <div className="hero-body-wide">
+            <div className="hero-badge">
+              ✈️ &nbsp; Premium Travel Experiences Since 2002
+            </div>
 
-                <TypedHeadline count={typed} slogan={currentSlogan} />
+            <TypedHeadline count={typed} slogan={currentSlogan} />
 
-                <p className="hero-desc">
-                  Handpicked destinations, unforgettable experiences, and journeys
-                  designed uniquely around you.
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="packages"
-                className="hero-packages-wide"
-                initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.98 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="pkg-header">
-                  <div className="pkg-header-title-box" style={{ minHeight: 110 }}>
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={slideIndex}
-                        initial={{ opacity: 0, x: 28 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -28 }}
-                        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        <div className="section-eyebrow">{currentSlide.eyebrow}</div>
-                        <h2 className="section-title">
-                          {currentSlide.title} <span>{currentSlide.highlight}</span>
-                        </h2>
-                        <p className="section-subtitle" style={{ marginTop: 'var(--sp-3)', maxWidth: 780 }}>
-                          {currentSlide.subtitle}
-                        </p>
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                  <Link to="/packages" className="btn btn-outline" style={{ alignSelf: 'flex-end', marginBottom: 8, whiteSpace: 'nowrap' }}>
-                    View All Packages <ArrowRight size={16} />
-                  </Link>
-                </div>
-
-                {pkgLoading ? (
-                  <div className="pkg-grid">
-                    {Array.from({ length: 4 }).map((_, i) => <PackageSkeleton key={i} />)}
-                  </div>
-                ) : pkgError ? (
-                  <div className="error-state">
-                    <h3>Unable to load packages</h3>
-                    <p>{pkgError}</p>
-                  </div>
-                ) : packages.length === 0 ? (
-                  <div className="error-state">
-                    <h3>No featured packages yet</h3>
-                    <p>Check back soon, or browse all packages.</p>
-                  </div>
-                ) : (
-                  <div className="pkg-grid">
-                    {packages.slice(0, 4).map((pkg, i) => (
-                      <PackageCard key={pkg.id} pkg={pkg} index={i} staggerSlideshow={true} />
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+            <p className="hero-desc">
+              Handpicked destinations, unforgettable experiences, and journeys
+              designed uniquely around you.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1586,6 +1499,54 @@ const Home = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* ══ FEATURED TOUR PACKAGES (LEFT-TO-RIGHT MOVING MARQUEE) ══ */}
+      <section className="featured-packages-section">
+        <div className="container">
+          <div className="pkg-header">
+            <div className="section-eyebrow">
+              <Sparkles size={14} /> Our Top Picks
+            </div>
+            <h2 className="section-title">
+              Explore Our Most <span>Loved Journeys</span>
+            </h2>
+            <p className="section-subtitle">
+              Handcrafted tour packages across Karnataka and South India with sanitized private cabs, top-rated drivers, and custom itineraries.
+            </p>
+            <div className="pkg-header-actions">
+              <Link to="/packages" className="btn btn-outline" style={{ whiteSpace: 'nowrap' }}>
+                View All Packages <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="pkg-marquee-container">
+            {pkgLoading ? (
+              <div style={{ display: 'flex', gap: 24, padding: '0 20px' }}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="skeleton" style={{ width: 340, height: 470, borderRadius: '16px', flexShrink: 0 }} />
+                ))}
+              </div>
+            ) : pkgError ? (
+              <div className="error-state">
+                <h3>Unable to load packages</h3>
+                <p>{pkgError}</p>
+              </div>
+            ) : packages.length === 0 ? (
+              <div className="error-state">
+                <h3>No featured packages yet</h3>
+                <p>Check back soon, or browse all packages.</p>
+              </div>
+            ) : (
+              <div className="pkg-marquee-track">
+                {marqueePackages.map((pkg, i) => (
+                  <PackageCard key={`${pkg.id}-${i}`} pkg={pkg} index={i} staggerSlideshow={false} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* ══ CUSTOMER REVIEWS (GOOGLE MY BUSINESS) ══ */}
       {(testLoading || testimonials.length > 0) && (
@@ -1652,29 +1613,6 @@ const Home = () => {
           </div>
         </section>
       )}
-
-      {/* ══ MOUNTAIN EDITORIAL ══ */}
-      <section className="mountain-section">
-        <div className="mountain-bg" />
-        <div className="mountain-overlay" />
-        <div className="mountain-content">
-          <FadeUp>
-            <div className="section-eyebrow" style={{ justifyContent: 'center' }}>
-              Mountain Escapes
-            </div>
-            <h2 className="section-title" style={{ marginBottom: 'var(--sp-5)' }}>
-              Begin Your Next<br /><span>Great Escape</span>
-            </h2>
-            <p className="section-subtitle" style={{ margin: '0 auto var(--sp-8)', textAlign: 'center' }}>
-              From peaceful mountain hideaways to thrilling high-altitude adventures,
-              discover journeys crafted for every kind of traveller.
-            </p>
-            <Link to="/packages?category=Adventure" className="btn btn-primary btn-lg">
-              Explore Mountain Trips <ArrowRight size={18} />
-            </Link>
-          </FadeUp>
-        </div>
-      </section>
 
       {/* ══ DESTINATION EDITORIAL GRID ══ */}
       <section className="dest-section">
@@ -1755,7 +1693,15 @@ const Home = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.45, delay: i * 0.06 }}
               >
-                <img src={cat.img} alt={cat.label} loading="lazy" />
+                <img
+                  src={cat.img}
+                  alt=""
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/images/mysore-palace-tour.jpg';
+                  }}
+                />
                 <div className="cat-overlay" />
                 <div className="cat-body">
                   <span className="cat-icon">{cat.icon}</span>
