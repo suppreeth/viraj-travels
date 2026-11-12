@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Plane, ChevronDown, Palette, Check, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme, THEMES } from '../context/ThemeContext';
+import BrandLogo from './BrandLogo';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -78,7 +79,7 @@ const Navbar = () => {
           top: 0; left: 0; right: 0;
           z-index: 999;
           transition: background 0.4s ease, box-shadow 0.4s ease, padding 0.4s ease;
-          padding: ${solid ? '0.75rem 0' : '1.5rem 0'};
+          padding: ${solid ? '0.55rem 0' : '1.15rem 0'};
         }
         .navbar-solid {
           background: rgba(255,255,255,0.97);
@@ -98,56 +99,15 @@ const Navbar = () => {
           padding: 0 var(--sp-8);
         }
         .nav-logo {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 12px;
           text-decoration: none;
-          transition: transform 0.2s ease;
+          line-height: 0;
+          transition: transform 0.2s ease, opacity 0.2s ease;
         }
         .nav-logo:hover {
           transform: translateY(-1px);
-        }
-        .nav-logo-badge {
-          height: 48px;
-          padding: 2px 4px;
-          background: ${solid ? 'transparent' : 'rgba(255, 255, 255, 0.95)'};
-          border-radius: var(--r-md);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: ${solid ? 'none' : '0 4px 12px rgba(0,0,0,0.18)'};
-          transition: all 0.3s ease;
-        }
-        .nav-logo-img {
-          height: 44px;
-          width: auto;
-          object-fit: contain;
-          display: block;
-        }
-        .nav-logo-text {
-          font-weight: 900;
-          font-size: 1.25rem;
-          letter-spacing: -0.02em;
-          color: ${solid ? 'var(--navy)' : 'white'};
-          transition: color 0.4s;
-          display: flex;
-          flex-direction: column;
-          line-height: 1;
-        }
-        .nav-logo-brand {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-        .nav-logo-brand .gold-text {
-          color: var(--gold);
-        }
-        .nav-logo-sub {
-          font-size: 0.68rem;
-          font-weight: 800;
-          letter-spacing: 0.22em;
-          color: ${solid ? 'var(--teal)' : 'var(--gold)'};
-          margin-top: 3px;
+          opacity: 0.92;
         }
         .nav-links {
           display: none;
@@ -595,34 +555,21 @@ const Navbar = () => {
             width: 100%;
             padding: 0 var(--sp-4);
           }
-          .nav-logo-badge {
-            height: 38px;
+          .nav-logo .brand-logo-wrap img {
+            height: 52px !important;
           }
-          .nav-logo-img {
-            height: 34px;
-          }
-          .nav-logo-text {
-            font-size: 1.05rem;
+        }
+        @media (max-width: 480px) {
+          .nav-logo .brand-logo-wrap img {
+            height: 48px !important;
           }
         }
       `}</style>
 
       <nav className={`navbar ${solid ? 'navbar-solid' : 'navbar-transparent'}`}>
         <div className="nav-inner">
-          <Link to="/" className="nav-logo">
-            <div className="nav-logo-badge">
-              <img
-                src="/logo-transparent.png"
-                alt="V-RAJ Holidays"
-                className="nav-logo-img"
-              />
-            </div>
-            <div className="nav-logo-text">
-              <div className="nav-logo-brand">
-                <span>V-RAJ</span>
-              </div>
-              <div className="nav-logo-sub">HOLIDAYS</div>
-            </div>
+          <Link to="/" className="nav-logo" aria-label="V Raj Holidays">
+            <BrandLogo height={solid ? 58 : 74} solid={solid} />
           </Link>
 
           <div className="nav-links">
@@ -743,18 +690,8 @@ const Navbar = () => {
               transition={{ type: 'tween', duration: 0.3 }}
             >
               <div className="mobile-nav-header">
-                <Link to="/" className="nav-logo" style={{ color: 'var(--navy)' }}>
-                  <img
-                    src="/logo-transparent.png"
-                    alt="V-RAJ Holidays"
-                    style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
-                  />
-                  <div className="nav-logo-text" style={{ color: 'var(--navy)' }}>
-                    <div className="nav-logo-brand">
-                      <span>V-RAJ</span>
-                    </div>
-                    <div className="nav-logo-sub" style={{ color: 'var(--teal)' }}>HOLIDAYS</div>
-                  </div>
+                <Link to="/" className="nav-logo" onClick={() => setMobileOpen(false)} aria-label="V Raj Holidays">
+                  <BrandLogo height={64} solid={theme === THEMES.CLASSIC} />
                 </Link>
                 <button
                   onClick={() => setMobileOpen(false)}

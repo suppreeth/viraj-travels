@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plane, Phone, Mail, MapPin, MessageCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import BrandLogo from './BrandLogo';
 
 const InstagramIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,42 +74,10 @@ const Footer = () => {
           border-bottom: 1px solid rgba(255,255,255,0.08);
         }
         .footer-brand {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 12px;
           margin-bottom: var(--sp-4);
-        }
-        .footer-brand-logo-badge {
-          height: 52px;
-          background: #ffffff;
-          border-radius: var(--r-md);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 4px 6px;
-          box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-          flex-shrink: 0;
-        }
-        .footer-brand-logo {
-          height: 100%;
-          width: auto;
-          object-fit: contain;
-        }
-        .footer-brand-name {
-          font-size: 1.3rem;
-          font-weight: 900;
-          color: white;
-          letter-spacing: -0.02em;
-          display: flex;
-          flex-direction: column;
-          line-height: 1.05;
-        }
-        .footer-brand-sub {
-          font-size: 0.65rem;
-          font-weight: 700;
-          letter-spacing: 0.22em;
-          color: var(--gold);
-          margin-top: 2px;
+          line-height: 0;
         }
         .footer-desc {
           font-size: 0.9rem;
@@ -217,17 +186,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="footer-brand">
-              <div className="footer-brand-logo-badge">
-                <img
-                  src="/logo-transparent.png"
-                  alt="V-RAJ Holidays"
-                  className="footer-brand-logo"
-                />
-              </div>
-              <div className="footer-brand-name">
-                <span>V-RAJ</span>
-                <span className="footer-brand-sub">HOLIDAYS</span>
-              </div>
+              <BrandLogo height={80} solid={false} />
             </div>
             <p className="footer-desc">
               Creating unforgettable travel experiences since 2002. We believe every journey should be a story worth telling.

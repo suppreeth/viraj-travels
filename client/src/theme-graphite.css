@@ -221,23 +221,57 @@
 [data-theme="graphite-yellow"] .hero-desc {
   color: #cbd5e1 !important;
 }
-[data-theme="graphite-yellow"] .hero-packages-wide .section-title span,
-[data-theme="graphite-yellow"] .hero-packages .section-title span {
+/* Featured packages section in graphite-yellow */
+[data-theme="graphite-yellow"] .featured-packages-section {
+  background: #101216 !important;
+}
+[data-theme="graphite-yellow"] .featured-packages-section::before {
+  background: radial-gradient(circle at 50% 0%, rgba(250, 204, 21, 0.05) 0%, transparent 70%) !important;
+}
+[data-theme="graphite-yellow"] .featured-packages-section .section-title {
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .featured-packages-section .section-title span {
   color: #facc15 !important;
   text-shadow: 0 0 25px rgba(250, 204, 21, 0.35);
 }
-[data-theme="graphite-yellow"] .hero-packages-wide .section-eyebrow,
-[data-theme="graphite-yellow"] .hero-packages .section-eyebrow {
+[data-theme="graphite-yellow"] .featured-packages-section .section-eyebrow {
   color: #facc15 !important;
 }
-[data-theme="graphite-yellow"] .hero-packages-wide .section-eyebrow::before,
-[data-theme="graphite-yellow"] .hero-packages .section-eyebrow::before {
+[data-theme="graphite-yellow"] .featured-packages-section .section-eyebrow::before {
   background: #facc15 !important;
   box-shadow: 0 0 10px #facc15;
 }
-[data-theme="graphite-yellow"] .hero-packages-wide .section-subtitle,
-[data-theme="graphite-yellow"] .hero-packages .section-subtitle {
+[data-theme="graphite-yellow"] .featured-packages-section .section-subtitle {
+  color: #94a3b8 !important;
+}
+[data-theme="graphite-yellow"] .pkg-marquee-hint {
+  background: #1c2027 !important;
+  border-color: rgba(250, 204, 21, 0.25) !important;
   color: #cbd5e1 !important;
+}
+[data-theme="graphite-yellow"] .pkg-live-dot {
+  background: #facc15 !important;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3) !important;
+}
+[data-theme="graphite-yellow"] .featured-packages-section .btn-outline {
+  border-color: rgba(250, 204, 21, 0.45) !important;
+  color: #facc15 !important;
+  background: rgba(250, 204, 21, 0.06) !important;
+}
+[data-theme="graphite-yellow"] .featured-packages-section .btn-outline:hover {
+  background: #facc15 !important;
+  color: #101216 !important;
+  border-color: #facc15 !important;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.35) !important;
+}
+[data-theme="graphite-yellow"] .pkg-marquee-track .pkg-card {
+  border: 1px solid rgba(250, 204, 21, 0.22) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+[data-theme="graphite-yellow"] .pkg-marquee-track .pkg-card:hover {
+  border-color: #facc15 !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.75), 0 0 20px rgba(250, 204, 21, 0.25) !important;
 }
 
 /* Search Panel Form */
