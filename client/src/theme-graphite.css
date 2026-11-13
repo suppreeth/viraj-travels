@@ -955,3 +955,31 @@
   color: #facc15 !important;
 }
 
+/* Google Review Cards Accent Tags */
+[data-theme="graphite-yellow"] .tc-dest-tag {
+  background: rgba(250, 204, 21, 0.2) !important;
+  color: #a16207 !important;
+  border: 1px solid rgba(234, 179, 8, 0.42);
+}
+
+[data-theme="graphite-yellow"] .tc-verified-label {
+  color: #a16207 !important;
+}
+
+/* Destinations Empty State */
+[data-theme="graphite-yellow"] .dest-empty-state {
+  background: #181b22 !important;
+  border-color: rgba(250, 204, 21, 0.25) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55) !important;
+}
+[data-theme="graphite-yellow"] .dest-empty-icon {
+  background: rgba(250, 204, 21, 0.12) !important;
+  color: #facc15 !important;
+}
+[data-theme="graphite-yellow"] .dest-empty-state h3 {
+  color: #ffffff !important;
+}
+[data-theme="graphite-yellow"] .dest-empty-state p {
+  color: #cbd5e1 !important;
+}
+

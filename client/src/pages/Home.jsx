@@ -588,18 +588,18 @@ const Home = () => {
           align-items: stretch;
           gap: 24px;
           width: max-content;
-          animation: pkgMarqueeLeftToRight 55s linear infinite;
+          animation: pkgMarqueeRightToLeft 55s linear infinite;
           will-change: transform;
         }
         .pkg-marquee-track:hover {
           animation-play-state: paused !important;
         }
-        @keyframes pkgMarqueeLeftToRight {
+        @keyframes pkgMarqueeRightToLeft {
           0% {
-            transform: translateX(-50%);
+            transform: translateX(0%);
           }
           100% {
-            transform: translateX(0%);
+            transform: translateX(-50%);
           }
         }
         .pkg-marquee-track .pkg-card {
