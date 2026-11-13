@@ -6,6 +6,7 @@ import {
   CheckCircle2, Award, Globe, Zap, Shield, MessageSquare, ThumbsUp, Sparkles
 } from 'lucide-react';
 import PackageCard from '../components/PackageCard';
+import CustomSelect from '../components/CustomSelect';
 import { getFeaturedPackages, getDestinations, getTestimonials } from '../services/api';
 
 /* ─────────────────────────────────────────
@@ -52,26 +53,44 @@ const HeroSearch = () => {
       </div>
       <div className="hs-sep" />
       <div className="hs-field">
-        <label className="hs-label"><Compass size={13} /> Travel Type</label>
-        <select className="hs-input" value={category} onChange={e => setCategory(e.target.value)}>
-          <option value="">All Categories</option>
-          <option value="Honeymoon">Honeymoon</option>
-          <option value="Family Tours">Family Tours</option>
-          <option value="Adventure">Adventure</option>
-          <option value="Beach Holidays">Beach Holidays</option>
-          <option value="International Tours">International Tours</option>
-          <option value="Luxury">Luxury</option>
-        </select>
+        <label htmlFor="hero-travel-type" className="hs-label"><Compass size={13} /> Travel Type</label>
+        <CustomSelect
+          id="hero-travel-type"
+          name="category"
+          ariaLabel="Travel Type"
+          variant="inline"
+          className="hs-input"
+          value={category}
+          onChange={setCategory}
+          options={[
+            { value: '', label: 'All Categories' },
+            { value: 'Honeymoon', label: 'Honeymoon' },
+            { value: 'Family Tours', label: 'Family Tours' },
+            { value: 'Adventure', label: 'Adventure' },
+            { value: 'Beach Holidays', label: 'Beach Holidays' },
+            { value: 'International Tours', label: 'International Tours' },
+            { value: 'Luxury', label: 'Luxury' },
+          ]}
+        />
       </div>
       <div className="hs-sep" />
       <div className="hs-field">
-        <label className="hs-label"><Clock size={13} /> Duration</label>
-        <select className="hs-input" value={duration} onChange={e => setDuration(e.target.value)}>
-          <option value="">Any Duration</option>
-          <option value="1-3">1-3 Days</option>
-          <option value="4-7">4-7 Days</option>
-          <option value="8+">8+ Days</option>
-        </select>
+        <label htmlFor="hero-duration" className="hs-label"><Clock size={13} /> Duration</label>
+        <CustomSelect
+          id="hero-duration"
+          name="duration"
+          ariaLabel="Duration"
+          variant="inline"
+          className="hs-input"
+          value={duration}
+          onChange={setDuration}
+          options={[
+            { value: '', label: 'Any Duration' },
+            { value: '1-3', label: '1-3 Days' },
+            { value: '4-7', label: '4-7 Days' },
+            { value: '8+', label: '8+ Days' },
+          ]}
+        />
       </div>
       <button type="submit" className="hs-btn">
         <Search size={17} />
@@ -382,8 +401,8 @@ const Home = () => {
         .hero-bg {
           position: absolute;
           inset: 0;
-          background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=85&w=2000&auto=format&fit=crop')
-            center 40% / cover no-repeat;
+          background: url('/images/hero-classic-coastal.jpg')
+            center 45% / cover no-repeat;
           z-index: 0;
           filter: saturate(1.1) contrast(1.05);
         }
@@ -1478,11 +1497,6 @@ const Home = () => {
             </div>
 
             <TypedHeadline count={typed} slogan={currentSlogan} />
-
-            <p className="hero-desc">
-              Handpicked destinations, unforgettable experiences, and journeys
-              designed uniquely around you.
-            </p>
           </div>
         </div>
       </section>

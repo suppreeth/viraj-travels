@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
-@import './theme-midnight.css';
 @import './theme-graphite.css';
+@import './theme-cream-orange.css';
 
 /* ===== DESIGN TOKENS ===== */
 :root {
@@ -300,3 +300,201 @@ input, select, textarea { font-family: inherit; }
 ::-webkit-scrollbar-track { background: var(--gray-50); }
 ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+/* ===== BRANDED ANIMATED CUSTOM SELECT ===== */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+.cs-native,
+.cs-native::picker(select) {
+  appearance: base-select;
+}
+
+.cs-native,
+.cs-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.cs-native.cs-variant-inline,
+.cs-trigger.cs-variant-inline {
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.cs-native.cs-variant-pill,
+.cs-trigger.cs-variant-pill {
+  padding: 0.6rem 1rem;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--r-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  background: var(--white);
+  width: auto;
+  min-width: 155px;
+}
+
+.cs-native.cs-variant-pill.active,
+.cs-trigger.cs-variant-pill.active {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(13, 148, 136, 0.06);
+}
+
+.cs-native:focus,
+.cs-trigger:focus {
+  outline: none;
+}
+
+.cs-native.cs-variant-pill:focus-visible,
+.cs-trigger.cs-variant-pill:focus-visible {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.16);
+}
+
+.cs-native::picker-icon,
+.cs-trigger-chevron {
+  color: var(--teal);
+  flex-shrink: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+}
+
+.cs-native:open::picker-icon,
+.cs-trigger-chevron.is-rotated {
+  transform: rotate(180deg);
+}
+
+.cs-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Top-layer ::picker(select) container */
+.cs-native::picker(select) {
+  background: rgba(255, 255, 255, 0.98);
+  color: #0c1e34;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(12, 30, 52, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(12, 30, 52, 0.18), 0 4px 16px rgba(2, 132, 199, 0.08);
+  padding: 6px;
+  margin-top: 8px;
+  min-width: max(anchor-size(width), 210px);
+  max-height: 320px;
+
+  transition:
+    display,
+    overlay,
+    opacity cubic-bezier(0.16, 1, 0.3, 1),
+    height cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 0.26s;
+  transition-behavior: allow-discrete;
+  opacity: 0;
+  height: 0;
+}
+
+.cs-native:open::picker(select) {
+  opacity: 1;
+  height: auto;
+}
+
+@starting-style {
+  .cs-native:open::picker(select) {
+    opacity: 0;
+    height: 0;
+  }
+}
+
+.cs-native option,
+.cs-portal-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+.cs-native option:hover,
+.cs-native option:focus,
+.cs-portal-option:hover,
+.cs-portal-option:focus-visible {
+  background-color: rgba(2, 132, 199, 0.08);
+  color: #0284c7;
+  outline: none;
+}
+
+.cs-native option:checked,
+.cs-portal-option.is-selected {
+  font-weight: 700;
+  background-color: rgba(13, 148, 136, 0.12);
+  color: #0c1e34;
+}
+
+.cs-native option::checkmark,
+.cs-portal-check {
+  color: #0d9488;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Portal fallback menu for browsers without base-select */
+.cs-portal-menu {
+  background: rgba(255, 255, 255, 0.98);
+  color: #0c1e34;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(12, 30, 52, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(12, 30, 52, 0.18), 0 4px 16px rgba(2, 132, 199, 0.08);
+  padding: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+  animation: csMenuIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes csMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-native::picker(select),
+  .cs-native::picker-icon,
+  .cs-trigger-chevron,
+  .cs-portal-menu {
+    transition: none !important;
+    animation: none !important;
+  }
+}
