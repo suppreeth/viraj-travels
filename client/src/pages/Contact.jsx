@@ -9,40 +9,77 @@ const Contact = () => {
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const validateField = (field, value) => {
+    const trimmed = (value || '').trim();
+    if (field === 'name') {
+      if (!trimmed) return 'Full name is required';
+      if (trimmed.length < 2) return 'Name must be at least 2 characters';
+      if (!/^[a-zA-Z\s'.-]+$/.test(trimmed)) return 'Please enter letters only';
+      return undefined;
+    }
+    if (field === 'email') {
+      if (!trimmed) return 'Email address is required';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) return 'Please enter a valid email address';
+      return undefined;
+    }
+    if (field === 'phone') {
+      if (!trimmed) return 'Phone number is required';
+      const digitsOnly = trimmed.replace(/\D/g, '');
+      const hasPlus = trimmed.startsWith('+');
+      if (hasPlus ? (digitsOnly.length < 11 || digitsOnly.length > 13) : digitsOnly.length !== 10) {
+        return 'Please enter a valid 10-digit mobile number';
+      }
+      if (/^(\d)\1+$/.test(digitsOnly)) {
+        return 'Please enter a valid mobile number';
+      }
+      return undefined;
+    }
+    if (field === 'message') {
+      if (!trimmed) return 'Message is required';
+      if (trimmed.length < 10) return 'Please provide at least 10 characters describing your requirement';
+      return undefined;
+    }
+    return undefined;
+  };
+
   const validate = () => {
     const err = {};
-    const nameTrim = form.name.trim();
-    if (!nameTrim) {
-      err.name = 'Full name is required';
-    } else if (nameTrim.length < 2) {
-      err.name = 'Name must be at least 2 characters';
-    } else if (!/^[a-zA-Z\s'.]+$/.test(nameTrim)) {
-      err.name = 'Please enter letters only';
-    }
-
-    const emailTrim = form.email.trim();
-    if (!emailTrim) {
-      err.email = 'Email address is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailTrim)) {
-      err.email = 'Please enter a valid email address';
-    }
-
-    const phoneTrim = form.phone.trim();
-    const digitsOnly = phoneTrim.replace(/\D/g, '');
-    if (!phoneTrim) {
-      err.phone = 'Phone number is required';
-    } else if (digitsOnly.length < 10 || digitsOnly.length > 13) {
-      err.phone = 'Please enter a valid 10-digit mobile number';
-    }
-
-    const msgTrim = form.message.trim();
-    if (!msgTrim) {
-      err.message = 'Message is required';
-    } else if (msgTrim.length < 10) {
-      err.message = 'Please provide at least 10 characters describing your requirement';
-    }
-
+    ['name', 'email', 'phone', 'message'].forEach((field) => {
+      const msg = validateField(field, form[field]);
+      if (msg) err[field] = msg;
+    });
     return err;
+  };
+
+  const handleFieldChange = (field, rawValue) => {
+    let nextValue = rawValue;
+    if (field === 'phone') {
+      // Allow optional leading '+' and digits/spaces/hyphens only; cap digits at 10 (or 13 with '+')
+      let cleaned = rawValue.replace(/[^\d+\s-]/g, '');
+      const hasPlus = cleaned.startsWith('+');
+      cleaned = (hasPlus ? '+' : '') + cleaned.replace(/\+/g, '');
+      const maxDigits = hasPlus ? 13 : 10;
+      let digitCount = 0;
+      cleaned = cleaned
+        .split('')
+        .filter((ch) => {
+          if (/\d/.test(ch)) {
+            if (digitCount >= maxDigits) return false;
+            digitCount += 1;
+          }
+          return true;
+        })
+        .join('');
+      nextValue = cleaned;
+    }
+    setForm((p) => ({ ...p, [field]: nextValue }));
+    if (errors[field]) {
+      setErrors((p) => ({ ...p, [field]: validateField(field, nextValue) }));
+    }
+  };
+
+  const handleFieldBlur = (field) => {
+    setErrors((p) => ({ ...p, [field]: validateField(field, form[field]) }));
   };
 
   const handleSubmit = async (e) => {
@@ -195,12 +232,11 @@ const Contact = () => {
                     <label className="form-label">Full Name *</label>
                     <input 
                       type="text"
+                      maxLength={80}
                       className={`form-input ${errors.name ? 'error' : ''}`} 
                       value={form.name} 
-                      onChange={e => {
-                        setForm(p => ({ ...p, name: e.target.value }));
-                        if (errors.name) setErrors(p => ({ ...p, name: undefined }));
-                      }} 
+                      onChange={e => handleFieldChange('name', e.target.value)}
+                      onBlur={() => handleFieldBlur('name')}
                       placeholder="Your full name" 
                     />
                     {errors.name && <span className="form-error">{errors.name}</span>}
@@ -209,12 +245,11 @@ const Contact = () => {
                     <label className="form-label">Email Address *</label>
                     <input 
                       type="email" 
+                      maxLength={120}
                       className={`form-input ${errors.email ? 'error' : ''}`} 
                       value={form.email} 
-                      onChange={e => {
-                        setForm(p => ({ ...p, email: e.target.value }));
-                        if (errors.email) setErrors(p => ({ ...p, email: undefined }));
-                      }} 
+                      onChange={e => handleFieldChange('email', e.target.value)}
+                      onBlur={() => handleFieldBlur('email')}
                       placeholder="name@example.com" 
                     />
                     {errors.email && <span className="form-error">{errors.email}</span>}
@@ -225,12 +260,12 @@ const Contact = () => {
                   <label className="form-label">Phone Number *</label>
                   <input 
                     type="tel"
+                    inputMode="tel"
+                    maxLength={16}
                     className={`form-input ${errors.phone ? 'error' : ''}`} 
                     value={form.phone} 
-                    onChange={e => {
-                      setForm(p => ({ ...p, phone: e.target.value }));
-                      if (errors.phone) setErrors(p => ({ ...p, phone: undefined }));
-                    }} 
+                    onChange={e => handleFieldChange('phone', e.target.value)}
+                    onBlur={() => handleFieldBlur('phone')}
                     placeholder="10-digit mobile number" 
                   />
                   {errors.phone && <span className="form-error">{errors.phone}</span>}
@@ -239,13 +274,12 @@ const Contact = () => {
                 <div className="form-group">
                   <label className="form-label">Your Message *</label>
                   <textarea 
+                    maxLength={1000}
                     className={`form-input ${errors.message ? 'error' : ''}`} 
                     rows={6} 
                     value={form.message} 
-                    onChange={e => {
-                      setForm(p => ({ ...p, message: e.target.value }));
-                      if (errors.message) setErrors(p => ({ ...p, message: undefined }));
-                    }} 
+                    onChange={e => handleFieldChange('message', e.target.value)}
+                    onBlur={() => handleFieldBlur('message')}
                     placeholder="How can we help you plan your next trip?" 
                     style={{ resize: 'vertical' }} 
                   />

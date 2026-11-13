@@ -25,7 +25,12 @@ const About = () => {
         .about-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, rgba(12,26,46,0.9), rgba(12,26,46,0.6));
+          background: linear-gradient(
+            180deg,
+            rgba(10, 20, 36, 0.48) 0%,
+            rgba(10, 20, 36, 0.34) 45%,
+            rgba(10, 20, 36, 0.72) 100%
+          );
         }
         .about-content {
           position: relative;
@@ -33,6 +38,7 @@ const About = () => {
           text-align: center;
           color: white;
           padding: 0 var(--sp-6);
+          text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
         }
         .about-story {
           padding: var(--sp-24) 0;
@@ -79,7 +85,7 @@ const About = () => {
       `}</style>
 
       <div className="about-hero">
-        <img src="https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2000&auto=format&fit=crop" alt="About Us" />
+        <img src="/images/about-story-hero.jpg" alt="Western Ghats scenic journey" />
         <div className="about-overlay" />
         <div className="about-content">
           <div className="section-eyebrow" style={{ justifyContent: 'center', color: 'var(--teal-light)' }}>Our Story</div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, ArrowRight } from 'lucide-react';
+import { MapPin, ArrowRight, Globe } from 'lucide-react';
 import { getDestinations } from '../services/api';
 
 const Destinations = () => {
@@ -106,6 +106,49 @@ const Destinations = () => {
         .dcf-desc { font-size: 0.9rem; color: rgba(255,255,255,0.75); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 16px; }
         .dcf-link { display: inline-flex; alignItems: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--teal-light); opacity: 0; transform: translateY(10px); transition: all 0.3s; }
         .dest-card-full:hover .dcf-link { opacity: 1; transform: translateY(0); }
+        .dest-empty-state {
+          max-width: 620px;
+          margin: var(--sp-6) auto var(--sp-20);
+          padding: var(--sp-12) var(--sp-8);
+          background: var(--white);
+          border: 1px solid var(--gray-200);
+          border-radius: var(--r-xl);
+          box-shadow: var(--shadow-md);
+          text-align: center;
+        }
+        .dest-empty-icon {
+          width: 72px;
+          height: 72px;
+          margin: 0 auto var(--sp-5);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(13, 148, 136, 0.1);
+          color: var(--teal);
+        }
+        .dest-empty-state h3 {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: var(--navy);
+          margin-bottom: var(--sp-3);
+        }
+        .dest-empty-state p {
+          font-size: 0.98rem;
+          color: var(--gray-500);
+          line-height: 1.7;
+          margin-bottom: var(--sp-6);
+        }
+        .dest-empty-actions {
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: var(--sp-3);
+        }
+        @media (max-width: 600px) {
+          .dest-filters { flex-wrap: wrap; gap: var(--sp-2); }
+          .dest-empty-state { padding: var(--sp-8) var(--sp-5); }
+        }
       `}</style>
 
       <div className="dest-hero">
@@ -128,6 +171,34 @@ const Destinations = () => {
         {loading ? (
           <div className="dest-grid-full">
             {Array.from({ length: 6 }).map((_, i) => <div key={i} className="skeleton" style={{ height: 360, borderRadius: 'var(--r-lg)' }} />)}
+          </div>
+        ) : filteredDests.length === 0 ? (
+          <div className="dest-empty-state">
+            <div className="dest-empty-icon">
+              <Globe size={34} />
+            </div>
+            <h3>
+              {filter === 'International'
+                ? 'International Packages Coming Soon'
+                : 'No Destinations Found'}
+            </h3>
+            <p>
+              {filter === 'International'
+                ? 'We currently specialize in curated domestic tours across Karnataka and South India. Looking for an international holiday? Contact our travel team and we can arrange a custom itinerary for you.'
+                : 'No destinations match the selected filter right now.'}
+            </p>
+            <div className="dest-empty-actions">
+              <Link to="/contact" className="btn btn-primary">
+                Request Custom Trip <ArrowRight size={16} />
+              </Link>
+              <button
+                type="button"
+                className="df-btn"
+                onClick={() => setFilter(filter === 'International' ? 'Domestic' : 'All')}
+              >
+                {filter === 'International' ? 'View Domestic Destinations' : 'View All Destinations'}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="dest-grid-full">

@@ -588,18 +588,18 @@ const Home = () => {
           align-items: stretch;
           gap: 24px;
           width: max-content;
-          animation: pkgMarqueeLeftToRight 55s linear infinite;
+          animation: pkgMarqueeRightToLeft 55s linear infinite;
           will-change: transform;
         }
         .pkg-marquee-track:hover {
           animation-play-state: paused !important;
         }
-        @keyframes pkgMarqueeLeftToRight {
+        @keyframes pkgMarqueeRightToLeft {
           0% {
-            transform: translateX(-50%);
+            transform: translateX(0%);
           }
           100% {
-            transform: translateX(0%);
+            transform: translateX(-50%);
           }
         }
         .pkg-marquee-track .pkg-card {
@@ -1375,9 +1375,28 @@ const Home = () => {
           }
           .hero-scene {
             width: 100%;
+            min-height: 430px;
+            min-height: 54svh;
           }
           .hero-body,
-          .hero-body-wide { padding: 90px var(--sp-4) 40px; }
+          .hero-body-wide { padding: 104px var(--sp-4) 68px; }
+          .hero-badge {
+            padding: 0.4rem 1.05rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.055em;
+            margin-bottom: var(--sp-4);
+            white-space: nowrap;
+            max-width: calc(100vw - 24px);
+          }
+          .hero-h1 {
+            font-size: clamp(2.05rem, 9.2vw, 2.85rem);
+            line-height: 1.14;
+            margin-bottom: var(--sp-3);
+            min-height: 6.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
           .featured-packages-section {
             padding: 50px 0 65px;
           }
@@ -1457,8 +1476,25 @@ const Home = () => {
             min-height: auto;
             overflow: visible;
           }
+          .hero-scene {
+            min-height: 390px;
+            min-height: 50svh;
+          }
           .hero-body,
-          .hero-body-wide { padding: 78px var(--sp-3) 32px; }
+          .hero-body-wide { padding: 94px var(--sp-3) 60px; }
+          .hero-badge {
+            padding: 0.36rem 0.9rem;
+            font-size: clamp(0.62rem, 2.7vw, 0.72rem);
+            letter-spacing: 0.04em;
+            gap: 6px;
+            margin-bottom: var(--sp-3);
+          }
+          .hero-h1 {
+            font-size: clamp(1.9rem, 8.6vw, 2.35rem);
+            line-height: 1.14;
+            margin-bottom: var(--sp-2);
+            min-height: 5.6rem;
+          }
           .featured-packages-section {
             padding: 40px 0 55px;
           }
