@@ -551,10 +551,17 @@
   background: linear-gradient(135deg, #101216 0%, #1a1e26 100%) !important;
   border-bottom: 1px solid rgba(250, 204, 21, 0.15) !important;
 }
+[data-theme="graphite-yellow"] .pkg-filters,
 [data-theme="graphite-yellow"] .pkg-filters-bar {
   background: #16191f !important;
   border-bottom: 1px solid rgba(250, 204, 21, 0.15) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+[data-theme="graphite-yellow"] .no-results h3 {
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .no-results p {
+  color: #94a3b8 !important;
 }
 [data-theme="graphite-yellow"] .pkg-search-input {
   background: #1c2027 !important;
@@ -577,6 +584,10 @@
 [data-theme="graphite-yellow"] .dest-hero {
   background: linear-gradient(135deg, #101216 0%, #1a1e26 100%) !important;
 }
+[data-theme="graphite-yellow"] .dest-filters {
+  background: #16191f !important;
+  border-bottom-color: rgba(250, 204, 21, 0.15) !important;
+}
 [data-theme="graphite-yellow"] .df-btn {
   background: #1c2027 !important;
   color: #cbd5e1 !important;
@@ -598,6 +609,48 @@
 [data-theme="graphite-yellow"] .package-detail-page {
   background: #101216 !important;
 }
+[data-theme="graphite-yellow"] .pkg-section h3 {
+  color: #f8fafc !important;
+  border-bottom-color: rgba(250, 204, 21, 0.2) !important;
+}
+[data-theme="graphite-yellow"] .pkg-description {
+  color: #cbd5e1 !important;
+}
+[data-theme="graphite-yellow"] .highlight-item {
+  color: #e2e8f0 !important;
+}
+[data-theme="graphite-yellow"] .itin-header {
+  background: #181b22 !important;
+  border: 1px solid rgba(250, 204, 21, 0.16) !important;
+}
+[data-theme="graphite-yellow"] .itin-header:hover,
+[data-theme="graphite-yellow"] .itin-header.open {
+  background: #1c2027 !important;
+  border-color: rgba(250, 204, 21, 0.45) !important;
+}
+[data-theme="graphite-yellow"] .itin-day {
+  background: #facc15 !important;
+  color: #101216 !important;
+  font-weight: 800 !important;
+}
+[data-theme="graphite-yellow"] .itin-title {
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .itin-header svg {
+  color: #facc15 !important;
+}
+[data-theme="graphite-yellow"] .itin-body {
+  background: #14171d !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(250, 204, 21, 0.14) !important;
+  border-top: none !important;
+}
+[data-theme="graphite-yellow"] .ie-item.inc {
+  color: #e2e8f0 !important;
+}
+[data-theme="graphite-yellow"] .ie-item.exc {
+  color: #94a3b8 !important;
+}
 [data-theme="graphite-yellow"] .pkg-detail-card,
 [data-theme="graphite-yellow"] .itinerary-day-card,
 [data-theme="graphite-yellow"] .inclusions-box,
@@ -606,10 +659,34 @@
   border: 1px solid rgba(250, 204, 21, 0.16) !important;
   color: #cbd5e1 !important;
 }
+[data-theme="graphite-yellow"] .booking-card,
 [data-theme="graphite-yellow"] .booking-sidebar-card {
   background: #181b22 !important;
+  border: 1.5px solid rgba(250, 204, 21, 0.28) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65) !important;
+}
+[data-theme="graphite-yellow"] .booking-header {
+  background: linear-gradient(135deg, #1c2027 0%, #101216 100%) !important;
+  border-bottom: 1px solid rgba(250, 204, 21, 0.2) !important;
+}
+[data-theme="graphite-yellow"] .booking-body,
+[data-theme="graphite-yellow"] .bm-row {
+  color: #e2e8f0 !important;
+}
+[data-theme="graphite-yellow"] .bm-icon {
+  color: #facc15 !important;
+}
+[data-theme="graphite-yellow"] .booking-body p {
+  color: #94a3b8 !important;
+}
+[data-theme="graphite-yellow"] .enquiry-modal {
+  background: #16191f !important;
   border: 1px solid rgba(250, 204, 21, 0.28) !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55) !important;
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .enquiry-header {
+  background: linear-gradient(135deg, #1c2027 0%, #101216 100%) !important;
+  border-bottom: 1px solid rgba(250, 204, 21, 0.2) !important;
 }
 [data-theme="graphite-yellow"] .form-input,
 [data-theme="graphite-yellow"] input[type="text"],
@@ -638,10 +715,36 @@
 [data-theme="graphite-yellow"] .contact-hero {
   background: linear-gradient(135deg, #101216 0%, #1a1e26 100%) !important;
 }
+[data-theme="graphite-yellow"] .about-story {
+  background: #101216 !important;
+}
+[data-theme="graphite-yellow"] .values-section {
+  background: #14171d !important;
+}
+[data-theme="graphite-yellow"] .story-badge {
+  background: #181b22 !important;
+  border: 1px solid rgba(250, 204, 21, 0.28) !important;
+}
+[data-theme="graphite-yellow"] .story-badge h4 {
+  color: #facc15 !important;
+}
+[data-theme="graphite-yellow"] .story-text h2,
+[data-theme="graphite-yellow"] .value-card h4,
+[data-theme="graphite-yellow"] .ci-title {
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .story-text p,
+[data-theme="graphite-yellow"] .ci-desc {
+  color: #cbd5e1 !important;
+}
+[data-theme="graphite-yellow"] .value-card p {
+  color: #94a3b8 !important;
+}
 [data-theme="graphite-yellow"] .about-card,
 [data-theme="graphite-yellow"] .contact-card,
 [data-theme="graphite-yellow"] .team-card,
-[data-theme="graphite-yellow"] .contact-info-card {
+[data-theme="graphite-yellow"] .contact-info-card,
+[data-theme="graphite-yellow"] .contact-form-card {
   background: #181b22 !important;
   border: 1px solid rgba(250, 204, 21, 0.16) !important;
 }
@@ -673,10 +776,15 @@
   background: rgba(11, 13, 16, 0.85) !important;
   backdrop-filter: blur(10px) !important;
 }
-[data-theme="graphite-yellow"] .lead-popup-card {
+[data-theme="graphite-yellow"] .lead-popup-card,
+[data-theme="graphite-yellow"] .lead-popup-container {
   background: #16191f !important;
   border: 1px solid rgba(250, 204, 21, 0.28) !important;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 30px rgba(250, 204, 21, 0.15) !important;
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .lead-popup-header {
+  background: linear-gradient(135deg, #1c2027 0%, #101216 100%) !important;
 }
 
 /* Badges */
@@ -715,6 +823,24 @@
   background: #1c2027 !important;
   color: #facc15 !important;
   border: 1px solid rgba(250, 204, 21, 0.25) !important;
+}
+[data-theme="graphite-yellow"] .review-input,
+[data-theme="graphite-yellow"] .review-textarea {
+  background: #121417 !important;
+  border-color: rgba(250, 204, 21, 0.24) !important;
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .review-item-card {
+  border-bottom-color: rgba(250, 204, 21, 0.14) !important;
+}
+[data-theme="graphite-yellow"] .ric-name {
+  color: #f8fafc !important;
+}
+[data-theme="graphite-yellow"] .ric-dest {
+  color: #facc15 !important;
+}
+[data-theme="graphite-yellow"] .ric-text {
+  color: #cbd5e1 !important;
 }
 
 /* Dropdown menu overrides */
@@ -765,5 +891,67 @@
   background: rgba(250, 204, 21, 0.24) !important;
   border-color: #facc15 !important;
   box-shadow: 0 0 22px rgba(250, 204, 21, 0.35);
+}
+
+/* Custom Branded Select & Picker for Deep Graphite & Sunshine Yellow */
+[data-theme="graphite-yellow"] .cs-native.cs-variant-inline,
+[data-theme="graphite-yellow"] .cs-trigger.cs-variant-inline {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native.cs-variant-pill,
+[data-theme="graphite-yellow"] .cs-trigger.cs-variant-pill {
+  background: #1c2027 !important;
+  color: #e2e8f0 !important;
+  border: 1.5px solid rgba(250, 204, 21, 0.26) !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native.cs-variant-pill.active,
+[data-theme="graphite-yellow"] .cs-trigger.cs-variant-pill.active {
+  border-color: #facc15 !important;
+  color: #facc15 !important;
+  background: rgba(250, 204, 21, 0.1) !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native::picker-icon,
+[data-theme="graphite-yellow"] .cs-trigger-chevron {
+  color: #facc15 !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native::picker(select),
+[data-theme="graphite-yellow"].cs-portal-menu {
+  background: rgba(22, 25, 31, 0.97) !important;
+  color: #f8fafc !important;
+  border: 1.5px solid rgba(250, 204, 21, 0.34) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 28px rgba(250, 204, 21, 0.16) !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native option,
+[data-theme="graphite-yellow"] .cs-portal-option {
+  color: #e2e8f0 !important;
+  background: transparent !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native option:hover,
+[data-theme="graphite-yellow"] .cs-native option:focus,
+[data-theme="graphite-yellow"] .cs-portal-option:hover,
+[data-theme="graphite-yellow"] .cs-portal-option:focus-visible {
+  background-color: rgba(250, 204, 21, 0.12) !important;
+  color: #fde047 !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native option:checked,
+[data-theme="graphite-yellow"] .cs-portal-option.is-selected {
+  background-color: rgba(250, 204, 21, 0.18) !important;
+  color: #facc15 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="graphite-yellow"] .cs-native option::checkmark,
+[data-theme="graphite-yellow"] .cs-portal-check {
+  color: #facc15 !important;
 }
 

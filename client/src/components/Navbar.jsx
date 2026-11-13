@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Plane, ChevronDown, Palette, Check, Sparkles } from 'lucide-react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
+import { Menu, X, ChevronDown, Palette, Check, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme, THEMES } from '../context/ThemeContext';
 import BrandLogo from './BrandLogo';
@@ -11,7 +11,6 @@ const Navbar = () => {
   const [themeOpen, setThemeOpen] = useState(false);
   const themeDropdownRef = useRef(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const isHome = location.pathname === '/';
   const { theme, setTheme } = useTheme();
 
@@ -49,11 +48,11 @@ const Navbar = () => {
 
   const themeOptions = [
     {
-      id: THEMES.MIDNIGHT_LIME,
-      name: 'Midnight Teal & Neon Lime',
-      subtitle: 'Deep midnight teal, soft pearl & vibrant neon lime',
-      badge: 'Luxury Dark',
-      colors: ['#06131e', '#f8fafc', '#bbf43d'],
+      id: THEMES.CREAM_ORANGE,
+      name: 'Cream, Sand & Orange',
+      subtitle: 'Warm ivory cream, golden sand & sunset orange',
+      badge: 'Warm Luxury',
+      colors: ['#fdf8f0', '#e8d5b7', '#ea580c'],
     },
     {
       id: THEMES.GRAPHITE_YELLOW,
@@ -171,17 +170,6 @@ const Navbar = () => {
         .theme-trigger-btn:hover {
           transform: translateY(-1px);
           background: ${solid ? 'var(--gray-200)' : 'rgba(255,255,255,0.28)'};
-        }
-        .theme-trigger-btn.is-lime {
-          background: rgba(187, 244, 61, 0.14) !important;
-          color: #bbf43d !important;
-          border-color: rgba(187, 244, 61, 0.4) !important;
-          box-shadow: 0 0 16px rgba(187, 244, 61, 0.2);
-        }
-        .theme-trigger-btn.is-lime:hover {
-          background: rgba(187, 244, 61, 0.24) !important;
-          border-color: #bbf43d !important;
-          box-shadow: 0 0 22px rgba(187, 244, 61, 0.35);
         }
         .theme-trigger-btn.is-yellow {
           background: rgba(250, 204, 21, 0.14) !important;
@@ -317,48 +305,6 @@ const Navbar = () => {
           font-weight: 600;
         }
 
-        /* Dark Theme overrides for the panel */
-        [data-theme="midnight-lime"] .theme-dropdown-panel {
-          background: #091a27 !important;
-          border-color: rgba(187, 244, 61, 0.28) !important;
-          box-shadow: 0 16px 50px rgba(0, 0, 0, 0.75), 0 0 25px rgba(187, 244, 61, 0.15) !important;
-        }
-        [data-theme="midnight-lime"] .theme-dropdown-header {
-          border-bottom-color: rgba(187, 244, 61, 0.15) !important;
-        }
-        [data-theme="midnight-lime"] .theme-header-title {
-          color: #bbf43d !important;
-        }
-        [data-theme="midnight-lime"] .theme-option-item {
-          background: #0d2234 !important;
-          border-color: rgba(255, 255, 255, 0.1) !important;
-        }
-        [data-theme="midnight-lime"] .theme-option-item:hover {
-          border-color: rgba(187, 244, 61, 0.4) !important;
-          background: #112a40 !important;
-        }
-        [data-theme="midnight-lime"] .theme-option-item.active {
-          border-color: #bbf43d !important;
-          background: rgba(187, 244, 61, 0.12) !important;
-          box-shadow: 0 0 20px rgba(187, 244, 61, 0.18) !important;
-        }
-        [data-theme="midnight-lime"] .theme-item-name {
-          color: #f8fafc !important;
-        }
-        [data-theme="midnight-lime"] .theme-item-badge {
-          background: rgba(187, 244, 61, 0.15) !important;
-          color: #bbf43d !important;
-        }
-        [data-theme="midnight-lime"] .theme-item-sub {
-          color: #94a3b8 !important;
-        }
-        [data-theme="midnight-lime"] .theme-active-tag {
-          color: #bbf43d !important;
-        }
-        [data-theme="midnight-lime"] .theme-color-dot {
-          border-color: rgba(255, 255, 255, 0.3) !important;
-        }
-
         /* Graphite Yellow Theme overrides for the panel */
         [data-theme="graphite-yellow"] .theme-dropdown-panel {
           background: #16191f !important;
@@ -442,23 +388,6 @@ const Navbar = () => {
           color: var(--teal);
           font-weight: 600;
         }
-        [data-theme="midnight-lime"] .mobile-theme-section {
-          border-top-color: rgba(187, 244, 61, 0.15) !important;
-        }
-        [data-theme="midnight-lime"] .mobile-theme-header {
-          color: #bbf43d !important;
-        }
-        [data-theme="midnight-lime"] .mobile-theme-btn {
-          background: #0d2234 !important;
-          border-color: rgba(255, 255, 255, 0.1) !important;
-          color: #cbd5e1 !important;
-        }
-        [data-theme="midnight-lime"] .mobile-theme-btn.active {
-          border-color: #bbf43d !important;
-          background: rgba(187, 244, 61, 0.12) !important;
-          color: #bbf43d !important;
-        }
-
         [data-theme="graphite-yellow"] .mobile-theme-section {
           border-top-color: rgba(250, 204, 21, 0.15) !important;
         }
@@ -592,7 +521,7 @@ const Navbar = () => {
             <div className="theme-selector-wrap" ref={themeDropdownRef}>
               <button
                 type="button"
-                className={`theme-trigger-btn ${theme === THEMES.MIDNIGHT_LIME ? 'is-lime' : ''} ${theme === THEMES.GRAPHITE_YELLOW ? 'is-yellow' : ''} ${themeOpen ? 'open' : ''}`}
+                className={`theme-trigger-btn ${theme === THEMES.GRAPHITE_YELLOW ? 'is-yellow' : ''} ${theme === THEMES.CREAM_ORANGE ? 'is-orange' : ''} ${themeOpen ? 'open' : ''}`}
                 onClick={() => setThemeOpen(!themeOpen)}
                 aria-label="Website Themes"
                 title="Change Website Theme"
@@ -691,7 +620,7 @@ const Navbar = () => {
             >
               <div className="mobile-nav-header">
                 <Link to="/" className="nav-logo" onClick={() => setMobileOpen(false)} aria-label="V Raj Holidays">
-                  <BrandLogo height={64} solid={theme === THEMES.CLASSIC} />
+                  <BrandLogo height={64} solid={theme === THEMES.CLASSIC || theme === THEMES.CREAM_ORANGE} />
                 </Link>
                 <button
                   onClick={() => setMobileOpen(false)}

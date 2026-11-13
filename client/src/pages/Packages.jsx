@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import PackageCard from '../components/PackageCard';
+import CustomSelect from '../components/CustomSelect';
 import { getPackages } from '../services/api';
 
 const Packages = () => {
@@ -169,22 +170,48 @@ const Packages = () => {
             {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-400)', display: 'flex' }}><X size={15} /></button>}
           </div>
 
-          <select className={`filter-select ${category ? 'active' : ''}`} value={category} onChange={e => setCategory(e.target.value)}>
-            <option value="">All Categories</option>
-            {categories.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <CustomSelect
+            id="pkg-category"
+            name="category"
+            ariaLabel="Filter by category"
+            variant="pill"
+            className={category ? 'active' : ''}
+            value={category}
+            onChange={setCategory}
+            options={[
+              { value: '', label: 'All Categories' },
+              ...categories.map((c) => ({ value: c, label: c })),
+            ]}
+          />
 
-          <select className={`filter-select ${duration ? 'active' : ''}`} value={duration} onChange={e => setDuration(e.target.value)}>
-            <option value="">Any Duration</option>
-            <option value="1-3">1–3 Days</option>
-            <option value="4-7">4–7 Days</option>
-            <option value="8+">8+ Days</option>
-          </select>
+          <CustomSelect
+            id="pkg-duration"
+            name="duration"
+            ariaLabel="Filter by duration"
+            variant="pill"
+            className={duration ? 'active' : ''}
+            value={duration}
+            onChange={setDuration}
+            options={[
+              { value: '', label: 'Any Duration' },
+              { value: '1-3', label: '1–3 Days' },
+              { value: '4-7', label: '4–7 Days' },
+              { value: '8+', label: '8+ Days' },
+            ]}
+          />
 
-          <select className="filter-select" value={sort} onChange={e => setSort(e.target.value)}>
-            <option value="">Sort: Popular</option>
-            <option value="rating">Highest Rated</option>
-          </select>
+          <CustomSelect
+            id="pkg-sort"
+            name="sort"
+            ariaLabel="Sort packages"
+            variant="pill"
+            value={sort}
+            onChange={setSort}
+            options={[
+              { value: '', label: 'Sort: Popular' },
+              { value: 'rating', label: 'Highest Rated' },
+            ]}
+          />
         </div>
 
         {(search || category || duration || destination) && (

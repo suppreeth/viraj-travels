@@ -3,8 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const THEMES = {
-  MIDNIGHT_LIME: 'midnight-lime',
   GRAPHITE_YELLOW: 'graphite-yellow',
+  CREAM_ORANGE: 'cream-orange',
   CLASSIC: 'classic',
 };
 
@@ -12,7 +12,7 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setThemeState] = useState(() => {
     try {
       const saved = localStorage.getItem('vt_theme');
-      if (saved && (saved === THEMES.MIDNIGHT_LIME || saved === THEMES.GRAPHITE_YELLOW || saved === THEMES.CLASSIC)) {
+      if (saved && (saved === THEMES.GRAPHITE_YELLOW || saved === THEMES.CREAM_ORANGE || saved === THEMES.CLASSIC)) {
         return saved;
       }
     } catch (e) {
@@ -26,7 +26,7 @@ export const ThemeProvider = ({ children }) => {
     setThemeState(newTheme);
     try {
       localStorage.setItem('vt_theme', newTheme);
-    } catch (e) {}
+    } catch (e) { }
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 

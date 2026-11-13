@@ -1,0 +1,980 @@
+/* ===================================================================
+   WARM CREAM, SAND & SUNSET ORANGE THEME
+   Palette:
+     - Warm Cream:    #fdf8f0, #fffcf7
+     - Golden Sand:   #f7efe2, #efe2ce, #e8d5b7
+     - Sunset Orange: #ea580c, #f97316, #fb923c
+     - Espresso Ink:  #2a1810, #4f3a2e, #6b5242
+   =================================================================== */
+
+:root[data-theme="cream-orange"] {
+  /* Color Variables */
+  --navy: #2a1810;
+  --navy-light: #43281c;
+  --blue: #ea580c;
+  --blue-bright: #f97316;
+  --teal: #ea580c;
+  --teal-light: #fb923c;
+  --gold: #d97706;
+  --gold-light: #fbbf24;
+
+  /* Theme specific tokens */
+  --theme-bg-base: #fdf8f0;
+  --theme-bg-surface: #fffcf7;
+  --theme-bg-sand: #f7efe2;
+  --theme-sand-border: #e8d5b7;
+  --theme-orange: #ea580c;
+  --theme-orange-glow: rgba(234, 88, 12, 0.28);
+
+  /* Overrides for system neutrals */
+  --white: #fffcf7;
+  --off-white: #fdf8f0;
+  --gray-50: #fdf8f0;
+  --gray-100: #f7efe2;
+  --gray-200: #ebd9c0;
+  --gray-300: #dcc2a1;
+  --gray-400: #a68b76;
+  --gray-500: #856b58;
+  --gray-600: #6b5242;
+  --gray-700: #4f3a2e;
+  --gray-800: #3a261c;
+  --gray-900: #2a1810;
+
+  --shadow-card: 0 8px 28px rgba(42, 24, 16, 0.08);
+  --shadow-card-hover: 0 18px 44px rgba(234, 88, 12, 0.14), 0 6px 18px rgba(42, 24, 16, 0.08);
+}
+
+/* Base Body & Layout */
+[data-theme="cream-orange"] body,
+[data-theme="cream-orange"] html {
+  background-color: #fdf8f0 !important;
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .app-container {
+  background-color: #fdf8f0;
+  color: #4f3a2e;
+}
+
+/* Scrollbars */
+[data-theme="cream-orange"] ::-webkit-scrollbar {
+  width: 7px;
+}
+[data-theme="cream-orange"] ::-webkit-scrollbar-track {
+  background: #f7efe2;
+}
+[data-theme="cream-orange"] ::-webkit-scrollbar-thumb {
+  background: #d8be9e;
+  border-radius: 4px;
+}
+[data-theme="cream-orange"] ::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
+}
+
+/* Typography */
+[data-theme="cream-orange"] h1,
+[data-theme="cream-orange"] h2,
+[data-theme="cream-orange"] h3,
+[data-theme="cream-orange"] h4,
+[data-theme="cream-orange"] .section-title {
+  color: #2a1810;
+}
+
+[data-theme="cream-orange"] .section-eyebrow {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .section-eyebrow::before {
+  background: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .section-sub {
+  color: #6b5242 !important;
+}
+
+[data-theme="cream-orange"] .text-gradient {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Sunset Orange Primary Buttons */
+[data-theme="cream-orange"] .btn-primary,
+[data-theme="cream-orange"] .nav-cta,
+[data-theme="cream-orange"] .pkg-btn,
+[data-theme="cream-orange"] .hs-btn,
+[data-theme="cream-orange"] .btn-submit {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #fffcf7 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.32) !important;
+  border: none !important;
+}
+
+[data-theme="cream-orange"] .btn-primary:hover,
+[data-theme="cream-orange"] .nav-cta:hover,
+[data-theme="cream-orange"] .pkg-btn:hover,
+[data-theme="cream-orange"] .hs-btn:hover,
+[data-theme="cream-orange"] .btn-submit:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #c2410c 100%) !important;
+  color: #fffcf7 !important;
+  box-shadow: 0 10px 28px rgba(234, 88, 12, 0.44) !important;
+  transform: translateY(-2px);
+}
+
+[data-theme="cream-orange"] .btn-outline,
+[data-theme="cream-orange"] .btn-secondary {
+  border-color: #dcc2a1 !important;
+  color: #2a1810 !important;
+  background: #fffcf7 !important;
+}
+
+[data-theme="cream-orange"] .btn-outline:hover,
+[data-theme="cream-orange"] .btn-secondary:hover {
+  border-color: #ea580c !important;
+  color: #ea580c !important;
+  background: #ffedd5 !important;
+}
+
+/* Navbar */
+[data-theme="cream-orange"] .navbar-solid {
+  background: rgba(255, 252, 247, 0.96) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(234, 88, 12, 0.14);
+  box-shadow: 0 6px 26px rgba(42, 24, 16, 0.08) !important;
+}
+
+[data-theme="cream-orange"] .navbar-transparent {
+  background: linear-gradient(to bottom, rgba(42, 24, 16, 0.72) 0%, transparent 100%) !important;
+}
+
+[data-theme="cream-orange"] .navbar-solid .nav-link {
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .navbar-solid .nav-link:hover,
+[data-theme="cream-orange"] .navbar-solid .nav-link.active {
+  color: #ea580c !important;
+  background: rgba(234, 88, 12, 0.09) !important;
+}
+
+[data-theme="cream-orange"] .navbar-transparent .nav-link {
+  color: rgba(253, 248, 240, 0.92) !important;
+}
+
+[data-theme="cream-orange"] .navbar-transparent .nav-link:hover,
+[data-theme="cream-orange"] .navbar-transparent .nav-link.active {
+  color: #fed7aa !important;
+  background: rgba(251, 146, 60, 0.18) !important;
+}
+
+[data-theme="cream-orange"] .mobile-nav {
+  background: #fdf8f0 !important;
+  border-left: 1px solid #e8d5b7;
+}
+
+[data-theme="cream-orange"] .mobile-nav-header {
+  border-bottom-color: #ebd9c0 !important;
+}
+
+[data-theme="cream-orange"] .mobile-nav-link {
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .mobile-nav-link.active,
+[data-theme="cream-orange"] .mobile-nav-link:hover {
+  background: #ffedd5 !important;
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .mobile-theme-section {
+  border-top-color: #ebd9c0 !important;
+}
+
+[data-theme="cream-orange"] .mobile-theme-header {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .mobile-theme-btn {
+  background: #fffcf7 !important;
+  border-color: #ebd9c0 !important;
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .mobile-theme-btn.active {
+  border-color: #ea580c !important;
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+}
+
+/* Home Hero Section */
+[data-theme="cream-orange"] .hero-bg {
+  background: url('/images/hero-cream-orange.jpg') center 45% / cover no-repeat !important;
+  filter: brightness(0.86) contrast(1.06) saturate(1.1) !important;
+}
+
+[data-theme="cream-orange"] .hero-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(42, 24, 16, 0.54) 0%,
+    rgba(42, 24, 16, 0.28) 45%,
+    rgba(42, 24, 16, 0.72) 100%
+  ) !important;
+}
+
+[data-theme="cream-orange"] .hero-pill {
+  background: rgba(255, 252, 247, 0.16) !important;
+  border: 1px solid rgba(251, 146, 60, 0.52) !important;
+  color: #ffedd5 !important;
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="cream-orange"] .hero-h1 {
+  color: #fffcf7 !important;
+  text-shadow: 0 4px 28px rgba(42, 24, 16, 0.45);
+}
+
+[data-theme="cream-orange"] .hero-h1 em {
+  color: #ff8a3d !important;
+  text-shadow: 0 4px 26px rgba(24, 14, 8, 0.75), 0 1px 3px rgba(24, 14, 8, 0.65);
+}
+
+[data-theme="cream-orange"] .hero-accent {
+  background: linear-gradient(135deg, #fed7aa 0%, #fb923c 50%, #ea580c 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="cream-orange"] .hero-sub,
+[data-theme="cream-orange"] .hero-desc {
+  color: rgba(253, 248, 240, 0.9) !important;
+}
+
+[data-theme="cream-orange"] .hero-scroll {
+  color: rgba(253, 248, 240, 0.78) !important;
+}
+
+/* Featured Packages Section */
+[data-theme="cream-orange"] .featured-packages-section {
+  background: #fdf8f0 !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section::before {
+  background: radial-gradient(circle at 50% 0%, rgba(234, 88, 12, 0.06) 0%, transparent 70%) !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section .section-title {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section .section-title span {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section .section-eyebrow {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section .section-eyebrow::before {
+  background: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section .section-subtitle {
+  color: #6b5242 !important;
+}
+
+[data-theme="cream-orange"] .pkg-marquee-hint {
+  background: #f7efe2 !important;
+  border-color: #e8d5b7 !important;
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .pkg-live-dot {
+  background: #ea580c !important;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.25) !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section .btn-outline {
+  border-color: rgba(234, 88, 12, 0.45) !important;
+  color: #ea580c !important;
+  background: rgba(234, 88, 12, 0.06) !important;
+}
+
+[data-theme="cream-orange"] .featured-packages-section .btn-outline:hover {
+  background: #ea580c !important;
+  color: #fffcf7 !important;
+  border-color: #ea580c !important;
+  box-shadow: 0 8px 22px rgba(234, 88, 12, 0.3) !important;
+}
+
+[data-theme="cream-orange"] .pkg-marquee-track .pkg-card {
+  border: 1.5px solid #ebd9c0 !important;
+  box-shadow: 0 10px 28px rgba(42, 24, 16, 0.08) !important;
+}
+
+[data-theme="cream-orange"] .pkg-marquee-track .pkg-card:hover {
+  border-color: #ea580c !important;
+  box-shadow: 0 18px 42px rgba(234, 88, 12, 0.16), 0 6px 18px rgba(42, 24, 16, 0.08) !important;
+}
+
+/* Search Panel Form */
+[data-theme="cream-orange"] .hs-form {
+  background: rgba(255, 252, 247, 0.96) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1.5px solid #e8d5b7 !important;
+  box-shadow: 0 24px 64px rgba(42, 24, 16, 0.22), 0 0 0 1px rgba(234, 88, 12, 0.08) !important;
+}
+
+[data-theme="cream-orange"] .hs-input {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .hs-input option {
+  background: #fffcf7;
+  color: #2a1810;
+}
+
+[data-theme="cream-orange"] .hs-input::placeholder {
+  color: #a68b76 !important;
+}
+
+[data-theme="cream-orange"] .hs-label {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .hs-sep {
+  background: #ebd9c0 !important;
+}
+
+/* Package Cards */
+[data-theme="cream-orange"] .pkg-card {
+  background: #fffcf7 !important;
+  border: 1.5px solid #ebd9c0 !important;
+  box-shadow: 0 10px 30px rgba(42, 24, 16, 0.08) !important;
+}
+
+[data-theme="cream-orange"] .pkg-card:hover {
+  border-color: #ea580c !important;
+  box-shadow: 0 18px 44px rgba(234, 88, 12, 0.16), 0 8px 20px rgba(42, 24, 16, 0.08) !important;
+}
+
+[data-theme="cream-orange"] .pkg-card-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(42, 24, 16, 0.95) 0%,
+    rgba(42, 24, 16, 0.78) 48%,
+    rgba(42, 24, 16, 0.3) 75%,
+    rgba(42, 24, 16, 0.08) 100%
+  ) !important;
+}
+
+[data-theme="cream-orange"] .pkg-location {
+  color: #fed7aa !important;
+}
+
+[data-theme="cream-orange"] .pkg-title {
+  color: #fffcf7 !important;
+}
+
+[data-theme="cream-orange"] .pkg-rating {
+  color: #fb923c !important;
+}
+
+[data-theme="cream-orange"] .pkg-badge-custom {
+  color: #fed7aa !important;
+}
+
+[data-theme="cream-orange"] .pkg-cta-details {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #fffcf7 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.36) !important;
+}
+
+[data-theme="cream-orange"] .pkg-cta-details:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #c2410c 100%) !important;
+  color: #fffcf7 !important;
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5) !important;
+}
+
+/* Mountain Section */
+[data-theme="cream-orange"] .mountain-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(253, 248, 240, 0.92) 0%,
+    rgba(247, 239, 226, 0.88) 100%
+  ) !important;
+}
+
+/* Destinations Editorial Grid */
+[data-theme="cream-orange"] .dest-section {
+  background: #f7efe2 !important;
+}
+
+[data-theme="cream-orange"] .dest-section::before {
+  opacity: 0.08 !important;
+}
+
+[data-theme="cream-orange"] .dest-section::after {
+  background: linear-gradient(to top, #f7efe2 0%, transparent 20%, transparent 80%, #f7efe2 100%) !important;
+}
+
+[data-theme="cream-orange"] .dest-card-overlay {
+  background: linear-gradient(to top, rgba(42, 24, 16, 0.92) 0%, transparent 60%) !important;
+}
+
+[data-theme="cream-orange"] .dest-card-ed {
+  border: 1.5px solid #e8d5b7 !important;
+}
+
+[data-theme="cream-orange"] .dest-card-ed:hover {
+  border-color: #ea580c !important;
+  box-shadow: 0 14px 36px rgba(234, 88, 12, 0.18), 0 6px 18px rgba(42, 24, 16, 0.1) !important;
+}
+
+[data-theme="cream-orange"] .dest-card-tag {
+  color: #fed7aa !important;
+}
+
+[data-theme="cream-orange"] .dest-card-name {
+  color: #fffcf7 !important;
+}
+
+[data-theme="cream-orange"] .dest-card-cta {
+  color: #fb923c !important;
+}
+
+/* Categories Section */
+[data-theme="cream-orange"] .cat-section {
+  background: #fdf8f0 !important;
+}
+
+[data-theme="cream-orange"] .cat-card {
+  border: 1.5px solid #ebd9c0 !important;
+}
+
+[data-theme="cream-orange"] .cat-card:hover {
+  border-color: #ea580c !important;
+  box-shadow: 0 12px 28px rgba(234, 88, 12, 0.18) !important;
+}
+
+[data-theme="cream-orange"] .cat-overlay {
+  background: linear-gradient(to top, rgba(42, 24, 16, 0.9) 0%, rgba(42, 24, 16, 0.35) 100%) !important;
+}
+
+[data-theme="cream-orange"] .cat-label {
+  color: #fffcf7 !important;
+}
+
+/* Beach Section */
+[data-theme="cream-orange"] .beach-section {
+  background: #f7efe2 !important;
+}
+
+[data-theme="cream-orange"] .beach-float-badge {
+  background: rgba(255, 252, 247, 0.95) !important;
+  border: 1.5px solid #e8d5b7 !important;
+  box-shadow: 0 10px 26px rgba(42, 24, 16, 0.12) !important;
+}
+
+[data-theme="cream-orange"] .fb-val {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .fb-lbl {
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .beach-tag {
+  background: #fffcf7 !important;
+  color: #4f3a2e !important;
+  border: 1px solid #dcc2a1 !important;
+}
+
+/* Why Choose Us & Feature Cards */
+[data-theme="cream-orange"] .why-section {
+  background: #fdf8f0 !important;
+}
+
+[data-theme="cream-orange"] .why-card {
+  background: #fffcf7 !important;
+  border: 1.5px solid #ebd9c0 !important;
+  box-shadow: 0 8px 24px rgba(42, 24, 16, 0.05) !important;
+}
+
+[data-theme="cream-orange"] .why-card:hover {
+  border-color: #ea580c !important;
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(234, 88, 12, 0.13) !important;
+}
+
+[data-theme="cream-orange"] .why-icon {
+  background: #ffedd5 !important;
+  color: #ea580c !important;
+  border: 1px solid rgba(234, 88, 12, 0.24) !important;
+}
+
+[data-theme="cream-orange"] .why-title {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .why-desc {
+  color: #6b5242 !important;
+}
+
+/* Stats Section */
+[data-theme="cream-orange"] .stats-band {
+  background: linear-gradient(135deg, #2a1810 0%, #43281c 55%, #7c2d12 100%) !important;
+  border-top: 1px solid rgba(251, 146, 60, 0.25) !important;
+  border-bottom: 1px solid rgba(251, 146, 60, 0.25) !important;
+}
+
+[data-theme="cream-orange"] .sb-value {
+  background: linear-gradient(135deg, #fed7aa, #fb923c) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="cream-orange"] .sb-label {
+  color: #f7efe2 !important;
+}
+
+/* Offer Section */
+[data-theme="cream-orange"] .offer-overlay-div {
+  background: linear-gradient(135deg, rgba(42, 24, 16, 0.9) 0%, rgba(124, 45, 18, 0.82) 100%) !important;
+}
+
+[data-theme="cream-orange"] .offer-title {
+  color: #fffcf7 !important;
+}
+
+[data-theme="cream-orange"] .offer-desc {
+  color: #f7efe2 !important;
+}
+
+/* Google Rating Summary & Marquee Reviews */
+[data-theme="cream-orange"] .testimonials-section {
+  background: #f7efe2 !important;
+}
+
+[data-theme="cream-orange"] .google-rating-summary-banner {
+  background: #fffcf7 !important;
+  border: 1.5px solid #e8d5b7 !important;
+  box-shadow: 0 10px 32px rgba(42, 24, 16, 0.08) !important;
+}
+
+[data-theme="cream-orange"] .gr-brand-name {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .gr-verified-pill {
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+  border: 1px solid rgba(234, 88, 12, 0.25) !important;
+}
+
+[data-theme="cream-orange"] .gr-score-number {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .gr-reviews-count {
+  color: #6b5242 !important;
+}
+
+[data-theme="cream-orange"] .gr-reviews-count strong {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .g-review-card {
+  background: #fffcf7 !important;
+  border: 1.5px solid #ebd9c0 !important;
+  box-shadow: 0 6px 20px rgba(42, 24, 16, 0.06) !important;
+}
+
+[data-theme="cream-orange"] .g-review-card:hover {
+  border-color: #ea580c !important;
+  box-shadow: 0 14px 32px rgba(234, 88, 12, 0.14) !important;
+}
+
+[data-theme="cream-orange"] .gr-reviewer-name {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .gr-comment {
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .gr-destination-tag {
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+  border: 1px solid rgba(234, 88, 12, 0.24) !important;
+}
+
+[data-theme="cream-orange"] .gr-footer {
+  border-top-color: #f7efe2 !important;
+}
+
+[data-theme="cream-orange"] .gr-verified-text {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .gr-review-date {
+  color: #856b58 !important;
+}
+
+/* Final CTA Section */
+[data-theme="cream-orange"] .final-cta {
+  background: #fdf8f0 !important;
+}
+
+[data-theme="cream-orange"] .final-cta div[style*="linear-gradient(to bottom, #fff"] {
+  background: linear-gradient(to bottom, #fdf8f0 0%, rgba(253, 248, 240, 0.78) 50%, #fdf8f0 100%) !important;
+}
+
+/* Packages Page (/packages) */
+[data-theme="cream-orange"] .packages-page,
+[data-theme="cream-orange"] div[style*="background: var(--off-white)"] {
+  background: #fdf8f0 !important;
+}
+
+[data-theme="cream-orange"] .packages-page-hero {
+  background: linear-gradient(135deg, #2a1810 0%, #4a2c1d 60%, #9a3412 100%) !important;
+  border-bottom: 1px solid rgba(251, 146, 60, 0.25) !important;
+}
+
+[data-theme="cream-orange"] .pkg-filters-bar {
+  background: rgba(255, 252, 247, 0.96) !important;
+  border-bottom: 1px solid #ebd9c0 !important;
+  box-shadow: 0 6px 20px rgba(42, 24, 16, 0.06) !important;
+}
+
+[data-theme="cream-orange"] .pkg-search-input {
+  background: #fdf8f0 !important;
+  border-color: #dcc2a1 !important;
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .pkg-search-input input {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .pkg-search-input input::placeholder {
+  color: #a68b76 !important;
+}
+
+[data-theme="cream-orange"] .filter-select {
+  background: #fffcf7 !important;
+  color: #4f3a2e !important;
+  border-color: #dcc2a1 !important;
+}
+
+[data-theme="cream-orange"] .active-filter-tag {
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+}
+
+/* Destinations Page (/destinations) */
+[data-theme="cream-orange"] .dest-hero {
+  background: linear-gradient(135deg, #2a1810 0%, #4a2c1d 60%, #9a3412 100%) !important;
+}
+
+[data-theme="cream-orange"] .df-btn {
+  background: #fffcf7 !important;
+  color: #4f3a2e !important;
+  border: 1.5px solid #dcc2a1 !important;
+}
+
+[data-theme="cream-orange"] .df-btn:hover {
+  border-color: #ea580c !important;
+  color: #ea580c !important;
+  background: #ffedd5 !important;
+}
+
+[data-theme="cream-orange"] .df-btn.active {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #fffcf7 !important;
+  border-color: #ea580c !important;
+  font-weight: 700 !important;
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.3) !important;
+}
+
+/* Package Detail Page (/packages/:id) */
+[data-theme="cream-orange"] .package-detail-page {
+  background: #fdf8f0 !important;
+}
+
+[data-theme="cream-orange"] .pkg-detail-card,
+[data-theme="cream-orange"] .itinerary-day-card,
+[data-theme="cream-orange"] .inclusions-box,
+[data-theme="cream-orange"] .exclusions-box {
+  background: #fffcf7 !important;
+  border: 1.5px solid #ebd9c0 !important;
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .booking-sidebar-card {
+  background: #fffcf7 !important;
+  border: 1.5px solid #e8d5b7 !important;
+  box-shadow: 0 14px 40px rgba(42, 24, 16, 0.1) !important;
+}
+
+[data-theme="cream-orange"] .form-input,
+[data-theme="cream-orange"] input[type="text"],
+[data-theme="cream-orange"] input[type="email"],
+[data-theme="cream-orange"] input[type="tel"],
+[data-theme="cream-orange"] input[type="date"],
+[data-theme="cream-orange"] select,
+[data-theme="cream-orange"] textarea {
+  background: #fdf8f0 !important;
+  border-color: #dcc2a1 !important;
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .form-input:focus,
+[data-theme="cream-orange"] input:focus,
+[data-theme="cream-orange"] select:focus,
+[data-theme="cream-orange"] textarea:focus {
+  border-color: #ea580c !important;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.16) !important;
+}
+
+[data-theme="cream-orange"] .form-label {
+  color: #4f3a2e !important;
+}
+
+/* About & Contact Pages */
+[data-theme="cream-orange"] .about-hero,
+[data-theme="cream-orange"] .contact-hero {
+  background: linear-gradient(135deg, #2a1810 0%, #4a2c1d 60%, #9a3412 100%) !important;
+}
+
+[data-theme="cream-orange"] .about-card,
+[data-theme="cream-orange"] .contact-card,
+[data-theme="cream-orange"] .team-card,
+[data-theme="cream-orange"] .contact-info-card {
+  background: #fffcf7 !important;
+  border: 1.5px solid #ebd9c0 !important;
+}
+
+/* Footer */
+[data-theme="cream-orange"] footer {
+  background: #23140d !important;
+  color: #ebd9c0 !important;
+  border-top: 2px solid rgba(234, 88, 12, 0.35) !important;
+}
+
+[data-theme="cream-orange"] .footer-heading {
+  color: #fffcf7 !important;
+}
+
+[data-theme="cream-orange"] .footer-link,
+[data-theme="cream-orange"] .footer-desc {
+  color: #d6bfa9 !important;
+}
+
+[data-theme="cream-orange"] .footer-links a {
+  color: #d6bfa9 !important;
+}
+
+[data-theme="cream-orange"] .footer-links a:hover,
+[data-theme="cream-orange"] .footer-link:hover {
+  color: #fb923c !important;
+}
+
+[data-theme="cream-orange"] .footer-social-btn,
+[data-theme="cream-orange"] .social-icon {
+  background: rgba(251, 146, 60, 0.14) !important;
+  color: #fb923c !important;
+  border: 1px solid rgba(251, 146, 60, 0.28) !important;
+}
+
+[data-theme="cream-orange"] .footer-social-btn:hover,
+[data-theme="cream-orange"] .social-icon:hover {
+  background: #ea580c !important;
+  color: #fffcf7 !important;
+  box-shadow: 0 0 15px rgba(234, 88, 12, 0.4) !important;
+}
+
+/* Lead Popup Modal */
+[data-theme="cream-orange"] .lead-popup-overlay {
+  background: rgba(42, 24, 16, 0.72) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+[data-theme="cream-orange"] .lead-popup-card {
+  background: #fffcf7 !important;
+  border: 1.5px solid #e8d5b7 !important;
+  box-shadow: 0 24px 60px rgba(42, 24, 16, 0.28) !important;
+}
+
+/* Badges */
+[data-theme="cream-orange"] .badge-teal,
+[data-theme="cream-orange"] .badge-gold {
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+  border: 1px solid rgba(234, 88, 12, 0.28) !important;
+}
+
+/* Floating Actions & Review Modal */
+[data-theme="cream-orange"] .fab-modal-overlay {
+  background: rgba(42, 24, 16, 0.74) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+[data-theme="cream-orange"] .fab-modal-card {
+  background: #fffcf7 !important;
+  border: 1.5px solid #e8d5b7 !important;
+  box-shadow: 0 24px 64px rgba(42, 24, 16, 0.3) !important;
+}
+
+[data-theme="cream-orange"] .fab-modal-header {
+  border-bottom: 1px solid #f7efe2 !important;
+}
+
+[data-theme="cream-orange"] .fab-modal-header h3 {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .fab-close-btn {
+  background: #f7efe2 !important;
+  color: #4f3a2e !important;
+}
+
+[data-theme="cream-orange"] .fab-close-btn:hover {
+  background: #ffedd5 !important;
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .fab-tooltip {
+  background: #fffcf7 !important;
+  color: #ea580c !important;
+  border: 1px solid #e8d5b7 !important;
+}
+
+/* Theme Dropdown Menu & Trigger */
+[data-theme="cream-orange"] .theme-trigger-btn.is-orange {
+  background: rgba(234, 88, 12, 0.12) !important;
+  color: #ea580c !important;
+  border-color: rgba(234, 88, 12, 0.38) !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.16);
+}
+
+[data-theme="cream-orange"] .navbar-transparent .theme-trigger-btn.is-orange {
+  background: rgba(251, 146, 60, 0.22) !important;
+  color: #ffedd5 !important;
+  border-color: rgba(251, 146, 60, 0.5) !important;
+}
+
+[data-theme="cream-orange"] .theme-trigger-btn.is-orange:hover {
+  background: rgba(234, 88, 12, 0.22) !important;
+  border-color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .theme-dropdown-panel {
+  background: #fffcf7 !important;
+  border-color: #e8d5b7 !important;
+  box-shadow: 0 20px 50px rgba(42, 24, 16, 0.18) !important;
+}
+
+[data-theme="cream-orange"] .theme-dropdown-header {
+  border-bottom-color: #f7efe2 !important;
+}
+
+[data-theme="cream-orange"] .theme-header-title {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .theme-option-item {
+  background: #fdf8f0 !important;
+  border-color: #ebd9c0 !important;
+}
+
+[data-theme="cream-orange"] .theme-option-item:hover {
+  background: #ffedd5 !important;
+  border-color: rgba(234, 88, 12, 0.45) !important;
+}
+
+[data-theme="cream-orange"] .theme-option-item.active {
+  border-color: #ea580c !important;
+  background: rgba(234, 88, 12, 0.1) !important;
+}
+
+[data-theme="cream-orange"] .theme-item-name {
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .theme-item-badge {
+  background: #ffedd5 !important;
+  color: #c2410c !important;
+}
+
+[data-theme="cream-orange"] .theme-item-sub {
+  color: #6b5242 !important;
+}
+
+[data-theme="cream-orange"] .theme-active-tag {
+  color: #ea580c !important;
+}
+
+/* Custom Branded Select & Picker for Cream, Sand & Orange */
+[data-theme="cream-orange"] .cs-native.cs-variant-inline,
+[data-theme="cream-orange"] .cs-trigger.cs-variant-inline {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #2a1810 !important;
+}
+
+[data-theme="cream-orange"] .cs-native.cs-variant-pill,
+[data-theme="cream-orange"] .cs-trigger.cs-variant-pill {
+  background: #fffcf7 !important;
+  color: #4f3a2e !important;
+  border: 1.5px solid #dcc2a1 !important;
+}
+
+[data-theme="cream-orange"] .cs-native.cs-variant-pill.active,
+[data-theme="cream-orange"] .cs-trigger.cs-variant-pill.active {
+  border-color: #ea580c !important;
+  color: #ea580c !important;
+  background: #ffedd5 !important;
+}
+
+[data-theme="cream-orange"] .cs-native::picker-icon,
+[data-theme="cream-orange"] .cs-trigger-chevron {
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .cs-native::picker(select),
+[data-theme="cream-orange"].cs-portal-menu {
+  background: rgba(255, 252, 247, 0.98) !important;
+  color: #2a1810 !important;
+  border: 1.5px solid #e8d5b7 !important;
+  box-shadow: 0 22px 54px rgba(42, 24, 16, 0.16), 0 6px 20px rgba(234, 88, 12, 0.12) !important;
+}
+
+[data-theme="cream-orange"] .cs-native option,
+[data-theme="cream-orange"] .cs-portal-option {
+  color: #4f3a2e !important;
+  background: transparent !important;
+}
+
+[data-theme="cream-orange"] .cs-native option:hover,
+[data-theme="cream-orange"] .cs-native option:focus,
+[data-theme="cream-orange"] .cs-portal-option:hover,
+[data-theme="cream-orange"] .cs-portal-option:focus-visible {
+  background-color: rgba(234, 88, 12, 0.1) !important;
+  color: #ea580c !important;
+}
+
+[data-theme="cream-orange"] .cs-native option:checked,
+[data-theme="cream-orange"] .cs-portal-option.is-selected {
+  background-color: #ffedd5 !important;
+  color: #2a1810 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="cream-orange"] .cs-native option::checkmark,
+[data-theme="cream-orange"] .cs-portal-check {
+  color: #ea580c !important;
+}
